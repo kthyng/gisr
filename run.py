@@ -64,46 +64,26 @@ for test in xrange(ntests):
 							init.test1(loc='local', nsteps=nstep, \
 										ah=ah, grid=None, nlon=nlon[m], \
 										nlat=nlat[m], doturb=doturb[n], name=name)
-	# pdb.set_trace()
 
-	# If the particle trajectories have not been run, run them
-	if not os.path.exists('tracks/' + name + '.nc'):
-		# TODO: Try to put each simulation on a different core of the current machine, except 1 or 2
-		lonp, latp, zp, t, grid = tracpy.run.run(loc, nsteps, ndays, ff, date, \
-										tseas, ah, av, lon0, lat0, \
-										z0, zpar, do3d, doturb, name)
 
-	else: # if the files already exist, just read them in for plotting
-		d = netCDF.Dataset('tracks/' + name + '.nc')
-		lonp = d.variables['lonp'][:]
-		latp = d.variables['latp'][:]
+					# If the particle trajectories have not been run, run them
+					if not os.path.exists('tracks/' + name + '.nc'):
+						# TODO: Try to put each simulation on a different core of the current machine, except 1 or 2
+						lonp, latp, zp, t, grid = tracpy.run.run(loc, nsteps, ndays, ff, date, \
+														tseas, ah, av, lon0, lat0, \
+														z0, zpar, do3d, doturb, name)
 
-	# pdb.set_trace()
-	ln = lonp.shape[1]
-	# Save final locations of drifters for summary origin plots
-	lonptemp, \
-		latptemp = tracpy.tools.find_final(lonp, latp)
+					else: # if the files already exist, just read them in for plotting
+						d = netCDF.Dataset('tracks/' + name + '.nc')
+						lonp = d.variables['lonp'][:]
+						latp = d.variables['latp'][:]
 
-	# Plot tracks
-	# pdb.set_trace()
-	# tracpy.plotting.tracks(lonp,latp,name,grid=grid)
 
-# 	# Plot final location (by time index) histogram
-# 	# tracpy.plotting.hist(lonp,latp,name,grid=grid,which='contour')
-# 	# xmin, ymin = grid['basemap'](lonp.min()-.1, latp.min()+.1)
-# 	# xmax, ymax = grid['basemap'](lonp.max()+.1, latp.max()+.1)
-# 	# tracpy.plotting.hist(lonp,latp,name,grid=grid, \
-# 	# 						which='pcolor',bins=(80,80), \
-# 	# 						xlims=[xmin, xmax], \
-# 	# 						ylims=[ymin, ymax])	
+					# Plot tracks
+					tracpy.plotting.tracks(lonp,latp,name,grid=grid)
 
-# 	# pdb.set_trace()
-# 	# ADD ABILITY TO JUST READ IN TRACKS IF ALREADY DONE
-
-# # pdb.set_trace()
-# # Make histogram of all final locations
-# tracpy.plotting.hist(lonpsave,latpsave,name,grid=grid,tind='vector', \
-# 							which='pcolor',bins=(80,80))
+					tracpy.plotting.hist(lonp,latp,name,grid=grid, \
+											which='pcolor',bins=(80,80))
 
 
 ### End of sensitivity study ###
