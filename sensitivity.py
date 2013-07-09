@@ -24,6 +24,12 @@ import init
 from scipy import ndimage
 
 def run():
+	# Make sure necessary directories exist
+	if not os.path.exists('tracks'):
+		os.makedirs('tracks')
+	if not os.path.exists('figures'):
+		os.makedirs('figures')
+
 	# Parameters to be rotated through
 	nsteps = np.array([5, 10, 15])
 	ahs = np.array([5, 20])
