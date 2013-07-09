@@ -146,4 +146,4 @@ for m, nspace in enumerate(nspaces):
 ### End of sensitivity study ###
 
 # Compile tex document with figures in it
-# !pdflatex gisr.tex
+!pdflatex gisr.tex

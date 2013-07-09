@@ -74,24 +74,26 @@ The difference in the results from diffusion types is illustrated in Figure \ref
 	\label{diffusiontype}
 \end{figure}
 
+Drifter tracks and final locations are shown in Figure \ref{diffusionsize} for changing the size of the horizontal diffusivity, $A_H$. The overall behavior is the same in all of the plots, but the drifters are somewhat noticeably more spread out as the value of the horizontal diffusivity increases. This is shown for adding diffusion using a random walk on a circle to the drifter positions, but the same type of behavior is found in the results of all of the parameterization techniques (not shown).
 
 \begin{figure}
 	\centering
 	\subfigure[No diffusion]{\includegraphics[width=.315\textwidth]{figures/5_5_None_Ftracks} \label{diffusionsize-none}}
 	\subfigure[Circular diffusion, $A_H=5$]{\includegraphics[width=.315\textwidth]{figures/5_5_D5_Ftracks} \label{diffusionsize-5}}
 	\subfigure[Circular diffusion, $A_H=20$]{\includegraphics[width=.315\textwidth]{figures/5_5_D20_Ftracks} \label{diffusionsize-20}}
-	\caption{Comparison of size of $A_H$ for initial spacing of 5km}
+	\caption{Comparison of size of $A_H$ for initial spacing of 5km and circular trajectory diffusion}
 	\label{diffusionsize}
 \end{figure}
 
 
-\begin{figure}
-	\centering
-	\subfigure[Circular, 5 km spacing]{\includegraphics[width=.325\textwidth]{figures/5_5_D20_Fhistpcolor}}
-	\subfigure[Circular, 10 km spacing]{\includegraphics[width=.325\textwidth]{figures/10_5_D20_Fhistpcolor}}
-	\subfigure[Circular, 50 km spacing]{\includegraphics[width=.325\textwidth]{figures/50_5_D20_Fhistpcolor}}
-	\caption{Comparison of initial drifter spacing with diffusion ($A_H=20$ m$^2$/s.}
-\end{figure}
+
+% \begin{figure}
+% 	\centering
+% 	\subfigure[Circular, 5 km spacing]{\includegraphics[width=.325\textwidth]{figures/5_5_D20_Fhistpcolor}}
+% 	\subfigure[Circular, 10 km spacing]{\includegraphics[width=.325\textwidth]{figures/10_5_D20_Fhistpcolor}}
+% 	\subfigure[Circular, 50 km spacing]{\includegraphics[width=.325\textwidth]{figures/50_5_D20_Fhistpcolor}}
+% 	\caption{Comparison of initial drifter spacing with diffusion ($A_H=20$ m$^2$/s.}
+% \end{figure}
 
 % \subsubsection{Number of Interpolation Steps}
 
