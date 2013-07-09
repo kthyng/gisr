@@ -124,7 +124,7 @@ def galveston():
 
 	return loc,nsteps,ndays,ff,date,tseas,ah,av,lon0,lat0,z0,zpar,do3d,doturb,name
 
-def test1(loc=None, nsteps=None, ff=None, ah=None, grid=None, nlon=None, nlat=None, doturb=None, name=None):
+def sensitivity(loc=None, nsteps=None, ff=None, ah=None, grid=None, nlon=None, nlat=None, doturb=None, name=None):
 	'''
 	A drifter test using TXLA model output. 
 	The comparison case for this simulation is 2D (do3d=0) 
@@ -164,14 +164,14 @@ def test1(loc=None, nsteps=None, ff=None, ah=None, grid=None, nlon=None, nlat=No
 	else:
 		nsteps = nsteps
 
-	ndays = .5 #1 #16
+	ndays = 16
 	if ff is None:
 		ff = 1
 	else:
 		ff = ff
 	# Start date
-	date = datetime(2009,11, 25, 0)
-	# date = datetime(2009,11, 20, 0)
+	# date = datetime(2009, 11, 19, 12)
+	date = datetime(2009, 11, 20, 0)
 
 	# Time between outputs
 	# Dt = 14400. # in seconds (4 hours), nc.variables['dt'][:] 

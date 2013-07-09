@@ -2,6 +2,8 @@
 Attempt at having a control-all file for oil modeling paper.
 """
 
+import matplotlib
+matplotlib.use("Agg") # set matplotlib to use the backend that does not require a windowing system
 import numpy as np
 import sys
 import os
@@ -27,7 +29,7 @@ units = 'seconds since 1970-01-01'
 
 # Parameters to be rotated through
 nsteps = np.array([5, 10, 15])
-ahs = np.array([5, 20, 100])
+ahs = np.array([5, 20])
 nlon = np.array([220, 110, 21])
 nlat = np.array([196, 98, 20])
 nspaces = list(['5', '10', '50']) # names for nlon, nlat
@@ -50,22 +52,45 @@ for m, nspace in enumerate(nspaces):
 				# Read in simulation initialization
 				# hgrid doesn't have any vertical grid info
 				if 'hgrid' in locals(): # don't need to reread grid
-					loc, nsteps, ndays, ff, date, tseas, \
+					loc, nstep, ndays, ff, date, tseas, \
 						ah, av, lon0, lat0, z0, zpar, do3d, \
 						doturb, name, hgrid = \
-						init.test1(loc='local', nsteps=nstep, \
+						init.sensitivity(loc='local', nsteps=nstep, \
 									ah=0, grid=hgrid, nlon=nlon[m], \
 									nlat=nlat[m], doturb=doturbs[n], name=name)
 				else: # need to read in grid
 					loc, nstep, ndays, ff, date, tseas, \
 						ah, av, lon0, lat0, z0, zpar, do3d, \
 						doturb, name, hgrid = \
-						init.test1(loc='local', nsteps=nstep, \
+						init.sensitivity(loc='local', nsteps=nstep, \
 									ah=0, grid=None, nlon=nlon[m], \
 									nlat=nlat[m], doturb=doturbs[n], name=name)
 
-			else: # need horizontal viscosity
+				# If the particle trajectories have not been run, run them
+				if not os.path.exists('tracks/' + name + '.nc'):
+					# TODO: Try to put each simulation on a different core of the current machine, except 1 or 2
+					if 'grid' in locals(): # don't need to reread grid
+						lonp, latp, zp, t, grid = tracpy.run.run(loc, nstep, ndays, ff, date, \
+														tseas, ah, av, lon0, lat0, \
+														z0, zpar, do3d, doturb, name, grid)
+					else:
+						lonp, latp, zp, t, grid = tracpy.run.run(loc, nstep, ndays, ff, date, \
+														tseas, ah, av, lon0, lat0, \
+														z0, zpar, do3d, doturb, name)
 
+				else: # if the files already exist, just read them in for plotting
+					d = netCDF.Dataset('tracks/' + name + '.nc')
+					lonp = d.variables['lonp'][:]
+					latp = d.variables['latp'][:]
+
+
+				# Plot tracks
+				tracpy.plotting.tracks(lonp,latp,name,grid=hgrid)
+
+				tracpy.plotting.hist(lonp,latp,name,grid=hgrid, \
+										which='pcolor',bins=(40,40))
+
+			else: # need horizontal viscosity
 				# loop through horizontal viscosities
 				for p, ah in enumerate(ahs):
 
@@ -76,47 +101,49 @@ for m, nspace in enumerate(nspaces):
 					# Read in simulation initialization
 					# hgrid doesn't have any vertical grid info
 					if 'hgrid' in locals(): # don't need to reread grid
-						loc, nsteps, ndays, ff, date, tseas, \
+						loc, nstep, ndays, ff, date, tseas, \
 							ah, av, lon0, lat0, z0, zpar, do3d, \
 							doturb, name, hgrid = \
-							init.test1(loc='local', nsteps=nstep, \
+							init.sensitivity(loc='local', nsteps=nstep, \
 										ah=ah, grid=hgrid, nlon=nlon[m], \
 										nlat=nlat[m], doturb=doturbs[n], name=name)
 					else: # need to read in grid
 						loc, nstep, ndays, ff, date, tseas, \
 							ah, av, lon0, lat0, z0, zpar, do3d, \
 							doturb, name, hgrid = \
-							init.test1(loc='local', nsteps=nstep, \
+							init.sensitivity(loc='local', nsteps=nstep, \
 										ah=ah, grid=None, nlon=nlon[m], \
 										nlat=nlat[m], doturb=doturbs[n], name=name)
 
 
-			# If the particle trajectories have not been run, run them
-			if not os.path.exists('tracks/' + name + '.nc'):
-				# TODO: Try to put each simulation on a different core of the current machine, except 1 or 2
-				if 'grid' in locals(): # don't need to reread grid
-					lonp, latp, zp, t, grid = tracpy.run.run(loc, nstep, ndays, ff, date, \
-													tseas, ah, av, lon0, lat0, \
-													z0, zpar, do3d, doturb, name, grid)
-				else:
-					lonp, latp, zp, t, grid = tracpy.run.run(loc, nstep, ndays, ff, date, \
-													tseas, ah, av, lon0, lat0, \
-													z0, zpar, do3d, doturb, name)
+					# If the particle trajectories have not been run, run them
+					if not os.path.exists('tracks/' + name + '.nc'):
+						# TODO: Try to put each simulation on a different core of the current machine, except 1 or 2
+						if 'grid' in locals(): # don't need to reread grid
+							lonp, latp, zp, t, grid = tracpy.run.run(loc, nstep, ndays, ff, date, \
+															tseas, ah, av, lon0, lat0, \
+															z0, zpar, do3d, doturb, name, grid)
+						else:
+							lonp, latp, zp, t, grid = tracpy.run.run(loc, nstep, ndays, ff, date, \
+															tseas, ah, av, lon0, lat0, \
+															z0, zpar, do3d, doturb, name)
 
-			else: # if the files already exist, just read them in for plotting
-				d = netCDF.Dataset('tracks/' + name + '.nc')
-				lonp = d.variables['lonp'][:]
-				latp = d.variables['latp'][:]
+					else: # if the files already exist, just read them in for plotting
+						d = netCDF.Dataset('tracks/' + name + '.nc')
+						lonp = d.variables['lonp'][:]
+						latp = d.variables['latp'][:]
 
 
-			# Plot tracks
-			tracpy.plotting.tracks(lonp,latp,name,grid=hgrid)
-
-			tracpy.plotting.hist(lonp,latp,name,grid=hgrid, \
-									which='pcolor',bins=(80,80))
+					# If the particle trajectories have not been plotted, plot them
+					if not os.path.exists('figures/' + name + 'tracks.png'):
+						# Plot tracks
+						tracpy.plotting.tracks(lonp,latp,name,grid=hgrid)
+					if not os.path.exists('figures/' + name + 'histpcolor.png'):
+						tracpy.plotting.hist(lonp,latp,name,grid=hgrid, \
+											which='pcolor',bins=(40,40))
 
 
 ### End of sensitivity study ###
 
-# # Compile tex document with figures in it
-# # !pdflatex dwight.tex
+# Compile tex document with figures in it
+# !pdflatex gisr.tex

@@ -1,0 +1,9 @@
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.log
+*.out
+*.synctex.gz
+*.pyc
+.DS_Store

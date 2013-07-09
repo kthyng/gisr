@@ -1,0 +1,89 @@
+
+% a few handy macros
+
+\newcommand\matlab{{\sc matlab}}
+\newcommand{\goto}{\rightarrow}
+\newcommand{\bigo}{{\mathcal O}}
+\newcommand{\half}{\frac{1}{2}}
+%\newcommand\implies{\quad\Longrightarrow\quad}
+\newcommand\reals{{{\rm l} \kern -.15em {\rm R} }}
+\newcommand\complex{{\raisebox{.043ex}{\rule{0.07em}{1.56ex}} \hskip -.35em {\rm C}}}
+
+
+% macros for matrices/vectors:
+
+% matrix environment for vectors or matrices where elements are centered
+\newenvironment{mat}{\left[\begin{array}{ccccccccccccccc}}{\end{array}\right]}
+\newcommand\bcm{\begin{mat}}
+\newcommand\ecm{\end{mat}}
+
+% matrix environment for vectors or matrices where elements are right justifvied
+\newenvironment{rmat}{\left[\begin{array}{rrrrrrrrrrrrr}}{\end{array}\right]}
+\newcommand\brm{\begin{rmat}}
+\newcommand\erm{\end{rmat}}
+
+% for left brace and a set of choices
+\newenvironment{choices}{\left\{ \begin{array}{ll}}{\end{array}\right.}
+\newcommand\when{&\text{if~}}
+\newcommand\otherwise{&\text{otherwise}}
+% sample usage:
+%  \delta_{ij} = \begin{choices} 1 \when i=j, \\ 0 \otherwise \end{choices}
+
+
+% for labeling and referencing equations:
+\newcommand{\eql}{\begin{equation}\label}
+\newcommand{\eqn}[1]{(\ref{#1})}
+% can then do
+%  \eql{eqnlabel}
+%  ...
+%  \end{equation}
+% and refer to it as equation \eqn{eqnlabel}.  
+
+
+% some useful macros for finite difference methods:
+\newcommand\unp{U^{n+1}}
+\newcommand\unm{U^{n-1}}
+
+% for chemical reactions:
+\newcommand{\react}[1]{\stackrel{K_{#1}}{\rightarrow}}
+\newcommand{\reactb}[2]{\stackrel{K_{#1}}{~\stackrel{\rightleftharpoons}
+   {\scriptstyle K_{#2}}}~}
+
+% Headers for exercises:
+
+\newcommand{\exercise}[1]{\vskip 15pt  \noindent {\large \bf Exercise #1}%
+     \nopagebreak\vskip 5pt \nopagebreak}
+
+\newcommand{\chapexercises}[1]{%
+     \cleardoublepage
+     \centerline{\LARGE\bf Chapter #1 Exercises}
+     \vskip .5cm
+     \noindent
+     From: {\it Finite Difference Methods for Ordinary and Partial 
+     Differential Equations}\\  by R.~J.~LeVeque, SIAM, 2007.~~~
+     {\tt http://www.amath.washington.edu/$\sim$rjl/fdmbook}
+     \vskip .5cm
+     }
+
+
+%% Kristen's added
+% Partial derivative d
+\newcommand{\p}{\partial}
+% integral dt
+\newcommand{\dd}{\text{d}}
+\newcommand{\ul}{\uvec{\ell}}
+%\newcommand{\dx}{\text{dx}}
+%\newcommand{\dy}{\text{dy}}
+%\newcommand{\dr}{\text{dr}}
+%\newcommand{\dl}{\text{d$\uvec{\ell}$}}
+% Full partial derivative fraction, use like \pd[x]{t} for \frac{\partial x}{\partial t}
+\newcommand{\pd[2]}{\frac{\partial #1}{\partial #2}}
+% left and right big parentheses, \left{ and \right} as \lp and \rp
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\uvec}{\underline} % for vectors
+\newcommand{\uuvec[1]}{\underline{\underline #1 }} % for tensors
+\newcommand{\ovec}{\overline} % for reynolds stresses
+
+% Better tilde: http://tex.stackexchange.com/questions/9363/how-does-one-insert-a-backslash-or-a-tilde-into-latex
+\newcommand{\ttilde}{{\raise.17ex\hbox{$\scriptstyle\sim$}}}
