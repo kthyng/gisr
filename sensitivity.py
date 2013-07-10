@@ -27,8 +27,12 @@ def run():
 	# Make sure necessary directories exist
 	if not os.path.exists('tracks'):
 		os.makedirs('tracks')
+	if not os.path.exists('tracks/sensitivity'):
+		os.makedirs('tracks/sensitivity')
 	if not os.path.exists('figures'):
 		os.makedirs('figures')
+	if not os.path.exists('figures/sensitivity'):
+		os.makedirs('figures/sensitivity')
 
 	# Parameters to be rotated through
 	nsteps = np.array([5, 10, 15])
@@ -49,7 +53,7 @@ def run():
 				if turbname == 'None': # don't need horizontal viscosity (the input one is not used)
 
 					# Add information to name
-					name = nspace + '_' + str(nstep) + '_' + turbname + '_F'
+					name = 'sensitivity/' + nspace + '_' + str(nstep) + '_' + turbname + '_F'
 
 					# pdb.set_trace()
 					# Read in simulation initialization
@@ -58,14 +62,14 @@ def run():
 						loc, nstep, ndays, ff, date, tseas, \
 							ah, av, lon0, lat0, z0, zpar, do3d, \
 							doturb, name, hgrid = \
-							init.sensitivity(loc='local', nsteps=nstep, \
+							init.sensitivity(loc='thredds', nsteps=nstep, \
 										ah=0, grid=hgrid, nlon=nlon[m], \
 										nlat=nlat[m], doturb=doturbs[n], name=name)
 					else: # need to read in grid
 						loc, nstep, ndays, ff, date, tseas, \
 							ah, av, lon0, lat0, z0, zpar, do3d, \
 							doturb, name, hgrid = \
-							init.sensitivity(loc='local', nsteps=nstep, \
+							init.sensitivity(loc='thredds', nsteps=nstep, \
 										ah=0, grid=None, nlon=nlon[m], \
 										nlat=nlat[m], doturb=doturbs[n], name=name)
 
@@ -100,7 +104,7 @@ def run():
 					for p, ah in enumerate(ahs):
 
 						# Add information to name
-						name = nspace + '_' + str(nstep) + '_' + turbname + str(ah) + '_F'
+						name = 'sensitivity/' + nspace + '_' + str(nstep) + '_' + turbname + '_F'
 
 						# pdb.set_trace()
 						# Read in simulation initialization
@@ -109,14 +113,14 @@ def run():
 							loc, nstep, ndays, ff, date, tseas, \
 								ah, av, lon0, lat0, z0, zpar, do3d, \
 								doturb, name, hgrid = \
-								init.sensitivity(loc='local', nsteps=nstep, \
+								init.sensitivity(loc='thredds', nsteps=nstep, \
 											ah=ah, grid=hgrid, nlon=nlon[m], \
 											nlat=nlat[m], doturb=doturbs[n], name=name)
 						else: # need to read in grid
 							loc, nstep, ndays, ff, date, tseas, \
 								ah, av, lon0, lat0, z0, zpar, do3d, \
 								doturb, name, hgrid = \
-								init.sensitivity(loc='local', nsteps=nstep, \
+								init.sensitivity(loc='thredds', nsteps=nstep, \
 											ah=ah, grid=None, nlon=nlon[m], \
 											nlat=nlat[m], doturb=doturbs[n], name=name)
 

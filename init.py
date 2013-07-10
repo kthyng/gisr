@@ -68,62 +68,6 @@ from matplotlib.mlab import *
 import inout
 import tools
 
-def galveston():
-	'''
-	Start drifters outside Galveston Bay and see where they move backward in time.
-
-	'''
-
-	# Location of TXLA model output
-	if 'rainier' in os.uname():
-		loc = '/Users/kthyng/Documents/research/postdoc/' # for model outputs
-	elif 'hafen.tamu.edu' in os.uname():
-		loc = '/home/kthyng/shelf/' # for model outputs
-
-	# Initialize parameters
-	nsteps = 10
-	ndays = 2
-	ff = -1
-	# Start date
-	date = datetime(2009,11, 30, 0)
-	# Time between outputs
-	# Dt = 14400. # in seconds (4 hours), nc.variables['dt'][:] 
-	tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
-	ah = 100.
-	av = 1.e-5 # m^2/s, or try 5e-6
-
-	## Input starting locations as real space lon,lat locations
-	lon0,lat0 = np.meshgrid(np.linspace(-95.3,-94.3,10), 
-							np.linspace(28.6,29.6,10))
-	# pdb.set_trace()
-	lon0 = lon0.flatten()
-	lat0 = lat0.flatten()
-
-	## Choose method for vertical placement of drifters
-	# Also update makefile accordingly. Choose the twodim flag for isoslice.
-	# See above for more notes, but do the following two lines for an isoslice
-	z0 = 's' #'z' #'salt' #'s' 
-	zpar = 29 #-10 #grid['km']-1 # 30 #grid['km']-1
-	# Do the following two for a 3d simulation
-	# z0 = np.ones(xstart0.shape)*-40 #  below the surface
-	# zpar = 'fromMSL' 
-	# pdb.set_trace()
-
-	## Set flags
-	
-	# for 3d flag, do3d=0 makes the run 2d and do3d=1 makes the run 3d
-	do3d = 0
-	# turbulence/diffusion flag. doturb=0 means no turb/diffusion,
-	# doturb=1 means adding parameterized turbulence
-	# doturb=2 means adding diffusion on a circle
-	# doturb=3 means adding diffusion on an ellipse (anisodiffusion)
-	doturb = 3
-
-	# simulation name, used for saving results into netcdf file
-	name = 'galveston'
-
-	return loc,nsteps,ndays,ff,date,tseas,ah,av,lon0,lat0,z0,zpar,do3d,doturb,name
-
 def sensitivity(loc=None, nsteps=None, ff=None, ah=None, grid=None, nlon=None, nlat=None, doturb=None, name=None):
 	'''
 	A drifter test using TXLA model output. 
@@ -149,8 +93,7 @@ def sensitivity(loc=None, nsteps=None, ff=None, ah=None, grid=None, nlon=None, n
 	# file and then grid. 
 	# 0150 file goes from (2009, 11, 19, 12, 0) to (2009, 12, 6, 0, 0)
 	if loc is None or loc == 'thredds':
-		loc = ['http://barataria.tamu.edu:8080/thredds/dodsC/txla_nesting6/ocean_his_0150.nc', \
-				'http://barataria.tamu.edu:8080//thredds/dodsC/txla_nesting6_grid/txla_grd_v4_new.nc']
+		loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'		
 	elif loc is 'local':
 	# Location of TXLA model output
 		if 'rainier' in os.uname():
@@ -191,20 +134,7 @@ def sensitivity(loc=None, nsteps=None, ff=None, ah=None, grid=None, nlon=None, n
 	else:
 		grid = grid
 
-	## Input starting locations as real space lon,lat locations
-	# lon0,lat0 = np.meshgrid(-95.498218005315309,23.142258627126882) # [0,0] (SE) corner
-	# lon0,lat0 = np.meshgrid(-97.748582291691989,23.000027311710628) # [-1,0] (SW) corner
-	# lon0,lat0 = np.meshgrid(-87.757124031927574,29.235771320764623) # [0,-1] (NE) corner
-	# lon0,lat0 = np.meshgrid(-88.3634073986196,30.388542615201313) # [-1,-1] (NW) corner
-	# lon0,lat0 = np.meshgrid(np.linspace(-94,-93,10),np.linspace(28,29,10)) # grid outside Galveston Bay
-	# lon0,lat0 = np.meshgrid(np.linspace(-95,-91,100),np.linspace(28,29,50)) # rectangle outside Galveston
-
-	# lon0,lat0 = np.meshgrid(np.linspace(-98.5,-87.5,1100),np.linspace(22.5,31,980)) # whole domain, 1 km
-	# lon0,lat0 = np.meshgrid(np.linspace(-98.5,-87.5,220),np.linspace(22.5,31,196)) # whole domain, 5 km
-	# # FOR TEST1:
-	# lon0,lat0 = np.meshgrid(np.linspace(-98.5,-87.5,110),np.linspace(22.5,31,98)) # whole domain, 10 km
-	# lon0,lat0 = np.meshgrid(np.linspace(-98.5,-87.5,21),np.linspace(22.5,31,20)) # whole domain, 50 km
-
+	# Initial lon/lat locations for drifters
 	if nlon is None:
 		nlon = 110
 	else:
@@ -219,8 +149,6 @@ def sensitivity(loc=None, nsteps=None, ff=None, ah=None, grid=None, nlon=None, n
 	lon0,lat0 = tools.check_points(lon0,lat0,grid)
 
 	## Choose method for vertical placement of drifters
-	# Also update makefile accordingly. Choose the twodim flag for isoslice.
-	# See above for more notes, but do the following two lines for an isoslice
 	z0 = 's'  #'salt' #'s' #'z' #'salt' #'s' 
 	zpar = 29 #30 #29 #-10 #grid['km']-1 # 30 #grid['km']-1
 	# Do the following two for a 3d simulation
@@ -247,108 +175,59 @@ def sensitivity(loc=None, nsteps=None, ff=None, ah=None, grid=None, nlon=None, n
 
 	return loc,nsteps,ndays,ff,date,tseas,ah,av,lon0,lat0,z0,zpar,do3d,doturb,name,grid
 
-def test2():
+def galv_b(date=None, grid=None):
 	'''
-	A drifter test using TXLA model output. 
-	This simulation is 3D (do3d=1) with turbulence (doturb=1) added in.
-	Drifters are started at 10 meters below the mean sea level and run backward (ff=-1)
-	for five days from 11/25/09. Compare results with figure in examples/test2.png.
+	Initialization for seeding drifters near Galveston Bay to be run
+	backward.
+
+	Optional inputs for making tests easy to run:
+		date 	Input date for name in datetime format
+				e.g., datetime(2009, 11, 20, 0). If date not input,
+				name will be 'temp' 
+		grid 	If input, will not redo this step. 
+				Default is to load in grid.
 	'''
 
 	# Location of TXLA model output
-	# file and then grid
-	loc = ['http://barataria.tamu.edu:8080/thredds/dodsC/txla_nesting6/ocean_his_0150.nc', \
-			'http://barataria.tamu.edu:8080//thredds/dodsC/txla_nesting6_grid/txla_grd_v4_new.nc']
+	loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
 
 	# Initialize parameters
-	nsteps = 10
-	ndays = 5
-	ff = -1
-	# Start date
-	date = datetime(2009,11, 25, 0)
+	nsteps = 5 # 5 time interpolation steps
+	ndays = 1 #60
+	ff = -1 # This is a backward-moving simulation
+
 	# Time between outputs
-	# Dt = 14400. # in seconds (4 hours), nc.variables['dt'][:] 
 	tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
-	ah = 100.
-	av = 1.e-5 # m^2/s, or try 5e-6
+	ah = 0.
+	av = 0. # m^2/s
 
-	## Input starting locations as real space lon,lat locations
-	lon0,lat0 = np.meshgrid(np.linspace(-94,-93,5), 
-							np.linspace(28,29,5))
-	lon0 = lon0.flatten()
-	lat0 = lat0.flatten()
+	if grid is None:
+		# if loc is the aggregated thredds server, the grid info is
+		# included in the same file
+		grid = inout.readgrid(loc)
+	else:
+		grid = grid
 
-	## Choose method for vertical placement of drifters
-	# # Also update makefile accordingly. Choose the twodim flag for isoslice.
-	# # See above for more notes, but do the following two lines for an isoslice
-	# z0 = 'z' #'salt' #'s' 
-	# zpar = -10 #grid['km']-1 # 30 #grid['km']-1
-	# Do the following two for a 3d simulation
-	z0 = np.ones(lon0.shape)*-10 #  below the surface
-	zpar = 'fromMSL' 
+	# Initial lon/lat locations for drifters
+	lon0,lat0 = np.meshgrid(np.linspace(-95.3,-94.3,15), 
+							np.linspace(28.6,29.6,15))
 
-	# for 3d flag, do3d=0 makes the run 2d and do3d=1 makes the run 3d
-	do3d = 1
-	# turbulence/diffusion flag. doturb=0 means no turb/diffusion,
-	# doturb=1 means adding parameterized turbulence
-	# doturb=2 means adding diffusion on a circle
-	# doturb=3 means adding diffusion on an ellipse (anisodiffusion)
-	doturb = 1
+	# Eliminate points that are outside domain or in masked areas
+	lon0,lat0 = tools.check_points(lon0,lat0,grid)
 
-	# simulation name, used for saving results into netcdf file
-	name = 'test2'
-
-	return loc,nsteps,ndays,ff,date,tseas,ah,av,lon0,lat0,z0,zpar,do3d,doturb,name
-
-def hab1b():
-	'''
-	Initialize a drifter run using the starting locations from 
-	HAB experiment 1b.
-	'''
-
-	if 'rainier' in os.uname():
-		loc = '/Users/kthyng/Documents/research/postdoc/' # for model outputs
-	elif 'hafen.tamu.edu' in os.uname():
-		loc = '/home/kthyng/shelf/' # for model outputs
-
-	# Initialize parameters
-	nsteps = 10
-	ndays = 10
-	ff = 1
-	# Start date
-	date = datetime(2009,11, 30, 0)
-	# Time between outputs
-	# Dt = 14400. # in seconds (4 hours), nc.variables['dt'][:] 
-	tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
-	ah = 100.
-	av = 1.e-5 # m^2/s, or try 5e-6
-
-	## Input starting locations as real space lon,lat locations
-	# Read in starting locations from HAB experiment to test
-	d = np.load(loc + 'hab/data/exp1b/starting_locations.npz')
-	lon0 = d['lon0']
-	lat0 = d['lat0']
-
-	## Choose method for vertical placement of drifters
-	# Also update makefile accordingly. Choose the twodim flag for isoslice.
-	# See above for more notes, but do the following two lines for an isoslice
-	z0 = 's' #'salt' #'s' 
-	zpar = 29 #grid['km']-1 # 30 #grid['km']-1
-	# Do the following two for a 3d simulation
-	# z0 = np.ones(xstart0.shape)*-40 #  below the surface
-	# zpar = 'fromMSL' 
-
+	# surface drifters
+	z0 = 's'  
+	zpar = 29 
 
 	# for 3d flag, do3d=0 makes the run 2d and do3d=1 makes the run 3d
 	do3d = 0
-	# turbulence/diffusion flag. doturb=0 means no turb/diffusion,
-	# doturb=1 means adding parameterized turbulence
-	# doturb=2 means adding diffusion on a circle
-	# doturb=3 means adding diffusion on an ellipse (anisodiffusion)
 	doturb = 0
 
 	# simulation name, used for saving results into netcdf file
-	name = 'hab1b'
+	if date is None:
+		name = 'temp' #'5_5_D5_F'
+	else:
+		name = 'galv_b/' + date.isoformat()[0:10] 
 
-	return loc,nsteps,ndays,ff,date,tseas,ah,av,lon0,lat0,z0,zpar,do3d,doturb,name
-
+	return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
+			z0, zpar, do3d, doturb, name, grid
