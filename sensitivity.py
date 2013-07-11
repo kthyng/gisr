@@ -6,22 +6,12 @@ the results as tracks and as a histogram.
 '''
 
 import numpy as np
-import sys
 import os
-import op
-import tracmass
 import netCDF4 as netCDF
-from mpl_toolkits.basemap import Basemap
 import pdb
-from matplotlib import delaunay
 import matplotlib.pyplot as plt
-import glob
-from datetime import datetime, timedelta
-from mpl_toolkits.basemap import Basemap
-import time
 import tracpy
 import init
-from scipy import ndimage
 
 def run():
 	# Make sure necessary directories exist
@@ -95,9 +85,9 @@ def run():
 					if not os.path.exists('figures/' + name + 'tracks.png'):
 						# Plot tracks
 						tracpy.plotting.tracks(lonp,latp,name,grid=hgrid)
-					if not os.path.exists('figures/' + name + 'histpcolor.png'):
+					if not os.path.exists('figures/' + name + 'histhexbin.png'):
 						tracpy.plotting.hist(lonp,latp,name,grid=hgrid, \
-											which='pcolor',bins=(40,40))
+											which='hexbin',bins=(40,40))
 
 				else: # need horizontal viscosity
 					# loop through horizontal viscosities
@@ -147,7 +137,7 @@ def run():
 						if not os.path.exists('figures/' + name + 'tracks.png'):
 							# Plot tracks
 							tracpy.plotting.tracks(lonp,latp,name,grid=hgrid)
-						if not os.path.exists('figures/' + name + 'histpcolor.png'):
+						if not os.path.exists('figures/' + name + 'histhexbin.png'):
 							tracpy.plotting.hist(lonp,latp,name,grid=hgrid, \
-												which='pcolor',bins=(40,40))
+												which='hexbin',bins=(40,40))
 

@@ -193,7 +193,7 @@ def galv_b(date=None, grid=None):
 
 	# Initialize parameters
 	nsteps = 5 # 5 time interpolation steps
-	ndays = 1 #60
+	ndays = 60
 	ff = -1 # This is a backward-moving simulation
 
 	# Time between outputs
@@ -228,6 +228,76 @@ def galv_b(date=None, grid=None):
 		name = 'temp' #'5_5_D5_F'
 	else:
 		name = 'galv_b/' + date.isoformat()[0:10] 
+
+	return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
+			z0, zpar, do3d, doturb, name, grid
+
+def outer_f(date=None, grid=None):
+	'''
+	Initialization for seeding drifters along the outside of the 
+	numerical domain to be run forward.
+
+	Optional inputs for making tests easy to run:
+		date 	Input date for name in datetime format
+				e.g., datetime(2009, 11, 20, 0). If date not input,
+				name will be 'temp' 
+		grid 	If input, will not redo this step. 
+				Default is to load in grid.
+	'''
+
+	# Location of TXLA model output
+	loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
+
+	# Initialize parameters
+	nsteps = 5 # 5 time interpolation steps
+	ndays = 60
+	ff = 1 # This is a backward-moving simulation
+
+	# Time between outputs
+	tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
+	ah = 0.
+	av = 0. # m^2/s
+
+	if grid is None:
+		# if loc is the aggregated thredds server, the grid info is
+		# included in the same file
+		grid = inout.readgrid(loc)
+	else:
+		grid = grid
+
+	# Initial lon/lat locations for drifters
+	# Assign them in grid coordinates
+	i0a = np.arange(0,grid['imt'],6)
+	j0a = np.ones(i0a.shape)*3
+	j0b = np.arange(0,grid['jmt'],6)
+	i0b = np.ones(j0b.shape)*3
+	# i0c = np.arange(0,grid['imt'],6)
+	# j0c = np.ones(i0a.shape)*(grid['jmt']-3)
+	j0d = np.arange(0,grid['jmt'],6)
+	i0d = np.ones(j0d.shape)*(grid['imt']-3)
+	i0 = np.hstack((i0a,i0b,i0d))
+	j0 = np.hstack((j0a,j0b,j0d))
+
+	# Convert to lon/lat
+	lon0, lat0, _ = tools.interpolate2d(i0, j0, grid,'m_ij2ll',
+										mode='constant', cval=np.nan)
+
+	# pdb.set_trace()
+	# Eliminate points that are outside domain or in masked areas
+	lon0,lat0 = tools.check_points(lon0,lat0,grid)
+	# surface drifters
+	z0 = 's'  
+	zpar = 29 
+
+	# for 3d flag, do3d=0 makes the run 2d and do3d=1 makes the run 3d
+	do3d = 0
+	doturb = 0
+
+	# simulation name, used for saving results into netcdf file
+	if date is None:
+		name = 'temp' #'5_5_D5_F'
+	else:
+		name = 'outer_f/' + date.isoformat()[0:10] 
 
 	return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
 			z0, zpar, do3d, doturb, name, grid
