@@ -30,7 +30,7 @@ units = 'seconds since 1970-01-01'
 
 # What tests to run, 1 to run or 0 to skip:
 do_sensitivity = 0
-do_galv_b = 0
+do_galv_b = 1
 do_outer_f = 0
 do_compile = 0
 

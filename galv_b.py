@@ -32,6 +32,9 @@ def run():
     _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, grid = init.galv_b()
 
     # loop through start dates for drifters
+    month = []
+    lonpsave = []
+    latpsave = []
     for n in xrange(ndays):
 
         # Date for this loop
@@ -60,6 +63,29 @@ def run():
         if not os.path.exists('figures/' + name + 'histhexbin.png'):
             tracpy.plotting.hist(lonp, latp, name, grid=grid, \
                                 which='hexbin', bins=(40,40))
+
+        # Save up tracks to plot together by month
+        if n == 0:
+            lonpsave = lonp
+            latpsave = latp
+        else:
+            lonpsave = np.hstack((lonpsave,lonp))
+            latpsave = np.hstack((latpsave,latp))
+        if n == 0: # initially, give month a value
+            month = date.month
+        # want to know when we are at a new month or the end of the year
+        elif (date.month != month) or \
+                (date.month == 12 and date.day == 31): 
+            # First plot previous month
+            # take off day and month and add on previous month instead
+            name = name[:-5] + str(month).zfill(2)
+            tracpy.plotting.tracks(lonpsave, latpsave, name, grid=grid)
+            tracpy.plotting.hist(lonpsave, latpsave, name, grid=grid, \
+                                which='hexbin', bins=(40,40))
+            # Reset month to next month value
+            month = date.month
+            lonpsave = lonp
+            latpsave = latp
 
 
     # Do more complicated plotting separately
