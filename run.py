@@ -37,15 +37,15 @@ do_compile = 0
 
 # Run sensitivity tests
 if do_sensitivity:
-	sensitivity.run()
+    sensitivity.run()
 
 # Run drifters backward from near Galveston Bay
 if do_galv_b:
-	galv_b.run()
+    galv_b.run()
 
 # Run drifters foward from near the outer numerical boundary
 if do_outer_f:
-	outer_f.run()
+    outer_f.run()
 
 
 ### Barataria test ###
@@ -54,5 +54,5 @@ if do_outer_f:
 # Compile tex document with figures in it. 
 # Run twice to get references correct.
 if do_compile:
-	os.system("/usr/texbin/pdflatex gisr.tex")
-	os.system("/usr/texbin/pdflatex gisr.tex")
+    os.system("/usr/texbin/pdflatex gisr.tex")
+    os.system("/usr/texbin/pdflatex gisr.tex")
