@@ -32,9 +32,6 @@ def run():
     _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, grid = init.galv_b()
 
     # loop through start dates for drifters
-    month = []
-    lonpsave = []
-    latpsave = []
     for n in xrange(ndays):
 
         # Date for this loop
@@ -66,11 +63,11 @@ def run():
 
         # Save up tracks to plot together by month
         if n == 0:
-            lonpsave = lonp
-            latpsave = latp
+            lonpsavem = lonp
+            latpsavem = latp
         else:
-            lonpsave = np.hstack((lonpsave,lonp))
-            latpsave = np.hstack((latpsave,latp))
+            lonpsavem = np.hstack((lonpsavem,lonp))
+            latpsavem = np.hstack((latpsavem,latp))
         if n == 0: # initially, give month a value
             month = date.month
         # want to know when we are at a new month or the end of the year
@@ -79,14 +76,27 @@ def run():
             # First plot previous month
             # take off day and month and add on previous month instead
             name = name[:-5] + str(month).zfill(2)
-            tracpy.plotting.tracks(lonpsave, latpsave, name, grid=grid)
-            tracpy.plotting.hist(lonpsave, latpsave, name, grid=grid, \
+            tracpy.plotting.tracks(lonpsavem, latpsavem, name, grid=grid)
+            tracpy.plotting.hist(lonpsavem, latpsavem, name, grid=grid, \
                                 which='hexbin', bins=(40,40))
             # Reset month to next month value
             month = date.month
-            lonpsave = lonp
-            latpsave = latp
+            # Save month arrays for year plot
+            if month == 1:
+                lonpsavey = lonp
+                latpsavey = latp
+            else:
+                lonpsavey = np.hstack((lonpsavey,lonpsavem))
+                latpsavey = np.hstack((latpsavey,latpsavem))
+            # Reset save arrays for month plots
+            lonpsavem = lonp
+            latpsavem = latp
 
+    # Plot year summaries
+    name = str(year)
+    tracpy.plotting.tracks(lonpsavey, latpsavey, name, grid=grid)
+    tracpy.plotting.hist(lonpsavey, latpsavey, name, grid=grid, \
+                        which='hexbin', bins=(40,40))
 
     # Do more complicated plotting separately
     
