@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import tracpy
 import init
 from datetime import datetime, timedelta
+import glob
 
 def run():
 
@@ -25,8 +26,11 @@ def run():
         os.makedirs('figures/galv_b')
 
     # Parameters to be rotated through
-    years = np.array([2009])
-    ndays = 365
+    years = np.array([2010])
+    # oil spill from April 20 - July 15, 2010
+    startdate = datetime(years[0], 4, 20, 0)
+
+    ndays = 87 # to cover oil spill time period
 
     # Do one initialization here to save grid
     _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, grid = init.galv_b()
@@ -35,7 +39,7 @@ def run():
     for n in xrange(ndays):
 
         # Date for this loop
-        date = datetime(years[0], 1, 1, 0) + timedelta(days=n)
+        date = startdate + timedelta(days=n)
 
         # Read in simulation initialization
         loc, nstep, ndays, ff, date, tseas, ah, av, lon0, lat0, z0, \
@@ -98,5 +102,7 @@ def run():
     tracpy.plotting.hist(lonpsavey, latpsavey, name, grid=grid, \
                         which='hexbin', bins=(40,40))
 
-    # Do more complicated plotting separately
+    ## Weatherband plotting
+    # Read in all tracks
+    files = np.sort(glob.glob('tracks/galv_b/*.nc')) # sorted list of file names
     

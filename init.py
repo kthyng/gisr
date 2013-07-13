@@ -193,7 +193,7 @@ def galv_b(date=None, grid=None):
 
     # Initialize parameters
     nsteps = 5 # 5 time interpolation steps
-    ndays = 60
+    ndays = 90
     ff = -1 # This is a backward-moving simulation
 
     # Time between outputs
