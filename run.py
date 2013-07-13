@@ -30,7 +30,8 @@ units = 'seconds since 1970-01-01'
 do_sensitivity = 0
 do_outer_f = 0
 do_galv_b = 0
-do_bara_b = 1
+do_bara_b = 0
+do_dwh_f = 1
 do_compile = 0
 
 
@@ -49,6 +50,10 @@ if do_galv_b:
 # Run drifters backward from near Barataria Bay
 if do_bara_b:
     projects.bara_b.run()
+
+# Run drifters forward from near the Deepwater Horizon Blowout
+if do_dwh_f:
+    projects.dwh_f.run()
 
 
 

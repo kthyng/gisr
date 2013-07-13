@@ -388,8 +388,8 @@ def dwh_f(date=None, grid=None):
         grid = grid
 
     # Initial lon/lat locations for drifters
-    lon0,lat0 = np.meshgrid(np.linspace(-88.81-.5,-88.81+.5,15), 
-                            np.linspace(28.0,29.0,15))
+    lon0,lat0 = np.meshgrid(np.linspace(-88.81-.4,-88.81+.4,15), 
+                            np.linspace(28.1,28.9,15))
 
     # Eliminate points that are outside domain or in masked areas
     lon0,lat0 = tools.check_points(lon0,lat0,grid)
