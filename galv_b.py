@@ -65,44 +65,44 @@ def run():
             tracpy.plotting.hist(lonp, latp, name, grid=grid, \
                                 which='hexbin', bins=(40,40))
 
-        # Save up tracks to plot together by month
-        if n == 0:
-            lonpsavem = lonp
-            latpsavem = latp
-        else:
-            lonpsavem = np.hstack((lonpsavem,lonp))
-            latpsavem = np.hstack((latpsavem,latp))
-        if n == 0: # initially, give month a value
-            month = date.month
-        # want to know when we are at a new month or the end of the year
-        elif (date.month != month) or \
-                (date.month == 12 and date.day == 31): 
-            # First plot previous month
-            # take off day and month and add on previous month instead
-            name = name[:-5] + str(month).zfill(2)
-            tracpy.plotting.tracks(lonpsavem, latpsavem, name, grid=grid)
-            tracpy.plotting.hist(lonpsavem, latpsavem, name, grid=grid, \
-                                which='hexbin', bins=(40,40))
-            # Reset month to next month value
-            month = date.month
-            # Save month arrays for year plot
-            if month == 1:
-                lonpsavey = lonp
-                latpsavey = latp
-            else:
-                lonpsavey = np.hstack((lonpsavey,lonpsavem))
-                latpsavey = np.hstack((latpsavey,latpsavem))
-            # Reset save arrays for month plots
-            lonpsavem = lonp
-            latpsavem = latp
+    #     # Save up tracks to plot together by month
+    #     if n == 0:
+    #         lonpsavem = lonp
+    #         latpsavem = latp
+    #     else:
+    #         lonpsavem = np.vstack((lonpsavem,lonp))
+    #         latpsavem = np.vstack((latpsavem,latp))
+    #     if n == 0: # initially, give month a value
+    #         month = date.month
+    #     # want to know when we are at a new month or the end of the year
+    #     elif (date.month != month) or \
+    #             (date.month == 12 and date.day == 31): 
+    #         # First plot previous month
+    #         # take off day and month and add on previous month instead
+    #         name = name[:-5] + str(month).zfill(2)
+    #         tracpy.plotting.tracks(lonpsavem, latpsavem, name, grid=grid)
+    #         tracpy.plotting.hist(lonpsavem, latpsavem, name, grid=grid, \
+    #                             which='hexbin', bins=(40,40))
+    #         # Reset month to next month value
+    #         month = date.month
+    #         # Save month arrays for year plot
+    #         if month == 1:
+    #             lonpsavey = lonp
+    #             latpsavey = latp
+    #         else:
+    #             lonpsavey = np.vstack((lonpsavey,lonpsavem))
+    #             latpsavey = np.vstack((latpsavey,latpsavem))
+    #         # Reset save arrays for month plots
+    #         lonpsavem = lonp
+    #         latpsavem = latp
 
-    # Plot year summaries
-    name = str(year)
-    tracpy.plotting.tracks(lonpsavey, latpsavey, name, grid=grid)
-    tracpy.plotting.hist(lonpsavey, latpsavey, name, grid=grid, \
-                        which='hexbin', bins=(40,40))
+    # # Plot year summaries
+    # name = str(year)
+    # tracpy.plotting.tracks(lonpsavey, latpsavey, name, grid=grid)
+    # tracpy.plotting.hist(lonpsavey, latpsavey, name, grid=grid, \
+    #                     which='hexbin', bins=(40,40))
 
-    ## Weatherband plotting
-    # Read in all tracks
-    files = np.sort(glob.glob('tracks/galv_b/*.nc')) # sorted list of file names
+    # ## Weatherband plotting
+    # # Read in all tracks
+    # files = np.sort(glob.glob('tracks/galv_b/*.nc')) # sorted list of file names
     
