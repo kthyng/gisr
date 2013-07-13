@@ -1,10 +1,5 @@
 '''
 Functions to initialize various numerical experiments.
-Contains:
-    test1
-    test2
-    galveston
-    hab1b
 
 Make a new init_* for your application.
 
@@ -175,63 +170,6 @@ def sensitivity(loc=None, nsteps=None, ff=None, ah=None, grid=None, nlon=None, n
 
     return loc,nsteps,ndays,ff,date,tseas,ah,av,lon0,lat0,z0,zpar,do3d,doturb,name,grid
 
-def galv_b(date=None, grid=None):
-    '''
-    Initialization for seeding drifters near Galveston Bay to be run
-    backward.
-
-    Optional inputs for making tests easy to run:
-        date    Input date for name in datetime format
-                e.g., datetime(2009, 11, 20, 0). If date not input,
-                name will be 'temp' 
-        grid    If input, will not redo this step. 
-                Default is to load in grid.
-    '''
-
-    # Location of TXLA model output
-    loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
-
-    # Initialize parameters
-    nsteps = 5 # 5 time interpolation steps
-    ndays = 90
-    ff = -1 # This is a backward-moving simulation
-
-    # Time between outputs
-    tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
-    ah = 0.
-    av = 0. # m^2/s
-
-    if grid is None:
-        # if loc is the aggregated thredds server, the grid info is
-        # included in the same file
-        grid = inout.readgrid(loc)
-    else:
-        grid = grid
-
-    # Initial lon/lat locations for drifters
-    lon0,lat0 = np.meshgrid(np.linspace(-95.3,-94.3,15), 
-                            np.linspace(28.6,29.6,15))
-
-    # Eliminate points that are outside domain or in masked areas
-    lon0,lat0 = tools.check_points(lon0,lat0,grid)
-
-    # surface drifters
-    z0 = 's'  
-    zpar = 29 
-
-    # for 3d flag, do3d=0 makes the run 2d and do3d=1 makes the run 3d
-    do3d = 0
-    doturb = 0
-
-    # simulation name, used for saving results into netcdf file
-    if date is None:
-        name = 'temp' #'5_5_D5_F'
-    else:
-        name = 'galv_b/' + date.isoformat()[0:10] 
-
-    return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
-            z0, zpar, do3d, doturb, name, grid
-
 def outer_f(date=None, grid=None):
     '''
     Initialization for seeding drifters along the outside of the 
@@ -302,6 +240,63 @@ def outer_f(date=None, grid=None):
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
             z0, zpar, do3d, doturb, name, grid
 
+def galv_b(date=None, grid=None):
+    '''
+    Initialization for seeding drifters near Galveston Bay to be run
+    backward.
+
+    Optional inputs for making tests easy to run:
+        date    Input date for name in datetime format
+                e.g., datetime(2009, 11, 20, 0). If date not input,
+                name will be 'temp' 
+        grid    If input, will not redo this step. 
+                Default is to load in grid.
+    '''
+
+    # Location of TXLA model output
+    loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
+
+    # Initialize parameters
+    nsteps = 5 # 5 time interpolation steps
+    ndays = 90
+    ff = -1 # This is a backward-moving simulation
+
+    # Time between outputs
+    tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
+    ah = 0.
+    av = 0. # m^2/s
+
+    if grid is None:
+        # if loc is the aggregated thredds server, the grid info is
+        # included in the same file
+        grid = inout.readgrid(loc)
+    else:
+        grid = grid
+
+    # Initial lon/lat locations for drifters
+    lon0,lat0 = np.meshgrid(np.linspace(-95.3,-94.3,15), 
+                            np.linspace(28.6,29.6,15))
+
+    # Eliminate points that are outside domain or in masked areas
+    lon0,lat0 = tools.check_points(lon0,lat0,grid)
+
+    # surface drifters
+    z0 = 's'  
+    zpar = 29 
+
+    # for 3d flag, do3d=0 makes the run 2d and do3d=1 makes the run 3d
+    do3d = 0
+    doturb = 0
+
+    # simulation name, used for saving results into netcdf file
+    if date is None:
+        name = 'temp' #'5_5_D5_F'
+    else:
+        name = 'galv_b/' + date.isoformat()[0:10] 
+
+    return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
+            z0, zpar, do3d, doturb, name, grid
+
 def bara_b(date=None, grid=None):
     '''
     Initialization for seeding drifters near Barataria Bay to be run
@@ -337,7 +332,7 @@ def bara_b(date=None, grid=None):
 
     # Initial lon/lat locations for drifters
     lon0,lat0 = np.meshgrid(np.linspace(-90.3,-89.3,15), 
-                            np.linspace(28.6,29.4,15))
+                            np.linspace(28.7,29.4,10))
 
     # Eliminate points that are outside domain or in masked areas
     lon0,lat0 = tools.check_points(lon0,lat0,grid)
@@ -355,6 +350,63 @@ def bara_b(date=None, grid=None):
         name = 'temp' #'5_5_D5_F'
     else:
         name = 'bara_b/' + date.isoformat()[0:10] 
+
+    return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
+            z0, zpar, do3d, doturb, name, grid
+
+def dwh_f(date=None, grid=None):
+    '''
+    Initialization for seeding drifters near the Deepwater Horizon
+    accident site to be run forward.
+
+    Optional inputs for making tests easy to run:
+        date    Input date for name in datetime format
+                e.g., datetime(2009, 11, 20, 0). If date not input,
+                name will be 'temp' 
+        grid    If input, will not redo this step. 
+                Default is to load in grid.
+    '''
+
+    # Location of TXLA model output
+    loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
+
+    # Initialize parameters
+    nsteps = 5 # 5 time interpolation steps
+    ndays = 90
+    ff = 1 # This is a forward-moving simulation
+
+    # Time between outputs
+    tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
+    ah = 0.
+    av = 0. # m^2/s
+
+    if grid is None:
+        # if loc is the aggregated thredds server, the grid info is
+        # included in the same file
+        grid = inout.readgrid(loc)
+    else:
+        grid = grid
+
+    # Initial lon/lat locations for drifters
+    lon0,lat0 = np.meshgrid(np.linspace(-88.81-.5,-88.81+.5,15), 
+                            np.linspace(28.0,29.0,15))
+
+    # Eliminate points that are outside domain or in masked areas
+    lon0,lat0 = tools.check_points(lon0,lat0,grid)
+
+    # surface drifters
+    z0 = 's'  
+    zpar = 29 
+
+    # for 3d flag, do3d=0 makes the run 2d and do3d=1 makes the run 3d
+    do3d = 0
+    doturb = 0
+
+    # simulation name, used for saving results into netcdf file
+    if date is None:
+        name = 'temp' #'5_5_D5_F'
+    else:
+        name = 'dwh_f/' + date.isoformat()[0:10] 
 
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
             z0, zpar, do3d, doturb, name, grid
