@@ -21,34 +21,35 @@ import time
 import tracpy
 import init
 from scipy import ndimage
-import sensitivity
-import galv_b
-import outer_f
+import projects
 
 # Units for time conversion with netCDF.num2date and .date2num
 units = 'seconds since 1970-01-01'
 
 # What tests to run, 1 to run or 0 to skip:
 do_sensitivity = 0
-do_galv_b = 1
 do_outer_f = 0
+do_galv_b = 0
+do_bara_b = 1
 do_compile = 0
 
 
 # Run sensitivity tests
 if do_sensitivity:
-    sensitivity.run()
-
-# Run drifters backward from near Galveston Bay
-if do_galv_b:
-    galv_b.run()
+    projects.sensitivity.run()
 
 # Run drifters foward from near the outer numerical boundary
 if do_outer_f:
-    outer_f.run()
+    projects.outer_f.run()
 
+# Run drifters backward from near Galveston Bay
+if do_galv_b:
+    projects.galv_b.run()
 
-### Barataria test ###
+# Run drifters backward from near Barataria Bay
+if do_bara_b:
+    projects.bara_b.run()
+
 
 
 # Compile tex document with figures in it. 
