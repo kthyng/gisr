@@ -64,3 +64,6 @@ def run():
         if not os.path.exists('figures/' + name + 'histhexbin.png'):
             tracpy.plotting.hist(lonp, latp, name, grid=grid, \
                                 which='hexbin')
+
+if __name__ == "__main__":
+    run()

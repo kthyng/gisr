@@ -141,3 +141,5 @@ def run():
                             tracpy.plotting.hist(lonp,latp,name,grid=hgrid, \
                                                 which='hexbin',bins=(40,40))
 
+if __name__ == "__main__":
+    run()

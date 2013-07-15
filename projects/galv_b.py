@@ -105,4 +105,6 @@ def run():
     # ## Weatherband plotting
     # # Read in all tracks
     # files = np.sort(glob.glob('tracks/galv_b/*.nc')) # sorted list of file names
-    
+
+if __name__ == "__main__":
+    run()    
