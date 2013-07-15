@@ -96,7 +96,7 @@ if __name__ == "__main__":
             # core we are using
             if 'Linux' in os.uname(): # Linux
                 # Control the core to run on if on a Linux machine
-                cmd_list.insert(0,'taskset %s ' % proc_count[0])
+                cmd_list[-1] = 'taskset %s %s' % (proc_count[0],cmd_list[-1])
                 # move first core number to end of list
                 proc_count.append(proc_count.pop(0))
 
