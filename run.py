@@ -1,6 +1,14 @@
 """
 Attempt at having a control-all file for oil modeling paper.
-ADD EXAMPLE CALL
+
+Run commands are included in this file, so to run, just do
+`python run.py` from the command prompt and include flags with
+-- in front to run whatever subprojects you want. Options include:
+sensitivity, outer_f, galv_b, bara_b, and dwh_f for projects, and
+compile to run the latex compilation.
+So, to run several subprojects and compile, type
+`python run.py --sensitivity --galv_b --compile` in the terminal.
+Also note that this is meant to run in python version 2.7.
 """
 
 import matplotlib
@@ -8,20 +16,14 @@ matplotlib.use("Agg") # set matplotlib to use the backend that does not require 
 import numpy as np
 import sys
 import os
-import op
-import tracmass
 import netCDF4 as netCDF
-from mpl_toolkits.basemap import Basemap
 import pdb
-from matplotlib import delaunay
 import matplotlib.pyplot as plt
 import glob
 from datetime import datetime, timedelta
-from mpl_toolkits.basemap import Basemap
 import time
 import tracpy
 import init
-from scipy import ndimage
 import projects
 import matplotlib as mpl
 import subprocess
@@ -30,19 +32,25 @@ import subprocess
 units = 'seconds since 1970-01-01'
 
 if __name__ == "__main__":
+
     # Make sure necessary directories exist
     if not os.path.exists('logs'):
         os.makedirs('logs')
+
     process_queue = []
-    poll_interval = 5.0 #600.0 # number of seconds to wait 
+    poll_interval = 600.0 # number of seconds to wait
+
+    # List of possible subprojects to run
     arg_switches = {"sensitivity":False, "outer_f":False, "galv_b":False,
                     "bara_b":False, "dwh_f":False}#, "compile":False}
+
     # Check to see if any input arguments were on the command line
     if len(sys.argv) > 1:
         for arg in sys.argv[1:]:
             # Select out all of the flags sent in
             # Flags should be indicated using '--' in front
-            key = arg[2:]
+            key = arg[2:] # take off preceding '--' from flags
+
             # Set all input keys to true
             if key in arg_switches.keys():
                 arg_switches[key] = True
@@ -51,9 +59,10 @@ if __name__ == "__main__":
 
     # Find number of cores to use
     # Use the environmental variable if set
+    # this is how one can override the computer setting if desired
     if os.environ.has_key('OMP_NUM_THREADS'):
         max_processes = int(os.environ['OMP_NUM_THREADS'])
-    # Otherwise try to find out
+    # Otherwise find out the number of cores on the computer
     else:
         if 'Linux' in os.uname(): # Linux
             # Find number of cores on a Linux box
@@ -64,7 +73,7 @@ if __name__ == "__main__":
             # Find number of cores on a mac
             max_processes = os.popen('system_profiler | grep "Cores"').read()[-2]
 
-    # Make list of process number
+    # Make list of how many processes can run
     proc_count = list(np.arange(max_processes))
 
     # Prepare date for log file
@@ -81,8 +90,10 @@ if __name__ == "__main__":
     log_name = []
     # Compile calls to do into a list so they can be distributed
     # amongst available cores 
-    # The call assigns the process to a specific core by number
-    # using `taskset [number]` and redirects the screen output
+    # On a Linux machine, the call assigns the process to a specific 
+    # core by number using `taskset [number]`. Can't do this on a mac,
+    # but hopefully the computer will distribute properly.
+    # On all machine, the commands will redirect the screen output
     # to a log file, and the process will run in the background
     for (key,value) in arg_switches.iteritems():
         if value:
@@ -111,7 +122,7 @@ if __name__ == "__main__":
                 time.sleep(poll_interval)
 
             # Add on process to queue list
-            # pdb.set_trace()
+            # Remove the used log file from the list
             log_file = open('logs/' + log_name.pop(0) + '.txt','w')
             log_file.write('Started ' + date)
             print cmd_list[0]
