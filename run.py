@@ -11,21 +11,20 @@ So, to run several subprojects and compile, type
 Also note that this is meant to run in python version 2.7.
 """
 
-import matplotlib
-matplotlib.use("Agg") # set matplotlib to use the backend that does not require a windowing system
+import matplotlib as mpl
+mpl.use("Agg") # set matplotlib to use the backend that does not require a windowing system
 import numpy as np
 import sys
 import os
 import netCDF4 as netCDF
 import pdb
-import matplotlib.pyplot as plt
+import mpl.pyplot as plt
 import glob
 from datetime import datetime, timedelta
 import time
 import tracpy
 import init
 import projects
-import matplotlib as mpl
 import subprocess
 
 # Units for time conversion with netCDF.num2date and .date2num
