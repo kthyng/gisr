@@ -18,7 +18,7 @@ import sys
 import os
 import netCDF4 as netCDF
 import pdb
-import mpl.pyplot as plt
+import matplotlib.pyplot as plt
 import glob
 from datetime import datetime, timedelta
 import time
