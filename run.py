@@ -30,10 +30,13 @@ import subprocess
 units = 'seconds since 1970-01-01'
 
 if __name__ == "__main__":
+    # Make sure necessary directories exist
+    if not os.path.exists('logs'):
+        os.makedirs('logs')
     process_queue = []
     poll_interval = 5.0 #600.0 # number of seconds to wait 
     arg_switches = {"sensitivity":False, "outer_f":False, "galv_b":False,
-                    "bara_b":False, "dwh_f":False, "compile":False}
+                    "bara_b":False, "dwh_f":False}#, "compile":False}
     # Check to see if any input arguments were on the command line
     if len(sys.argv) > 1:
         for arg in sys.argv[1:]:
@@ -103,14 +106,14 @@ if __name__ == "__main__":
                 print "Number of processes currently:",len(process_queue)
                 for process in process_queue:
                     if process.poll() == 0:
-                        print 'process ended:' process
+                        # print 'process ended:' process
                         process_queue.remove(process)
                 time.sleep(poll_interval)
 
             # Add on process to queue list
             # pdb.set_trace()
             log_file = open('logs/' + log_name.pop(0) + '.txt','w')
-            log_file.write('Started ' + date '\n')
+            log_file.write('Started ' + date)
             print cmd_list[0]
             print log_file
             process_queue.append(subprocess.Popen(cmd_list.pop(0),shell=True,
@@ -118,6 +121,6 @@ if __name__ == "__main__":
 
     # Compile tex document with figures in it. 
     # Run twice to get references correct.
-    if arg_switches['compile']:
+    if 'compile' in sys.argv[1:]:
         os.system("/usr/texbin/pdflatex gisr.tex")
         os.system("/usr/texbin/pdflatex gisr.tex")
