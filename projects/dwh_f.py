@@ -65,5 +65,21 @@ def run():
             tracpy.plotting.hist(lonp, latp, name, grid=grid, \
                                 which='hexbin')
 
+        # Plot tracks and histograms for these drifters
+        # but only those outside the shelf
+        fh = grid['trirllrho'].nn_interpolator(grid['h'].flatten())
+        hp = fh(lonp[:,0],latp[:,0]) #depths at starting lon/lat
+        ind = hp > 500. # want to know which drifters start outside shelf break
+        name1 = name + 'tracks_outershelf'
+        if not os.path.exists('figures/' + name1 + '.png'):
+            tracpy.plotting.tracks(lonp[ind,:], latp[ind,:], name1, grid=grid)
+        name2 = name + 'histhexbin_outershelf'
+        if not os.path.exists('figures/' + name2 + '.png'):
+            tracpy.plotting.hist(lonp[ind,:], latp[ind,:], name2, grid=grid, \
+                                which='hexbin')
+
+    # Now do useful plots
+    # Want to only plot tracks
+
 if __name__ == "__main__":
     run()

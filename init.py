@@ -274,8 +274,8 @@ def galv_b(date=None, grid=None):
         grid = grid
 
     # Initial lon/lat locations for drifters
-    lon0,lat0 = np.meshgrid(np.linspace(-95.3,-94.3,15), 
-                            np.linspace(28.6,29.6,15))
+    lon0,lat0 = np.meshgrid(np.linspace(-95.3,-94.3,30), 
+                            np.linspace(28.6,29.6,30))
 
     # Eliminate points that are outside domain or in masked areas
     lon0,lat0 = tools.check_points(lon0,lat0,grid)
@@ -292,7 +292,7 @@ def galv_b(date=None, grid=None):
     if date is None:
         name = 'temp' #'5_5_D5_F'
     else:
-        name = 'galv_b/' + date.isoformat()[0:10] 
+        name = 'galv_b/' + date.isoformat()[0:13] 
 
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
             z0, zpar, do3d, doturb, name, grid
@@ -315,7 +315,7 @@ def galv_f(date=None, grid=None):
 
     # Initialize parameters
     nsteps = 5 # 5 time interpolation steps
-    ndays = 30 # run drifters for ndays
+    ndays = 60 # run drifters for ndays
     ff = 1 # This is a backward-moving simulation
 
     # Time between outputs
@@ -331,8 +331,8 @@ def galv_f(date=None, grid=None):
         grid = grid
 
     # Initial lon/lat locations for drifters
-    lon0,lat0 = np.meshgrid(np.linspace(-95.3,-94.3,15), 
-                            np.linspace(28.6,29.6,15))
+    lon0,lat0 = np.meshgrid(np.linspace(-95.3,-94.3,30), 
+                            np.linspace(28.6,29.6,30))
 
     # Eliminate points that are outside domain or in masked areas
     lon0,lat0 = tools.check_points(lon0,lat0,grid)
@@ -349,7 +349,7 @@ def galv_f(date=None, grid=None):
     if date is None:
         name = 'temp' #'5_5_D5_F'
     else:
-        name = 'galv_f/' + date.isoformat()[0:10] 
+        name = 'galv_f/' + date.isoformat()[0:13] 
 
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
             z0, zpar, do3d, doturb, name, grid
