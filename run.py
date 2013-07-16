@@ -73,7 +73,7 @@ if __name__ == "__main__":
             max_processes = os.popen('system_profiler | grep "Cores"').read()[-2]
 
     # Make list of how many processes can run
-    proc_count = list(np.arange(max_processes))
+    proc_count = list(np.arange(1,max_processes+1))
 
     # Prepare date for log file
     tm = time.localtime()
