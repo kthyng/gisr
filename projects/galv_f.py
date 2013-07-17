@@ -36,6 +36,9 @@ def run():
     # how many days to start drifters from, starting from startdate
     rundays = 6
 
+    print os.system('pwd')
+    print os.system('echo $PYTHONPATH')
+
     # Do one initialization here to save grid
     _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, grid = init.galv_f()
 
