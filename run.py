@@ -100,7 +100,7 @@ if __name__ == "__main__":
             log_name.append('%s-%s' % (date,key))
 
             # Set up command
-            cmd_list.append('python projects/%s.py' % key)
+            cmd_list.append('python2.7 projects/%s.py' % key)
                             
             # if this is a linux machine, keep track of which 
             # core we are using
