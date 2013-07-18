@@ -48,7 +48,7 @@ def run():
             for nh in range(0,24,4):
 
                 # Date for this loop
-                date = startdate + timedelta(days=n)
+                date = startdate + timedelta(days=n) + timedelta(hours=nh)
 
                 # Read in simulation initialization
                 loc, nstep, ndays, ff, date, tseas, ah, av, lon0, lat0, z0, \
