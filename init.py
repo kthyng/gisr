@@ -397,7 +397,7 @@ def bara_b(ndatum=0, hour=0, grid=None):
 
     # Time between outputs
     tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
-    ah = 20.
+    ah = 100.
     av = 0. # m^2/s
 
     if grid is None:
@@ -430,13 +430,13 @@ def bara_b(ndatum=0, hour=0, grid=None):
 
     # for 3d flag, do3d=0 makes the run 2d and do3d=1 makes the run 3d
     do3d = 0
-    doturb = 2
+    doturb = 1
 
     # simulation name, used for saving results into netcdf file
     if date is None:
         name = 'temp' #'5_5_D5_F'
     else:
-        name = 'bara_b/' + date.isoformat()
+        name = 'bara_b/turb/' + date.isoformat()
 
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
             z0, zpar, do3d, doturb, name, grid
