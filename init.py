@@ -382,7 +382,8 @@ def bara_b(ndatum=0, hour=0, grid=None):
     # just use the lon/lat/date for this oil datum
     lon = lon[ndatum]
     lat = lat[ndatum]
-    date = netCDF.num2date(date[ndatum],units)
+    # run for a variety of times before oil was found
+    date = netCDF.num2date(date[ndatum],units) - timedelta(hours=hour)
 
     # when oil started spilling, 4/20/10 9:45PM CDT to UTC
     enddate = datetime(2010, 4, 20, 9+12, 45, 0) + timedelta(hours=5)
