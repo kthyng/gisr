@@ -63,6 +63,8 @@ from matplotlib.mlab import *
 import inout
 import tools
 
+units = 'seconds since 1970-01-01'
+
 def sensitivity(loc=None, nsteps=None, ff=None, ah=None, grid=None, nlon=None, nlat=None, doturb=None, name=None):
     '''
     A drifter test using TXLA model output. 
@@ -354,30 +356,47 @@ def galv_f(date=None, grid=None):
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
             z0, zpar, do3d, doturb, name, grid
 
-def bara_b(date=None, grid=None):
+def bara_b(ndatum=0, hour=0, grid=None):
     '''
     Initialization for seeding drifters near Barataria Bay to be run
-    backward.
+    backward. Start a 2d gaussian of drifters in x y backward started
+    over a range of 2 days with the number of drifters run selected 
+    using a time gaussian.
 
     Optional inputs for making tests easy to run:
-        date    Input date for name in datetime format
-                e.g., datetime(2009, 11, 20, 0). If date not input,
-                name will be 'temp' 
+        ndatum  Which oil datum is being run, in order from 0 to 55.
+                Default is 0.
+        hour    What hour of 48 this simulation is being run for.
+                Default is 0.
         grid    If input, will not redo this step. 
                 Default is to load in grid.
     '''
 
+    import bara_data
+
     # Location of TXLA model output
     loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
 
+    # Get lon/lat/time info from bara_data.py
+    lon, lat, date = bara_data.retrieve()
+    # just use the lon/lat/date for this oil datum
+    lon = lon[ndatum]
+    lat = lat[ndatum]
+    date = netCDF.num2date(date[ndatum],units)
+
+    # when oil started spilling, 4/20/10 9:45PM CDT to UTC
+    enddate = datetime(2010, 4, 20, 9+12, 45, 0) + timedelta(hours=5)
+
+    # Number of days to run depends on date of data relative to spill start
+    ndays = (date - enddate).total_seconds()/(3600.*24)
+
     # Initialize parameters
     nsteps = 5 # 5 time interpolation steps
-    ndays = 90
     ff = -1 # This is a backward-moving simulation
 
     # Time between outputs
     tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
-    ah = 0.
+    ah = 20.
     av = 0. # m^2/s
 
     if grid is None:
@@ -387,9 +406,19 @@ def bara_b(date=None, grid=None):
     else:
         grid = grid
 
-    # Initial lon/lat locations for drifters
-    lon0,lat0 = np.meshgrid(np.linspace(-90.3,-89.3,15), 
-                            np.linspace(28.7,29.4,10))
+    # Initialize drifters in space using 2d gaussian.
+    # Select out the lon/lat for test
+    dlon = 0.1; dlat = 0.14 # delta degree distances for starting particles
+    # Time Gaussian to set number of drifters used in (x,y)
+    H = np.arange(48) # hours in 2 days
+    mu = 24 # 1 day into the 2 days of simulation starts is the mean
+    sigma = 16. # Standard deviation
+    # pdb.set_trace()
+    N = 30*np.exp(-(H-mu)**2/(2*sigma**2))
+    # Choose N value for hour
+    Nh = np.floor(N[H==hour])
+
+    lon0, lat0 = tools.seed(lon, lat, dlon=dlon, dlat=dlat, N=Nh)
 
     # Eliminate points that are outside domain or in masked areas
     lon0,lat0 = tools.check_points(lon0,lat0,grid)
@@ -400,13 +429,13 @@ def bara_b(date=None, grid=None):
 
     # for 3d flag, do3d=0 makes the run 2d and do3d=1 makes the run 3d
     do3d = 0
-    doturb = 0
+    doturb = 2
 
     # simulation name, used for saving results into netcdf file
     if date is None:
         name = 'temp' #'5_5_D5_F'
     else:
-        name = 'bara_b/' + date.isoformat()[0:10] 
+        name = 'bara_b/' + date.isoformat()
 
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
             z0, zpar, do3d, doturb, name, grid

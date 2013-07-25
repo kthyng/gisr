@@ -117,5 +117,24 @@ def run():
             # # Read in all tracks
             # files = np.sort(glob.glob('tracks/galv_b/*.nc')) # sorted list of file names
 
+    # Plot forward and backward together for Galveston
+    # May time period: 5/23/10-5/28/10
+    db = netCDF.MFDataset('tracks/galv_b/2010-05-*.nc',aggdim='ntrac')
+    lonb = np.fliplr(db.variables['lonp'][:]) # flip to be forward in time
+    latb = np.fliplr(db.variables['latp'][:]) # flip to be forward in time
+    df = netCDF.MFDataset('tracks/galv_b/2010-06-*.nc',aggdim='ntrac')
+    lonf = df.variables['lonp'][:]
+    latf = df.variables['latp'][:]
+    # Combined
+    lonp = np.concatenate((lonb,lonf),axis=1)
+    latp = np.concatenate((latb,latf),axis=1)
+    # Plot
+    name = '2010-05-23-back+forward'
+    tracpy.plotting.tracks(lonp, latp, name, grid=grid)
+    tracpy.plotting.hist(lonp, latp, name, grid=grid, which='hexbin')
+                                            
+    # June time period: 6/21/10-6/26/10
+
+
 if __name__ == "__main__":
     run()    
