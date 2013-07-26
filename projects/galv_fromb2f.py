@@ -45,7 +45,7 @@ def run():
     _, _, _, _, _, _, _, _, _, _, _, _, grid = init.galv_fromb2f()
 
     # loop through start dates for drifters
-    # pdb.set_trace()
+    pdb.set_trace()
     Files = glob.glob('tracks/galv_b/2010-05-*')
     for File in Files:
 
