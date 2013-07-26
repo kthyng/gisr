@@ -53,13 +53,15 @@ def run():
         tp = d.variables['tp'][:]
         backward_startdate = netCDF.num2date(tp[0],units)
 
-        # CALCULATE LAST TIME STEP (since wasn't saved correctly), which is start date
+        # calculate last time step (since wasn't saved correctly), which is start date
         date = backward_startdate-timedelta(minutes=48)*(len(tp)-1)
 
-        # GET FINAL POSITIONS, which are start positions for this run
+        # get final positions, which are start positions for this run
         lon0 = d.variables['lonp'][:,-1]
         lat0 = d.variables['latp'][:,-1]
-        lon0,lat0 = tracpy.tools.check_points(lon0,lat0,grid)
+        # don't check points because they are already within the domain from
+        # running backward
+        # lon0,lat0 = tracpy.tools.check_points(lon0,lat0,grid)
 
         # Read in simulation initialization
         loc, nstep, ndays, ff, tseas, ah, av, z0, \
