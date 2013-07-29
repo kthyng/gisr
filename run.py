@@ -42,7 +42,7 @@ if __name__ == "__main__":
     # List of possible subprojects to run
     arg_switches = {"sensitivity":False, "outer_f":False, "galv_b":False,
                     "bara_b":False, "dwh_f":False, "galv_f":False,
-                    "galv_fromb2f":False}
+                    "galv_fromb2f":False, "dwh_stream_f":False}
 
     # Check to see if any input arguments were on the command line
     if len(sys.argv) > 1:

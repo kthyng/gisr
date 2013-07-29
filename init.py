@@ -548,3 +548,130 @@ def dwh_f(date=None, grid=None):
 
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
             z0, zpar, do3d, doturb, name, grid
+
+def dwh_stream_f(date, N, grid=None):
+    '''
+    Initialization for seeding drifters near the Deepwater Horizon
+    accident site to be run forward. for lagrangian streamfunctions
+
+    Optional inputs for making tests easy to run:
+        date    Input date for name in datetime format
+                e.g., datetime(2009, 11, 20, 0).
+        N       Number of drifters to seed
+        grid    If input, will not redo this step. 
+                Default is to load in grid.
+    '''
+
+    # Location of TXLA model output
+    loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
+
+    # Initialize parameters
+    nsteps = 5 # 5 time interpolation steps
+    ndays = 90
+    ff = 1 # This is a forward-moving simulation
+
+    # Time between outputs
+    tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
+    ah = 20.
+    av = 0. # m^2/s
+
+    if grid is None:
+        # if loc is the aggregated thredds server, the grid info is
+        # included in the same file
+        grid = inout.readgrid(loc)
+    else:
+        grid = grid
+
+    # Initial lon/lat locations for drifters
+    # These are the actual blowout coords for DWH (shifted to be in domain)
+    lon0 = np.array([-88.36594444444444-.15])
+    lat0 = np.array([28.73813888888889+.15])
+    # # Want to use the coords for the nearby east/north grid cell walls for
+    # # the proper transport calculation. Index: (617, 6)
+    # lon0 = np.array([-88.50377451891225])
+    # lat0 = np.array([28.888202179642793])
+    # Interpolate to get starting positions in grid space
+    xstart0, ystart0, _ = tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
+    # Initialize seed locations 
+    ia = np.ceil(xstart0).astype(int) #[253]#,525]
+    ja = np.ceil(ystart0).astype(int) #[57]#,40]
+    # Change to get positions at the center of the given cell
+    lon0, lat0, _ = tools.interpolate2d(ia - 0.5, ja - 0.5, grid, 'm_ij2ll')
+
+    # surface drifters
+    z0 = 's'  
+    zpar = 29 
+
+    # for 3d flag, do3d=0 makes the run 2d and do3d=1 makes the run 3d
+    do3d = 0
+    doturb = 1
+
+    # Flag for streamlines. All the extra steps right after this are for streamlines.
+    dostream = 1
+    # convert date to number
+    datenum = netCDF.date2num(date, units)
+    # Number of model outputs to use
+    tout = np.int((ndays*(24*3600))/tseas)
+    # Figure out what files will be used for this tracking - to get tinds for
+    # the following calculation
+    nc, tinds = inout.setupROMSfiles(loc, datenum, ff, tout)
+    # Get fluxes at first time step in order to find initial drifter volume transport
+    uf, vf, dzt, zrt, zwt  = inout.readfields(tinds[0],grid,nc,z0,zpar)
+    # Save initial volume transport of each drifter. Initial volume is equal to
+    # the velocity of the initial drifter locations times the flux and divided
+    # by the number of drifters in that cell.
+    # All drifters in this case are initialized in the same grid cell. T is overall
+    # volume transport.
+    # pdb.set_trace()
+    # if uf[ia, ja, 0]>0: # if positive u flux, start u drifters on positive side of cell
+    #     iau = ia
+    #     jau = ja
+    # else: # if negative u flux, start u drifters on negative side of cell
+    #     iau = ia-1
+    #     jau = ja
+    # lon0u, lat0u = grid['basemap'](grid['xpsi'][iau, jau], grid['ypsi'][iau, jau], \
+    #                                 inverse=True)
+    # if vf[ia, ja, 0]>0: # if positive v flux, start v drifters on positive side of cell
+    #     iav = ia
+    #     jav = ja
+    # else: # if negative v flux, start v drifters on negative side of cell
+    #     iav = ia
+    #     jav = ja-1
+    # lon0v, lat0v = grid['basemap'](grid['xpsi'][iav, jav], grid['ypsi'][iav, jav], \
+    #                                 inverse=True)
+    # # Base the number of drifters used in each direction on the ratio of 
+    # # transport in each direction
+    # Nu = int(N*(abs(uf[iau, jau, 0])/(abs(uf[iau, jau, 0])+abs(vf[iav, jav, 0]))))
+    # Nv = int(N*(abs(vf[iav, jav, 0])/(abs(uf[iau, jau, 0])+abs(vf[iav, jav, 0]))))
+    # Initial volume transport for u and v-moving drifters
+    U0 = uf[ia, ja, 0]/N
+    V0 = vf[ia, ja, 0]/N
+    # Initialize arrays of lon0, lat0 and U, V for full number of drifters
+    lon0 = np.ones(N)*lon0
+    lat0 = np.ones(N)*lat0
+    U0 = np.ones(N)*U0
+    V0 = np.ones(N)*V0
+    # # Initialize arrays of lon0, lat0 and U, V for full number of drifters
+    # lon0 = np.concatenate((np.ones(Nu)*lon0u, np.ones(Nv)*lon0v))
+    # lat0 = np.concatenate((np.ones(Nu)*lat0u, np.ones(Nv)*lat0v))
+    # U0 = np.concatenate((np.ones(Nu)*U0, np.ones(Nv)*V0))
+
+    # Initialize the arrays to save the transports on the grid in the loop.
+    # These arrays aggregate volume transport when a drifter enters or exits a grid cell
+    Urho = np.zeros(grid['xr'].shape)
+    # Urho[ia, ja] = Urho[ia, ja] + U0*N
+    Vrho = np.zeros(grid['xr'].shape)
+    # Vrho[ia, ja] = Vrho[ia, ja] + V0*N
+
+    # Save drifter index as drifter identifier
+    idrift = np.arange(lon0.size)
+
+
+    # simulation name, used for saving results into netcdf file
+    if date is None:
+        name = 'temp' #'5_5_D5_F'
+    else:
+        name = 'dwh_stream_f/' + date.isoformat()[0:10] 
+
+    return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
+            z0, zpar, do3d, doturb, name, grid, idrift, dostream, U0, V0, Urho, Vrho
