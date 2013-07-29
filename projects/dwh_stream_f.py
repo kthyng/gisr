@@ -41,6 +41,7 @@ def run():
 
     # loop through start dates for drifters
     for n in xrange(ndays):
+
         # loop through numbers of drifters for test
         for N in Ns:
 
@@ -50,7 +51,7 @@ def run():
             # Read in simulation initialization
             loc, nstep, ndays, ff, date, tseas, ah, av, \
                     lon0, lat0, z0, zpar, do3d, doturb, \
-                    name, grid, idrift, dostream, U0, V0, \
+                    name, grid, dostream, U0, V0, \
                     Urho, Vrho = init.dwh_stream_f(date, N, grid=grid)
 
             # If the particle trajectories have not been run, run them
@@ -59,8 +60,8 @@ def run():
                                                 ff, date, tseas, ah, av, \
                                                 lon0, lat0, z0, zpar, do3d, \
                                                 doturb, name, grid=grid, \
-                                                idrift=idrift, dostream=dostream, \
-                                                U0=U0, V0=V0, Urho=Urho, Vrho=Vrho)
+                                                dostream=dostream, U0=U0, V0=V0, \
+                                                Urho=Urho, Vrho=Vrho)
             else: # if the files already exist, just read them in for plotting
                 d = netCDF.Dataset('tracks/' + name + '.nc')
                 lonp = d.variables['lonp'][:]

@@ -663,10 +663,6 @@ def dwh_stream_f(date, N, grid=None):
     Vrho = np.zeros(grid['xr'].shape,order='F')
     # Vrho[ia, ja] = Vrho[ia, ja] + V0*N
 
-    # Save drifter index as drifter identifier
-    idrift = np.arange(lon0.size)
-
-
     # simulation name, used for saving results into netcdf file
     if date is None:
         name = 'temp' #'5_5_D5_F'
@@ -674,4 +670,4 @@ def dwh_stream_f(date, N, grid=None):
         name = 'dwh_stream_f/' + date.isoformat()[0:10] + 'N' + str(N)
 
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
-            z0, zpar, do3d, doturb, name, grid, idrift, dostream, U0, V0, Urho, Vrho
+            z0, zpar, do3d, doturb, name, grid, dostream, U0, V0, Urho, Vrho
