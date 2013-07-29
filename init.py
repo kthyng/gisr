@@ -647,10 +647,10 @@ def dwh_stream_f(date, N, grid=None):
     U0 = uf[ia, ja, 0]/N
     V0 = vf[ia, ja, 0]/N
     # Initialize arrays of lon0, lat0 and U, V for full number of drifters
-    lon0 = np.ones(N)*lon0
-    lat0 = np.ones(N)*lat0
-    U0 = np.ones(N)*U0
-    V0 = np.ones(N)*V0
+    lon0 = np.ones(N,order='F')*lon0
+    lat0 = np.ones(N,order='F')*lat0
+    U0 = np.ones(N,order='F')*U0
+    V0 = np.ones(N,order='F')*V0
     # # Initialize arrays of lon0, lat0 and U, V for full number of drifters
     # lon0 = np.concatenate((np.ones(Nu)*lon0u, np.ones(Nv)*lon0v))
     # lat0 = np.concatenate((np.ones(Nu)*lat0u, np.ones(Nv)*lat0v))
@@ -658,9 +658,9 @@ def dwh_stream_f(date, N, grid=None):
 
     # Initialize the arrays to save the transports on the grid in the loop.
     # These arrays aggregate volume transport when a drifter enters or exits a grid cell
-    Urho = np.zeros(grid['xr'].shape)
+    Urho = np.zeros(grid['xr'].shape,order='F')
     # Urho[ia, ja] = Urho[ia, ja] + U0*N
-    Vrho = np.zeros(grid['xr'].shape)
+    Vrho = np.zeros(grid['xr'].shape,order='F')
     # Vrho[ia, ja] = Vrho[ia, ja] + V0*N
 
     # Save drifter index as drifter identifier
