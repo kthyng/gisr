@@ -4,6 +4,8 @@ drifters near Deepwater Horizon and run them forward.
 This is particular to running simulations for calculating Lagrangian streamfunctions.
 '''
 
+import matplotlib as mpl
+mpl.use("Agg") # set matplotlib to use the backend that does not require a windowing system
 import numpy as np
 import os
 import netCDF4 as netCDF
