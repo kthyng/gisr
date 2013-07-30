@@ -671,3 +671,94 @@ def dwh_stream_f(date, N, grid=None):
 
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
             z0, zpar, do3d, doturb, name, grid, dostream, U0, V0, Urho, Vrho
+
+def bara_stream_b(date, N, grid=None):
+    '''
+    Initialization for seeding drifters near the Deepwater Horizon
+    accident site to be run forward. for lagrangian streamfunctions
+
+    Optional inputs for making tests easy to run:
+        date    Input date for name in datetime format
+                e.g., datetime(2009, 11, 20, 0).
+        N       Number of drifters to seed
+        grid    If input, will not redo this step. 
+                Default is to load in grid.
+    '''
+
+    # Location of TXLA model output
+    loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
+
+    # Initialize parameters
+    nsteps = 5 # 5 time interpolation steps
+    ndays = 90
+    ff = 1 # This is a forward-moving simulation
+
+    # Time between outputs
+    tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
+    ah = 20.
+    av = 0. # m^2/s
+
+    if grid is None:
+        # if loc is the aggregated thredds server, the grid info is
+        # included in the same file
+        grid = inout.readgrid(loc)
+    else:
+        grid = grid
+
+    # Initial lon/lat locations for drifters
+    # Outside Barataria Bay
+    lon0 = np.array([-89.88])
+    lat0 = np.array([29.22])
+    # # Want to use the coords for the nearby east/north grid cell walls for
+    # # the proper transport calculation. Index: (617, 6)
+    # lon0 = np.array([-88.50377451891225])
+    # lat0 = np.array([28.888202179642793])
+    # Interpolate to get starting positions in grid space
+    xstart0, ystart0, _ = tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
+    # Initialize seed locations 
+    ia = np.ceil(xstart0).astype(int) #[253]#,525]
+    ja = np.ceil(ystart0).astype(int) #[57]#,40]
+    # Change to get positions at the center of the given cell
+    lon0, lat0, _ = tools.interpolate2d(ia - 0.5, ja - 0.5, grid, 'm_ij2ll')
+
+    # surface drifters
+    z0 = 's'  
+    zpar = 29 
+
+    # for 3d flag, do3d=0 makes the run 2d and do3d=1 makes the run 3d
+    do3d = 0
+    doturb = 1
+
+    # Flag for streamlines. All the extra steps right after this are for streamlines.
+    dostream = 1
+    # convert date to number
+    datenum = netCDF.date2num(date, units)
+    # Number of model outputs to use
+    tout = np.int((ndays*(24*3600))/tseas)
+    # Figure out what files will be used for this tracking - to get tinds for
+    # the following calculation
+    nc, tinds = inout.setupROMSfiles(loc, datenum, ff, tout)
+    # Get fluxes at first time step in order to find initial drifter volume transport
+    uf, vf, dzt, zrt, zwt  = inout.readfields(tinds[0],grid,nc,z0,zpar)
+   # Initial volume transport for u and v-moving drifters
+    U0 = uf[ia, ja, 0]/N
+    V0 = vf[ia, ja, 0]/N
+    # Initialize arrays of lon0, lat0 and U, V for full number of drifters
+    lon0 = np.ones(N,order='F')*lon0
+    lat0 = np.ones(N,order='F')*lat0
+    U0 = np.ones(N,order='F')*U0
+    V0 = np.ones(N,order='F')*V0
+
+    # Initialize the arrays to save the transports on the grid in the loop.
+    # These arrays aggregate volume transport when a drifter enters or exits a grid cell
+    Urho = np.zeros(grid['xr'].shape,order='F')
+    Vrho = np.zeros(grid['xr'].shape,order='F')
+
+    # simulation name, used for saving results into netcdf file
+    if date is None:
+        name = 'temp' #'5_5_D5_F'
+    else:
+        name = 'bara_stream_b/' + date.isoformat()[0:13] + 'N' + str(N)
+
+    return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
+            z0, zpar, do3d, doturb, name, grid, dostream, U0, V0, Urho, Vrho
