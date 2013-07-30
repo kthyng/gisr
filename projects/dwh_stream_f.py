@@ -92,10 +92,10 @@ def run():
 
             # Plot Lagrangian stream functions
             Lx = np.zeros(Urho.shape)
-            for i in xrange(1,Urho.shape[0])
+            for i in xrange(1,Urho.shape[0]):
                 Lx[i,:] = Lx[i-1,:] + Urho[i,:]
             Ly = np.zeros(Urho.shape)
-            for j in xrange(1,Urho.shape[1])
+            for j in xrange(1,Urho.shape[1]):
                 Ly[:,j] = Ly[:,j-1] - Vrho[:,j]
             pdb.set_trace()
 
