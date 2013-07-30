@@ -63,10 +63,13 @@ def run():
                                                 doturb, name, grid=grid, \
                                                 dostream=dostream, U0=U0, V0=V0, \
                                                 Urho=Urho, Vrho=Vrho)
+
             else: # if the files already exist, just read them in for plotting
                 d = netCDF.Dataset('tracks/' + name + '.nc')
                 lonp = d.variables['lonp'][:]
                 latp = d.variables['latp'][:]
+                Urho = d.variables['Urho'][:]
+                Vrho = d.variables['Vrho'][:]
 
             # If the particle trajectories have not been plotted, plot them
             if not os.path.exists('figures/' + name + 'tracks.png'):
@@ -87,8 +90,14 @@ def run():
             #     tracpy.plotting.hist(lonp[ind,:], latp[ind,:], name2, grid=grid, \
             #                         which='hexbin')
 
-        # Now do useful plots
-        # Want to only plot tracks
+            # Plot Lagrangian stream functions
+            Lx = np.zeros(Urho.shape)
+            for i in xrange(1,Urho.shape[0])
+                Lx[i,:] = Lx[i-1,:] + Urho[i,:]
+            Ly = np.zeros(Urho.shape)
+            for j in xrange(1,Urho.shape[1])
+                Ly[:,j] = Ly[:,j-1] - Vrho[:,j]
+            pdb.set_trace()
 
 if __name__ == "__main__":
     run()
