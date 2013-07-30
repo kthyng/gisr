@@ -57,7 +57,7 @@ def run():
                 # Read in simulation initialization
                 loc, nstep, ndays, ff, date, tseas, ah, av, \
                         lon0, lat0, z0, zpar, do3d, doturb, \
-                        name, grid, dostream, U0, V0, \
+                        name, grid, dostream, T0, \
                         Urho, Vrho = init.dwh_stream_f(date, N, grid=grid)
 
                 # If the particle trajectories have not been run, run them
@@ -66,7 +66,7 @@ def run():
                                                     ff, date, tseas, ah, av, \
                                                     lon0, lat0, z0, zpar, do3d, \
                                                     doturb, name, grid=grid, \
-                                                    dostream=dostream, U0=U0, V0=V0, \
+                                                    dostream=dostream, T0=T0, \
                                                     Urho=Urho, Vrho=Vrho)
 
                 else: # if the files already exist, just read them in for plotting
@@ -96,13 +96,16 @@ def run():
                 #                         which='hexbin')
 
                 # # Plot Lagrangian stream functions
-                # Lx = np.zeros(Urho.shape)
+                # # U0 = -758.04584431263879
+                # # V0 = 728.98278696034538
+                # # i, j = 616.5, 6.5
+                # Lx = np.ma.zeros(Urho.shape)
                 # for i in xrange(1,Urho.shape[0]):
-                #     Lx[i,:] = Lx[i-1,:] + Urho[i,:]
-                # Ly = np.zeros(Urho.shape)
+                #     Lx[i,:] = Lx[i-1,:] + Vrho[i,:]
+                # Ly = np.ma.zeros(Urho.shape)
                 # for j in xrange(1,Urho.shape[1]):
-                #     Ly[:,j] = Ly[:,j-1] - Vrho[:,j]
-                # pdb.set_trace()
+                #     Ly[:,j] = Ly[:,j-1] - Urho[:,j]
+                # # pdb.set_trace()
 
 if __name__ == "__main__":
     run()
