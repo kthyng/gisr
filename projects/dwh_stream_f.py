@@ -68,8 +68,8 @@ def run():
                 d = netCDF.Dataset('tracks/' + name + '.nc')
                 lonp = d.variables['lonp'][:]
                 latp = d.variables['latp'][:]
-                Urho = d.variables['Urho'][:]
-                Vrho = d.variables['Vrho'][:]
+                Urho = d.variables['Urho'][:].T.copy(order='c')
+                Vrho = d.variables['Vrho'][:].T.copy(order='c')
 
             # If the particle trajectories have not been plotted, plot them
             if not os.path.exists('figures/' + name + 'tracks.png'):
