@@ -667,7 +667,7 @@ def dwh_stream_f(date, N, grid=None):
     if date is None:
         name = 'temp' #'5_5_D5_F'
     else:
-        name = 'dwh_stream_f/' + date.isoformat()[0:10] + 'N' + str(N)
+        name = 'dwh_stream_f/' + date.isoformat()[0:13] + 'N' + str(N)
 
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
             z0, zpar, do3d, doturb, name, grid, dostream, U0, V0, Urho, Vrho
