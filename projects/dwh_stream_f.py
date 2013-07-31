@@ -34,7 +34,7 @@ def run():
     startdate = datetime(years[0], 4, 20, 0)
 
     # Number of drifters to use
-    Ns = np.array([100, 1000, 10000])
+    Ns = np.array([100])#, 1000, 10000])
     # Ns = np.array([10, 20, 50, 100, 1000, 10000])
 
     ndays = 87 # to cover oil spill time period
