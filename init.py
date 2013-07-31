@@ -840,14 +840,12 @@ def bara_stream_b(date, N, grid=None):
     nc, tinds = inout.setupROMSfiles(loc, datenum, ff, tout)
     # Get fluxes at first time step in order to find initial drifter volume transport
     uf, vf, dzt, zrt, zwt  = inout.readfields(tinds[0],grid,nc,z0,zpar)
-   # Initial volume transport for u and v-moving drifters
-    U0 = uf[ia, ja, 0]/N
-    V0 = vf[ia, ja, 0]/N
+    # Initial total volume transport as a scalar quantity to be conserved, I think
+    T0 = (abs(uf[ia, ja, 0]) + abs(vf[ia, ja, 0]))/N
     # Initialize arrays of lon0, lat0 and U, V for full number of drifters
     lon0 = np.ones(N,order='F')*lon0
     lat0 = np.ones(N,order='F')*lat0
-    U0 = np.ones(N,order='F')*U0
-    V0 = np.ones(N,order='F')*V0
+    T0 = np.ones(N,order='F')*T0
 
     # Initialize the arrays to save the transports on the grid in the loop.
     # These arrays aggregate volume transport when a drifter enters or exits a grid cell
@@ -861,4 +859,4 @@ def bara_stream_b(date, N, grid=None):
         name = 'bara_stream_b/' + date.isoformat()[0:13] + 'N' + str(N)
 
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
-            z0, zpar, do3d, doturb, name, grid, dostream, U0, V0, Urho, Vrho
+            z0, zpar, do3d, doturb, name, grid, dostream, T0, Urho, Vrho

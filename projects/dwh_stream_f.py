@@ -73,8 +73,8 @@ def run():
                     d = netCDF.Dataset('tracks/' + name + '.nc')
                     lonp = d.variables['lonp'][:]
                     latp = d.variables['latp'][:]
-                    Urho = d.variables['Urho'][:].T.copy(order='c')
-                    Vrho = d.variables['Vrho'][:].T.copy(order='c')
+                    Urho = d.variables['Urho'][:]
+                    Vrho = d.variables['Vrho'][:]
 
                 # If the particle trajectories have not been plotted, plot them
                 if not os.path.exists('figures/' + name + 'tracks.png'):
@@ -95,17 +95,20 @@ def run():
                 #     tracpy.plotting.hist(lonp[ind,:], latp[ind,:], name2, grid=grid, \
                 #                         which='hexbin')
 
-                # # Plot Lagrangian stream functions
-                # # U0 = -758.04584431263879
-                # # V0 = 728.98278696034538
-                # # i, j = 616.5, 6.5
+                # Plot Lagrangian stream functions
+                # U0 = -758.04584431263879
+                # V0 = 728.98278696034538
+                # i, j = 616.5, 6.5
                 # Lx = np.ma.zeros(Urho.shape)
                 # for i in xrange(1,Urho.shape[0]):
                 #     Lx[i,:] = Lx[i-1,:] + Vrho[i,:]
                 # Ly = np.ma.zeros(Urho.shape)
                 # for j in xrange(1,Urho.shape[1]):
                 #     Ly[:,j] = Ly[:,j-1] - Urho[:,j]
-                # # pdb.set_trace()
+                # for j in xrange(1,Urho.shape[1]):
+                #     for i in xrange(1,Urho.shape[0]):
+                #         Lx[i,j] = Lx[i-1,j] + Vrho[i,j]
+                # pdb.set_trace()
 
 if __name__ == "__main__":
     run()

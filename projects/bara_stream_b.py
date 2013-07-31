@@ -57,7 +57,7 @@ def run():
                 # Read in simulation initialization
                 loc, nstep, ndays, ff, date, tseas, ah, av, \
                         lon0, lat0, z0, zpar, do3d, doturb, \
-                        name, grid, dostream, U0, V0, \
+                        name, grid, dostream, T0, \
                         Urho, Vrho = init.bara_stream_b(date, N, grid=grid)
 
                 # If the particle trajectories have not been run, run them
@@ -66,15 +66,15 @@ def run():
                                                     ff, date, tseas, ah, av, \
                                                     lon0, lat0, z0, zpar, do3d, \
                                                     doturb, name, grid=grid, \
-                                                    dostream=dostream, U0=U0, V0=V0, \
+                                                    dostream=dostream, T0=T0, \
                                                     Urho=Urho, Vrho=Vrho)
 
                 else: # if the files already exist, just read them in for plotting
                     d = netCDF.Dataset('tracks/' + name + '.nc')
                     lonp = d.variables['lonp'][:]
                     latp = d.variables['latp'][:]
-                    Urho = d.variables['Urho'][:].T.copy(order='c')
-                    Vrho = d.variables['Vrho'][:].T.copy(order='c')
+                    Urho = d.variables['Urho'][:]
+                    Vrho = d.variables['Vrho'][:]
 
                 # If the particle trajectories have not been plotted, plot them
                 if not os.path.exists('figures/' + name + 'tracks.png'):
