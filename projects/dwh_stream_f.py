@@ -15,6 +15,7 @@ import tracpy
 import init
 from datetime import datetime, timedelta
 import glob
+from mpl_toolkits.basemap import Basemap
 
 def run():
 
@@ -34,19 +35,19 @@ def run():
     startdate = datetime(years[0], 4, 20, 0)
 
     # Number of drifters to use
-    Ns = np.array([100])#, 1000, 10000])
+    Ns = np.array([100, 1000, 10000])
     # Ns = np.array([10, 20, 50, 100, 1000, 10000])
 
-    ndays = 87 # to cover oil spill time period
+    rundays = 87 # to cover oil spill time period
 
     # Do one initialization here to save grid
     _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, grid = init.dwh_f()
 
-    # loop through start dates for drifters
-    for n in xrange(ndays):
+    # loop through numbers of drifters for test
+    for N in Ns:
 
-        # loop through numbers of drifters for test
-        for N in Ns:
+        # loop through start dates for drifters
+        for n in xrange(rundays):
 
             # Run for each output during the day too
             for nh in range(0,24,4):
@@ -95,20 +96,48 @@ def run():
                 #     tracpy.plotting.hist(lonp[ind,:], latp[ind,:], name2, grid=grid, \
                 #                         which='hexbin')
 
-                # Plot Lagrangian stream functions
-                # U0 = -758.04584431263879
-                # V0 = 728.98278696034538
-                # i, j = 616.5, 6.5
-                # Lx = np.ma.zeros(Urho.shape)
-                # for i in xrange(1,Urho.shape[0]):
-                #     Lx[i,:] = Lx[i-1,:] + Vrho[i,:]
-                # Ly = np.ma.zeros(Urho.shape)
-                # for j in xrange(1,Urho.shape[1]):
-                #     Ly[:,j] = Ly[:,j-1] - Urho[:,j]
-                # for j in xrange(1,Urho.shape[1]):
-                #     for i in xrange(1,Urho.shape[0]):
-                #         Lx[i,j] = Lx[i-1,j] + Vrho[i,j]
-                # pdb.set_trace()
+    # ## Plot Lagrangian stream functions
+    # # Which files to read in
+    # Files = glob.glob('tracks/dwh_stream_f/*N100.nc')
+    # Files.sort()
+
+    # for i, File in enumerate(Files):
+    #     d = netCDF.Dataset(File)
+    #     if i == 0: # initialize U and V transports from first file
+    #         Urho = d.variables['Urho'][:]
+    #         Vrho = d.variables['Vrho'][:]
+    #     else: # add in transports from subsequent simulations
+    #         Urho = Urho + d.variables['Urho'][:]
+    #         Vrho = Vrho + d.variables['Vrho'][:]
+
+    # # Calculate lagrangian barotropic stream function
+    # psi_i = np.cumsum(Vrho, axis=1)
+    # psi_j = np.cumsum(Urho, axis=0)
+    # psi = psi_j - psi_i
+
+    # # Smaller basemap parameters.
+    # llcrnrlon=-93; llcrnrlat=27.2;
+    # loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
+    # grid = tracpy.inout.readgrid(loc, llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat)
+
+
+    # # Make plot
+    # plt.figure(figsize=(11.6875,   9.875))
+    # tracpy.plotting.background(grid=grid)
+    # contourf(grid['xr'], grid['yr'], psi, 
+    #         levels=np.linspace(-1000,1000,10), 
+    #         extend='both', 
+    #         cmap='RdBu_r')
+    # colorbar()
+    # # axis([529390.89968305617, 1083602.3405513568, 
+    # #         515464.17304731032, 941232.85177483247])
+
+    # # Add initial drifter location (all drifters start at the same location)
+    # lon0 = d.variables['lonp'][0,0]
+    # lat0 = d.variables['latp'][0,0]
+    # x0, y0 = grid['basemap'](lon0, lat0)
+    # plot(x0, y0, 'go', markersize=10)
+
 
 if __name__ == "__main__":
     run()

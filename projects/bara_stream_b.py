@@ -37,13 +37,13 @@ def run():
     Ns = np.array([100])#, 1000, 10000])
     # Ns = np.array([10, 20, 50, 100, 1000, 10000])
 
-    ndays = 87 # to cover oil spill time period
+    rundays = 87 # to cover oil spill time period
 
     # Do one initialization here to save grid
     _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, grid = init.dwh_f()
 
     # loop through start dates for drifters
-    for n in xrange(ndays):
+    for n in xrange(rundays):
 
         # loop through numbers of drifters for test
         for N in Ns:
