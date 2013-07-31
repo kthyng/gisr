@@ -32,7 +32,7 @@ def run():
     # Parameters to be rotated through
     years = np.array([2010])
     # oil spill from April 20 - July 15, 2010
-    startdate = datetime(years[0], 4, 20, 0)
+    startdate = datetime(years[0], 4, 20, 0, 1)
 
     # Number of drifters to use
     Ns = np.array([100, 1000, 10000])

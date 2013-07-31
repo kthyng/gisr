@@ -772,7 +772,7 @@ def dwh_stream3d_f(date, N, grid=None):
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
             z0, zpar, do3d, doturb, name, grid, dostream, U0, V0, Urho, Vrho
 
-def bara_stream_b(date, N, grid=None):
+def bara_stream_b(date, runend, N, grid=None):
     '''
     Initialization for seeding drifters near the Deepwater Horizon
     accident site to be run forward. for lagrangian streamfunctions
@@ -790,8 +790,10 @@ def bara_stream_b(date, N, grid=None):
 
     # Initialize parameters
     nsteps = 5 # 5 time interpolation steps
-    ndays = 90
     ff = -1 # This is a forward-moving simulation
+
+    # Number of days to run depends on date of data relative to spill start
+    ndays = (date - runend).total_seconds()/(3600.*24)
 
     # Time between outputs
     tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
