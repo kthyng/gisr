@@ -66,23 +66,23 @@ def run():
                 loc, nstep, ndays, ff, date, tseas, ah, av, \
                         lon0, lat0, z0, zpar, do3d, doturb, \
                         name, grid, dostream, T0, \
-                        Urho, Vrho = init.bara_stream_b(date, runend, N, grid=grid)
+                        U, V = init.bara_stream_b(date, runend, N, grid=grid)
 
                 # If the particle trajectories have not been run, run them
                 if not os.path.exists('tracks/' + name + '.nc'):
-                    lonp, latp, zp, t, grid, Urho, Vrho = tracpy.run.run(loc, nstep, ndays, \
+                    lonp, latp, zp, t, grid, U, V = tracpy.run.run(loc, nstep, ndays, \
                                                     ff, date, tseas, ah, av, \
                                                     lon0, lat0, z0, zpar, do3d, \
                                                     doturb, name, grid=grid, \
                                                     dostream=dostream, T0=T0, \
-                                                    Urho=Urho, Vrho=Vrho)
+                                                    U=U, V=V)
 
                 else: # if the files already exist, just read them in for plotting
                     d = netCDF.Dataset('tracks/' + name + '.nc')
                     lonp = d.variables['lonp'][:]
                     latp = d.variables['latp'][:]
-                    Urho = d.variables['Urho'][:]
-                    Vrho = d.variables['Vrho'][:]
+                    U = d.variables['U'][:]
+                    V = d.variables['V'][:]
 
                 # If the particle trajectories have not been plotted, plot them
                 if not os.path.exists('figures/' + name + 'tracks.png'):
@@ -102,15 +102,6 @@ def run():
                 # if not os.path.exists('figures/' + name2 + '.png'):
                 #     tracpy.plotting.hist(lonp[ind,:], latp[ind,:], name2, grid=grid, \
                 #                         which='hexbin')
-
-                # # Plot Lagrangian stream functions
-                # Lx = np.zeros(Urho.shape)
-                # for i in xrange(1,Urho.shape[0]):
-                #     Lx[i,:] = Lx[i-1,:] + Urho[i,:]
-                # Ly = np.zeros(Urho.shape)
-                # for j in xrange(1,Urho.shape[1]):
-                #     Ly[:,j] = Ly[:,j-1] - Vrho[:,j]
-                # pdb.set_trace()
 
 if __name__ == "__main__":
     run()

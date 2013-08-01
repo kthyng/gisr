@@ -661,9 +661,9 @@ def dwh_stream_f(date, N, grid=None):
     # Initialize the arrays to save the transports on the grid in the loop.
     # These arrays aggregate volume transport when a drifter enters or exits a grid cell
     # These should start at zero since we don't know which way things will travel yet
-    Urho = np.ma.zeros(grid['xu'].shape,order='F')
+    U = np.ma.zeros(grid['xu'].shape,order='F')
     # Urho[ia, ja] = Urho[ia, ja] + U0.sum()
-    Vrho = np.ma.zeros(grid['xv'].shape,order='F')
+    V = np.ma.zeros(grid['xv'].shape,order='F')
     # Vrho[ia, ja] = Vrho[ia, ja] + V0.sum()
 
     # simulation name, used for saving results into netcdf file
@@ -673,7 +673,7 @@ def dwh_stream_f(date, N, grid=None):
         name = 'dwh_stream_f/' + date.isoformat()[0:13] + 'N' + str(N)
 
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
-            z0, zpar, do3d, doturb, name, grid, dostream, T0, Urho, Vrho
+            z0, zpar, do3d, doturb, name, grid, dostream, T0, U, V
 
 def bara_stream_b(date, runend, N, grid=None):
     '''
@@ -754,8 +754,8 @@ def bara_stream_b(date, runend, N, grid=None):
 
     # Initialize the arrays to save the transports on the grid in the loop.
     # These arrays aggregate volume transport when a drifter enters or exits a grid cell
-    Urho = np.zeros(grid['xu'].shape,order='F')
-    Vrho = np.zeros(grid['xv'].shape,order='F')
+    U = np.zeros(grid['xu'].shape,order='F')
+    V = np.zeros(grid['xv'].shape,order='F')
 
     # simulation name, used for saving results into netcdf file
     if date is None:
@@ -764,4 +764,4 @@ def bara_stream_b(date, runend, N, grid=None):
         name = 'bara_stream_b/' + date.isoformat()[0:13] + 'N' + str(N)
 
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
-            z0, zpar, do3d, doturb, name, grid, dostream, T0, Urho, Vrho
+            z0, zpar, do3d, doturb, name, grid, dostream, T0, U, V

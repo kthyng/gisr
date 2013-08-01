@@ -59,23 +59,23 @@ def run():
                 loc, nstep, ndays, ff, date, tseas, ah, av, \
                         lon0, lat0, z0, zpar, do3d, doturb, \
                         name, grid, dostream, T0, \
-                        Urho, Vrho = init.dwh_stream_f(date, N, grid=grid)
+                        U, V = init.dwh_stream_f(date, N, grid=grid)
 
                 # If the particle trajectories have not been run, run them
                 if not os.path.exists('tracks/' + name + '.nc'):
-                    lonp, latp, zp, t, grid, Urho, Vrho = tracpy.run.run(loc, nstep, ndays, \
+                    lonp, latp, zp, t, grid, U, V = tracpy.run.run(loc, nstep, ndays, \
                                                     ff, date, tseas, ah, av, \
                                                     lon0, lat0, z0, zpar, do3d, \
                                                     doturb, name, grid=grid, \
                                                     dostream=dostream, T0=T0, \
-                                                    Urho=Urho, Vrho=Vrho)
+                                                    U=U, V=V)
 
                 else: # if the files already exist, just read them in for plotting
                     d = netCDF.Dataset('tracks/' + name + '.nc')
                     lonp = d.variables['lonp'][:]
                     latp = d.variables['latp'][:]
-                    Urho = d.variables['Urho'][:]
-                    Vrho = d.variables['Vrho'][:]
+                    U = d.variables['U'][:]
+                    V = d.variables['V'][:]
 
                 # If the particle trajectories have not been plotted, plot them
                 if not os.path.exists('figures/' + name + 'tracks.png'):
@@ -105,15 +105,15 @@ def run():
     # for i, File in enumerate(Files):
     #     d = netCDF.Dataset(File)
     #     if i == 0: # initialize U and V transports from first file
-    #         Urho = d.variables['Urho'][:]
-    #         Vrho = d.variables['Vrho'][:]
+    #         U = d.variables['U'][:]
+    #         V = d.variables['V'][:]
     #     else: # add in transports from subsequent simulations
-    #         Urho = Urho + d.variables['Urho'][:]
-    #         Vrho = Vrho + d.variables['Vrho'][:]
+    #         U = U + d.variables['U'][:]
+    #         V = V + d.variables['V'][:]
 
     # # Calculate lagrangian barotropic stream function
-    # psi_i = np.cumsum(Vrho, axis=1)
-    # psi_j = np.cumsum(Urho, axis=0)
+    # psi_i = np.cumsum(V, axis=1)
+    # psi_j = np.cumsum(U, axis=0)
     # psi = psi_j - psi_i
 
     # # Smaller basemap parameters.
