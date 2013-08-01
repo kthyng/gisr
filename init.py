@@ -615,6 +615,7 @@ def dwh_stream_f(date, N, grid=None):
     nc, tinds = inout.setupROMSfiles(loc, datenum, ff, tout)
     # Get fluxes at first time step in order to find initial drifter volume transport
     uf, vf, dzt, zrt, zwt  = inout.readfields(tinds[0],grid,nc,z0,zpar)
+    nc.close()
     # Save initial volume transport of each drifter. Initial volume is equal to
     # the velocity of the initial drifter locations times the flux and divided
     # by the number of drifters in that cell.

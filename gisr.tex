@@ -5,6 +5,7 @@
 %\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
 \usepackage{graphicx}
 \usepackage{amssymb}
+\usepackage{commath}
 \usepackage{amsmath}
 \usepackage{epstopdf}
 \usepackage{subfigure}
@@ -27,7 +28,7 @@
 \author{Kristen M. Thyng}
 %%\date{January 27, 2011}                                           % Activate to display a given date or no date
 
-\input{macros}
+% \input{macros}
 % \linenumbers % add line numbers
 
 % \begin{frontmatter}
@@ -115,6 +116,68 @@ Drifter tracks and final locations are shown in Figure \ref{diffusionsize} for c
 \subsection{Sensitivity to Waves, Tides, and Model Output Frequency}
 
 
+\section{Lagrangian Barotropic Stream Functions}
+
+\subsection{Methodology}
+
+The Lagrangian barotropic stream function, a metric for communicating the transport for a given situation, has been used in several studies previously (\textit{e.g.}, \citep{Blanke:1999hm,Doos:2007fm}). The idea is to assign an initial volume transport property to the drifters based on their initial placement and velocity and, given a high enough density that the result does not change with more drifters, track the $x$ and $y$ transport as the drifters pass numerical grid cell walls. The initial volume transport is found by summing the overall flux into or out of the grid cells in which drifters are initially located and dividing by the number of initial drifters in the cells, or
+\begin{align*}
+    T_0 &= \frac{1}{N_0} \left(\left|u[i_0,j_0,k_0,t_0]\right| \Delta y_{i_0,j_0} \Delta z_{i_0,j_0,k_0,t_0} + \left|v[i_0,j_0,k_0,t_0]\right| \Delta x_{i_0,j_0} \Delta z_{i_0,j_0,k_0,t_0}\right),
+\end{align*}
+where $N_0$ is the number of drifters initialized in a grid cell or grid cells (in which case $N_0$ is a vector), $u[i_0,j_0,k_0,t_0]$ and $v[i_0,j_0,k_0,t_0]$ are the zonal and meridional velocities for the initial grid cell(s) at grid index locations $i_0,j_0,k_0$, the drifters are seeded at time $t_0$, and the grid cell spacing in the zonal and meridional directions is given by $\Delta x_{i_0,j_0}$ and $\Delta y_{i_0,j_0}$ (assuming they can change horizontally but not vertically or in time), and in the vertical direction is given by $\Delta z_{i_0,j_0,k_0,t_0}$ (which can change in all dimensions) \citep{Doos:1995tf}.
+
+Assuming that all drifters that enter a grid cell will exit via another grid cell wall, the 3D transport field is non-divergent, that is,
+\begin{align}
+    \partial_i U + \partial_j V + \partial_k W &= 0, \label{transport}
+\end{align}
+for zonal, meridional, and vertical volume transports $U,V,W$ and directions $i,j,k$. Alternatively, this can be written in terms of the numerical discretization as:
+\begin{align}
+    U_{i,j,k,n} - U_{i-1,j,k,n} + V_{i,j,k,n} - V_{i,j-1,k,n} + W_{i,j,k,n} + W_{i,j,k-1,n} &= 0, \label{transport_discretized}
+\end{align}
+where $U_{i,j,k,n}, V_{i,j,k,n}, W_{i,j,k,n}$ are the $(x,y,z)$ volume transports registered for drifter instance $n$ for grid cell located at indices $(i,j,k)$. Equations \ref{transport} or \ref{transport_discretized} can be integrated along an axis to obtain a 2D non-divergent field which can be presented using a stream function. For the vertical case, this gives
+\begin{subequations} \label{psi}
+\begin{align}
+    \frac{\partial \psi}{\partial i} &= \sum_k V \label{psix} \\
+    \frac{\partial \psi}{\partial j} &= -\sum_k U, \label{psiy}
+\end{align}
+\end{subequations}
+where $\psi$ is the stream function.
+
+In this particular surface-limited drifter case, we assume that there is little vertical motion at the surface such that $\partial_k W\approx 0$, so that $\sum_k V\approx V$ and $\sum_k U\approx U$. All following analysis applies without this assumption but would just include a step of first summing the transports in the vertical direction. This analysis was originally presented by \citet{Blanke:1999hm} for numerical drifters stepped forward for a given time. \citet{Doos:2007fm} applied the method to model output that changes in time and for a physical regime that changes over larger time scales as well. This work also presents paths that are averaged over many drifter simulations starting at different times in order to find the overall transport. To do so, transports calculated over time for a given simulation are then combined with transports from subsequent simulations before calculating the stream function.
+
+To apply this to a numerical simulation of drifters, $U_{i,j}$ and $V_{i,j}$ have to be calculated for a given simulation (or $U_{i,j,k}$ and $V_{i,j,k}$ if changes in $z$ are important). This is accomplished by registering each time a drifter exits one grid cell and enters another by passing a cell wall, and subtracting or adding that drifter's initial volume transport from the cumulative grid cell drifter transport value. Once $U_{i,j}$ and $V_{i,j}$ are found for all drifter simulations, they can be added together.
+
+% http://www.pmel.noaa.gov/maillists/tmap/ferret_users/fu_2001/msg00303.html
+We can use the equations for the stream function, Equation \ref{psi} with the vertical direction excluded or already integrated away, to find the explicit formulation for the stream function, using also the continuity equation assuming that the vertical direction is unimportant or has been integrated away:
+\begin{align}
+    U_x+V_y=0. \label{continuity}
+\end{align}
+Equation \ref{psiy} gives:
+\begin{align}
+    \psi(x,y) &= \int^y_{y_0} U \dif y' + a(x), \label{step1}
+\end{align}
+where $y_0$ is a specific $y$ value and $y'$ is a dummy variable. Differentiating Equation \ref{step1}, using Equation \ref{continuity}, and comparing with Equation \ref{psix} gives
+\begin{align}
+    \psi_x &= \int^y_{y_0} U_x \dif y' + a_x(x) \nonumber \\
+    ~ &= \int^y_{y_0} -V_y \dif y' + a_x(x) \text{~~~~~~~~~~~~~~~~~~~~~~~~~from Equation \ref{continuity}} \nonumber \\
+    ~ &= -V(x,y) + V(x,y_0) + a_x(x) \nonumber \\
+    ~ &= -V(x,y) \text{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~from Equation \ref{psix}} \nonumber \\
+    \Rightarrow a_x(x) &= -V(x,y_0) \nonumber \\
+    a(x) &= -\int^x_{x_0} V(x,y_0)\dif x' \label{constant}
+\end{align}
+Using Equation \ref{step1} with Equation \ref{constant} gives
+\begin{align}
+    \psi(x,y) &= \int^y_{y_0} U(x,y) \dif y' - \int^x_{x_0} V(x,y_0)\dif x'. \label{streamfunction}
+\end{align}
+Equation \ref{streamfunction} can be solved numerically by simply cumulatively summing in each direction according to the integrals and combining the terms, that is (in Python),
+\begin{verbatim}
+psi_i = np.cumsum(V, axis=1)
+psi_j = np.cumsum(U, axis=0)
+psi = psi_j - psi_i.
+\end{verbatim}
+
+\subsection{Results}
+
 % Now for some results
 \section{Results for Different Conditions}
 
@@ -138,7 +201,7 @@ Drifter tracks and final locations are shown in Figure \ref{diffusionsize} for c
 % \end{figure}
 
 \bibliographystyle{apalike}%abbrv}%plain}
-\bibliography{postdoc}
+\bibliography{gisr}
 
 
 \end{document}  
