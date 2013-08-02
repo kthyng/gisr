@@ -49,7 +49,8 @@ def load(name,fmod=None):
     # all files
     for i, File in enumerate(Files):
         d = netCDF.Dataset(File)
-        # get lon0, lat0, and initial volumes from init file
+        date = netCDF.num2date(d.variables['tp'][0],units)
+       # get lon0, lat0, and initial volumes from init file
         _, _, _, _, _, _, _, _, \
             lon0, lat0, _, _, _, _, \
             _, _, _, T0temp, \
@@ -63,7 +64,6 @@ def load(name,fmod=None):
             U = U + d.variables['U'][:]
             V = V + d.variables['V'][:]
             T0 = T0 + T0temp
-        date = netCDF.num2date(d.variables['tp'][0],units)
         d.close()
 
     # # Add initial drifter location (all drifters start at the same location)
