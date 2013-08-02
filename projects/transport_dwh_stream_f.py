@@ -18,6 +18,8 @@ import glob
 from mpl_toolkits.basemap import Basemap
 import op
 
+units = 'seconds since 1970-01-01'
+
 def load(name,fmod=None):
 	'''
 
@@ -32,6 +34,7 @@ def load(name,fmod=None):
 				used simulation files
 		lon0 	Initial lon location for drifters
 		lat0 	Initial lat location for drifters
+		T0 		Overall
 	'''
 
 	# Which files to read in.
@@ -46,16 +49,26 @@ def load(name,fmod=None):
 	# all files
 	for i, File in enumerate(Files):
 	    d = netCDF.Dataset(File)
+	    # get lon0, lat0, and initial volumes from init file
+	    _, _, _, _, _, _, _, _, \
+		    lon0, lat0, _, _, _, _, \
+		    _, _, _, T0temp, \
+		    _, _ = init.dwh_stream_f(date, 100)
+
 	    if i == 0: # initialize U and V transports from first file
 	        U = d.variables['U'][:]
 	        V = d.variables['V'][:]
+	        T0 = T0temp
 	    else: # add in transports from subsequent simulations
 	        U = U + d.variables['U'][:]
 	        V = V + d.variables['V'][:]
+			T0 = T0 + T0temp
+	    date = netCDF.num2date(d.variables['tp'][0],units)
+	    d.close()
 
-	# Add initial drifter location (all drifters start at the same location)
-	lon0 = d.variables['lonp'][0,0]
-	lat0 = d.variables['latp'][0,0]
+	# # Add initial drifter location (all drifters start at the same location)
+	# lon0 = d.variables['lonp'][0,0]
+	# lat0 = d.variables['latp'][0,0]
 
 	# old streamline code
 	# # Calculate lagrangian barotropic stream function
@@ -68,9 +81,9 @@ def load(name,fmod=None):
 	# # psi_j2 = np.fliplr(np.cumsum(U[:,::-1], axis=1))
 	# psi = psi_j2[:,:-1] - psi_i2[:-1,:]
 
-	return U, V, lon0, lat0
+	return U, V, lon0, lat0, T0
 
-def plot(name, U, V, lon0, lat0, extraname=None):
+def plot(name, U, V, lon0, lat0, T0, extraname=None):
 	'''
 	Make plot of zoomed-in area near DWH spill of transport of drifters over 
 	time.
@@ -81,6 +94,7 @@ def plot(name, U, V, lon0, lat0, extraname=None):
 		V
 		lon0
 		lat0
+		T0
 	'''
 
 	# Smaller basemap parameters.
@@ -89,12 +103,17 @@ def plot(name, U, V, lon0, lat0, extraname=None):
 	grid = tracpy.inout.readgrid(loc, llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat, 
 	                                urcrnrlat=urcrnrlat)
 
-	plt.figure(figsize=(16.0375,   9.9125))
+	fig = plt.figure(figsize=(16.0375,   9.9125))
 	tracpy.plotting.background(grid=grid)
-	plt.contourf(grid['xpsi'], grid['ypsi'], np.sqrt(op.resize(U,1)**2+op.resize(V,0)**2), 
+	plt.contourf(grid['xpsi'], grid['ypsi'], np.sqrt(op.resize(U,1)**2+op.resize(V,0)**2)/T0, 
 	        cmap='gray_r', levels=np.linspace(0,18000,10), extend='max')
-	colorbar()
-	title('$\sqrt{U^2+V^2}$')
+
+	# Inlaid colorbar
+	cax = fig.add_axes([0.42, 0.2, 0.27, 0.02])
+	cb = colorbar(cax=cax,orientation='horizontal')
+	cb.set_label('Normalized drifter transport')
+	plt.colorbar()
+	plt.title('Deepwater Horizon Spill Transport')
 
 	# Add initial drifter location (all drifters start at the same location)
 	x0, y0 = grid['basemap'](lon0, lat0)
@@ -131,8 +150,8 @@ def run():
 	''' Controls which project to run this for'''
 
 	name = 'dwh_stream_f'
-	U, V, lon0, lat0 = load(name)
-	plot(name, U, V, lon0, lat0)
+	U, V, lon0, lat0, T0 = load(name)
+	plot(name, U, V, lon0, lat0, T0)
 	# # Load in information
 	# if fmod is None:
 	# 	U, V, lon0, lat0 = load(name)
