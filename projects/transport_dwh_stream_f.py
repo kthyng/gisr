@@ -17,6 +17,7 @@ from datetime import datetime, timedelta
 import glob
 from mpl_toolkits.basemap import Basemap
 import op
+import matplotlib.ticker as ticker
 
 units = 'seconds since 1970-01-01'
 
@@ -103,22 +104,28 @@ def plot(name, U, V, lon0, lat0, extraname=None):
     grid = tracpy.inout.readgrid(loc, llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat, 
                                     urcrnrlat=urcrnrlat)
 
+    S = np.sqrt(op.resize(U,1)**2+op.resize(V,0)**2)
+    # from http://matplotlib.1069221.n5.nabble.com/question-about-contours-and-clim-td21111.html
+    locator = ticker.MaxNLocator(7) # if you want no more than 10 contours
+    locator.create_dummy_axis()
+    locator.set_bounds(0,7)#d.min(),d.max())
+    levs = locator()
+
     fig = plt.figure(figsize=(16.0375,   9.9125))
     tracpy.plotting.background(grid=grid)
-    S = np.sqrt(op.resize(U,1)**2+op.resize(V,0)**2)
-    plt.contourf(grid['xpsi'], grid['ypsi'], S/S.max,             
-            cmap='gray_r', levels=np.linspace(0,18000,10), extend='max')
-
-    # Inlaid colorbar
-    cax = fig.add_axes([0.42, 0.2, 0.27, 0.02])
-    cb = colorbar(cax=cax,orientation='horizontal')
-    cb.set_label('Normalized drifter transport')
-    plt.colorbar()
+    c = plt.contourf(grid['xpsi'], grid['ypsi'], (S/S.max())*100,             
+            cmap='gray_r', extend='max', levels=levs)
     plt.title('Deepwater Horizon Spill Transport')
 
     # Add initial drifter location (all drifters start at the same location)
     x0, y0 = grid['basemap'](lon0, lat0)
     plt.plot(x0, y0, 'go', markersize=10)
+
+    # Inlaid colorbar
+    cax = fig.add_axes([0.5, 0.2, 0.35, 0.02])
+    cb = colorbar(cax=cax,orientation='horizontal')
+    cb.set_label('Normalized drifter transport (%)')
+
     if extraname is None:
         plt.savefig('figures/' + name + '/transport', bbox_inches='tight')
     else:
