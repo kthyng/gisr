@@ -16,6 +16,7 @@ import init
 from datetime import datetime, timedelta
 import glob
 from mpl_toolkits.basemap import Basemap
+import op
 
 def run():
 
@@ -95,66 +96,6 @@ def run():
                 # if not os.path.exists('figures/' + name2 + '.png'):
                 #     tracpy.plotting.hist(lonp[ind,:], latp[ind,:], name2, grid=grid, \
                 #                         which='hexbin')
-
-    # ## Plot Lagrangian stream functions
-    # # Which files to read in
-    # Files = glob.glob('tracks/dwh_stream_f/*.nc')
-    # # Files = glob.glob('tracks/bara_stream_b/*.nc')
-    # Files.sort()
-
-    # for i, File in enumerate(Files):
-    #     d = netCDF.Dataset(File)
-    #     if i == 0: # initialize U and V transports from first file
-    #         U = d.variables['U'][:]
-    #         V = d.variables['V'][:]
-    #     else: # add in transports from subsequent simulations
-    #         U = U + d.variables['U'][:]
-    #         V = V + d.variables['V'][:]
-
-    # # Calculate lagrangian barotropic stream function
-    # psi_i = np.cumsum(V, axis=1)
-    # psi_j = np.cumsum(U, axis=0)
-    # psi = psi_j - psi_i
-
-    # # Smaller basemap parameters.
-    # llcrnrlon=-93.5; llcrnrlat=27.2; urcrnrlat=30.7
-    # loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
-    # grid = tracpy.inout.readgrid(loc, llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat, 
-    #                                 urcrnrlat=urcrnrlat)
-
-
-    # # Make plot
-    # plt.figure(figsize=(16.0375,   9.9125))
-    # tracpy.plotting.background(grid=grid)
-    # # contourf(grid['xr'], grid['yr'], psi, cmap='RdBu_r',
-    # #         levels=np.linspace(-600,600,10), 
-    # #         extend='both')
-    # contourf(grid['xr'], grid['yr'], psi, cmap='RdBu_r',
-    #         levels=np.linspace(-120000,120000,12), 
-    #         extend='both')
-    # colorbar()
-    # # Add initial drifter location (all drifters start at the same location)
-    # lon0 = d.variables['lonp'][0,0]
-    # lat0 = d.variables['latp'][0,0]
-    # x0, y0 = grid['basemap'](lon0, lat0)
-    # plot(x0, y0, 'go', markersize=10)
-    # plt.savefig('figures/dwh_stream_f/stream',bbox_inches='tight')
-
-    # # # Compare with tracks plot and histogram
-    # # d = netCDF.MFDataset('tracks/bara_stream_b/*.nc',aggdim='ntrac')
-    # # lonp = d.variables['lonp'][:]
-    # # latp = d.variables['latp'][:]
-    # # tracpy.plotting.tracks(lonp, latp, 'bara_stream_b/overall', grid=grid)
-    # # tracpy.plotting.hist(lonp, latp, 'bara_stream_b/overall', grid=grid, which='hexbin')
-    # # tracpy.plotting.hist(lonp, latp, 'bara_stream_b/overall-alllocations', grid=grid, which='hexbin', tind='all')
-    # # Compare with tracks plot and histogram
-    # d = netCDF.MFDataset('tracks/dwh_stream_f/*.nc',aggdim='ntrac')
-    # lonp = d.variables['lonp'][:]
-    # latp = d.variables['latp'][:]
-    # tracpy.plotting.hist(lonp, latp, 'dwh_stream_f/overall-alllocations', grid=grid, which='hexbin', tind='all')
-    # tracpy.plotting.tracks(lonp, latp, 'dwh_stream_f/overall', grid=grid)
-    # tracpy.plotting.hist(lonp, latp, 'dwh_stream_f/overall', grid=grid, which='hexbin')
-
 
 if __name__ == "__main__":
     run()
