@@ -64,11 +64,11 @@ def load(name,fmod=None):
             U = U + d.variables['U'][:]
             V = V + d.variables['V'][:]
             # T0 = T0 + T0temp
-        d.close()
 
-    # Add initial drifter location (all drifters start at the same location)
-    lon0 = d.variables['lonp'][0,0]
-    lat0 = d.variables['latp'][0,0]
+        # Add initial drifter location (all drifters start at the same location)
+        lon0 = d.variables['lonp'][0,0]
+        lat0 = d.variables['latp'][0,0]
+        d.close()
 
     # old streamline code
     # # Calculate lagrangian barotropic stream function
