@@ -136,8 +136,22 @@ for zonal, meridional, and vertical volume transports $U,V,W$ and directions $i,
 \end{align}
 where $U_{i,j,k,n}, V_{i,j,k,n}, W_{i,j,k,n}$ are the $(x,y,z)$ volume transports registered for drifter instance $n$ for grid cell located at indices $(i,j,k)$. 
 
-In this work, the vertical direction is assumed to be unimportant, so only the zonal and meridional directions are used. Everytime a drifter crosses a grid cell wall in the positive zonal or meridional direction, its initial volume transport is registered at that cell wall by adding it to the running total. Drifters moving past a wall in a negative zonal or meridional direction are subtracted from the transport total at that wall. Thus, an array that is the size of the cell walls of the numerical grid for the $u$ direction and one for the $v$ direction is generated of the volume transport as represented by the drifters that pass the cell walls. To present the information together, the square root of the sum of the squares of the two components is calculated. 
+In this work, the vertical direction is assumed to be unimportant (these are surface-only drifters), so only the zonal and meridional directions are used. Everytime a drifter crosses a grid cell wall in the positive zonal or meridional direction, its initial volume transport (which is a property of the drifter) is registered at that cell wall by adding it to the running total. Drifters moving past a wall in a negative zonal or meridional direction are subtracted from the transport total at that wall. Thus, an array that is the size of the cell walls of the numerical grid for the $u$ direction and one for the $v$ direction is generated of the volume transport as represented by the drifters that pass the cell walls.  
 
+\subsection{Results}
+
+In this simulation, surface-restricted drifters were released at a location $(-88.5159,28.8881)$ near the Deepwater Horizonal Oil Spill $(-88.3659,28.7381)$ (the actual site is just outside the model domain). 100 drifters were seeded at the same location every four hours (due to the frequency of model output) from April 20, 2010 through July 15, 2010, to represent a fixed amount of material regularly moving away from the initial site, and followed forward in time for 90 days (with 5 interpolation steps between each model output). Subgrid scale effects were represented using an added random turbulence to the grid cell fluxes used to calculate the drifter paths, with a horizontal diffusion of $A_h=20$ m$^2$/s. Drifters were initialized with a volume transport representing the initial flux out of the cells when they were released (divided by the number of drifters). This is used to track the transport of the drifters over all of the simulations together, to understand where the model predicts surface oil from the spill traveled. To present the information, the square root of the sum of the squares of the two components of volume flux on the grid is calculated. 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/dwh_stream_f/transport}
+    \caption{Transport of surface material from a site representing the Deepwater Horizon oil spill (in green), as calculated from Lagrangian drifters. The transport values have been normalized by the maximum transport and multiplied by 100 to find percentage transport values. Note that the colorbar has been set to a lower value than the true maximum in order to demonstrate more transport paths than would otherwise by visible.}
+    \label{fig:dwh_transport}
+\end{figure}
+
+Figure \ref{fig:dwh_transport} shows the transport away from the surface near the Deepwater Horizon site averaged over the drifter simulations from the entire spill period. A large part of the transport went immediately outside of the numerical domain. However, of the drifters that stayed within the numerical domain, transport was directed along the Louisiana coastline. In particular, a portion of drifter transport is indicated near Barataria Bay, an area in which oil is known to have been found.
+ 
+Future work here: make sure that ``enough'' drifters are being used such that the results do not change by adding more drifters. Also want to normalize using the total drifter volume transport rather than the maximum transport currently being used. Also want to calculate an appropriate horizontal diffusion to use in the subgrid parameterizations based on that found from drifters in the Gulf.
 
 % \section{Lagrangian Barotropic Stream Functions}
 
@@ -198,8 +212,6 @@ In this work, the vertical direction is assumed to be unimportant, so only the z
 % psi_j = np.cumsum(U, axis=0)
 % psi = psi_j - psi_i.
 % \end{verbatim}
-
-\subsection{Results}
 
 % Now for some results
 \section{Results for Different Conditions}
