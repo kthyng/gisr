@@ -64,7 +64,7 @@ def run():
 
                 # If the particle trajectories have not been run, run them
                 if not os.path.exists('tracks/' + name + '.nc'):
-                    lonp, latp, zp, t, grid, U, V = tracpy.run.run(loc, nstep, ndays, \
+                    lonp, latp, zp, t, grid, T0, U, V = tracpy.run.run(loc, nstep, ndays, \
                                                     ff, date, tseas, ah, av, \
                                                     lon0, lat0, z0, zpar, do3d, \
                                                     doturb, name, grid=grid, \
@@ -75,6 +75,7 @@ def run():
                     d = netCDF.Dataset('tracks/' + name + '.nc')
                     lonp = d.variables['lonp'][:]
                     latp = d.variables['latp'][:]
+                    T0 = d.variables['T0'][:]
                     U = d.variables['U'][:]
                     V = d.variables['V'][:]
 
