@@ -49,12 +49,12 @@ def load(name,fmod=None):
     # all files
     for i, File in enumerate(Files):
         d = netCDF.Dataset(File)
-        date = netCDF.num2date(d.variables['tp'][0],units)
-       # get lon0, lat0, and initial volumes from init file
-        _, _, _, _, _, _, _, _, \
-            lon0, lat0, _, _, _, _, \
-            _, _, _, T0temp, \
-            _, _ = init.dwh_stream_f(date, 100)
+       #  date = netCDF.num2date(d.variables['tp'][0],units)
+       # # get lon0, lat0, and initial volumes from init file
+       #  _, _, _, _, _, _, _, _, \
+       #      lon0, lat0, _, _, _, _, \
+       #      _, _, _, T0temp, \
+       #      _, _ = init.dwh_stream_f(date, 100)
 
         if i == 0: # initialize U and V transports from first file
             U = d.variables['U'][:]
@@ -66,9 +66,9 @@ def load(name,fmod=None):
             T0 = T0 + T0temp
         d.close()
 
-    # # Add initial drifter location (all drifters start at the same location)
-    # lon0 = d.variables['lonp'][0,0]
-    # lat0 = d.variables['latp'][0,0]
+    # Add initial drifter location (all drifters start at the same location)
+    lon0 = d.variables['lonp'][0,0]
+    lat0 = d.variables['latp'][0,0]
 
     # old streamline code
     # # Calculate lagrangian barotropic stream function
@@ -81,9 +81,9 @@ def load(name,fmod=None):
     # # psi_j2 = np.fliplr(np.cumsum(U[:,::-1], axis=1))
     # psi = psi_j2[:,:-1] - psi_i2[:-1,:]
 
-    return U, V, lon0, lat0, T0
+    return U, V, lon0, lat0
 
-def plot(name, U, V, lon0, lat0, T0, extraname=None):
+def plot(name, U, V, lon0, lat0, extraname=None):
     '''
     Make plot of zoomed-in area near DWH spill of transport of drifters over 
     time.
@@ -105,7 +105,8 @@ def plot(name, U, V, lon0, lat0, T0, extraname=None):
 
     fig = plt.figure(figsize=(16.0375,   9.9125))
     tracpy.plotting.background(grid=grid)
-    plt.contourf(grid['xpsi'], grid['ypsi'], np.sqrt(op.resize(U,1)**2+op.resize(V,0)**2)/T0, 
+    S = np.sqrt(op.resize(U,1)**2+op.resize(V,0)**2)
+    plt.contourf(grid['xpsi'], grid['ypsi'], S/S.max,             
             cmap='gray_r', levels=np.linspace(0,18000,10), extend='max')
 
     # Inlaid colorbar
@@ -150,8 +151,8 @@ def run():
     ''' Controls which project to run this for'''
 
     name = 'dwh_stream_f'
-    U, V, lon0, lat0, T0 = load(name)
-    plot(name, U, V, lon0, lat0, T0)
+    U, V, lon0, lat0 = load(name)
+    plot(name, U, V, lon0, lat0)
     # # Load in information
     # if fmod is None:
     #   U, V, lon0, lat0 = load(name)
