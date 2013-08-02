@@ -59,11 +59,11 @@ def load(name,fmod=None):
         if i == 0: # initialize U and V transports from first file
             U = d.variables['U'][:]
             V = d.variables['V'][:]
-            T0 = T0temp
+            # T0 = T0temp
         else: # add in transports from subsequent simulations
             U = U + d.variables['U'][:]
             V = V + d.variables['V'][:]
-            T0 = T0 + T0temp
+            # T0 = T0 + T0temp
         d.close()
 
     # Add initial drifter location (all drifters start at the same location)
