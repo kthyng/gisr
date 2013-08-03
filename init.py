@@ -288,6 +288,31 @@ def galv_b(date=None, grid=None):
     do3d = 0
     doturb = 0
 
+    # Flag for streamlines. All the extra steps right after this are for streamlines.
+    dostream = 1
+    # convert date to number
+    datenum = netCDF.date2num(date, units)
+    # Number of model outputs to use
+    tout = np.int((ndays*(24*3600))/tseas)
+    # Figure out what files will be used for this tracking - to get tinds for
+    # the following calculation
+    nc, tinds = inout.setupROMSfiles(loc, datenum, ff, tout)
+    # Get fluxes at first time step in order to find initial drifter volume transport
+    uf, vf, dzt, zrt, zwt  = inout.readfields(tinds[0],grid,nc,z0,zpar)
+    nc.close()
+    # Initial total volume transport as a scalar quantity to be conserved, I think
+    T0 = (abs(uf[ia, ja, 0]) + abs(vf[ia, ja, 0]))/N
+    # Initialize arrays of lon0, lat0 and U, V for full number of drifters
+    lon0 = np.ones(N,order='F')*lon0
+    lat0 = np.ones(N,order='F')*lat0
+    T0 = np.ones(N,order='F')*T0
+
+    # Initialize the arrays to save the transports on the grid in the loop.
+    # These arrays aggregate volume transport when a drifter enters or exits a grid cell
+    # These should start at zero since we don't know which way things will travel yet
+    U = np.ma.zeros(grid['xu'].shape,order='F')
+    V = np.ma.zeros(grid['xv'].shape,order='F')
+
     # simulation name, used for saving results into netcdf file
     if date is None:
         name = 'temp' #'5_5_D5_F'
@@ -295,7 +320,7 @@ def galv_b(date=None, grid=None):
         name = 'galv_b/' + date.isoformat()[0:13] 
 
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
-            z0, zpar, do3d, doturb, name, grid
+            z0, zpar, do3d, doturb, name, grid, dostream, T0, U, V
 
 def galv_fromb2f(date=None, grid=None):
     '''
@@ -396,6 +421,31 @@ def galv_f(date=None, grid=None):
     do3d = 0
     doturb = 0
 
+    # Flag for streamlines. All the extra steps right after this are for streamlines.
+    dostream = 1
+    # convert date to number
+    datenum = netCDF.date2num(date, units)
+    # Number of model outputs to use
+    tout = np.int((ndays*(24*3600))/tseas)
+    # Figure out what files will be used for this tracking - to get tinds for
+    # the following calculation
+    nc, tinds = inout.setupROMSfiles(loc, datenum, ff, tout)
+    # Get fluxes at first time step in order to find initial drifter volume transport
+    uf, vf, dzt, zrt, zwt  = inout.readfields(tinds[0],grid,nc,z0,zpar)
+    nc.close()
+    # Initial total volume transport as a scalar quantity to be conserved, I think
+    T0 = (abs(uf[ia, ja, 0]) + abs(vf[ia, ja, 0]))/N
+    # Initialize arrays of lon0, lat0 and U, V for full number of drifters
+    lon0 = np.ones(N,order='F')*lon0
+    lat0 = np.ones(N,order='F')*lat0
+    T0 = np.ones(N,order='F')*T0
+
+    # Initialize the arrays to save the transports on the grid in the loop.
+    # These arrays aggregate volume transport when a drifter enters or exits a grid cell
+    # These should start at zero since we don't know which way things will travel yet
+    U = np.ma.zeros(grid['xu'].shape,order='F')
+    V = np.ma.zeros(grid['xv'].shape,order='F')
+
     # simulation name, used for saving results into netcdf file
     if date is None:
         name = 'temp' #'5_5_D5_F'
@@ -403,7 +453,7 @@ def galv_f(date=None, grid=None):
         name = 'galv_f/' + date.isoformat()[0:13] 
 
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
-            z0, zpar, do3d, doturb, name, grid
+            z0, zpar, do3d, doturb, name, grid, dostream, T0, U, V
 
 def bara_b(ndatum=0, hour=0, grid=None):
     '''
