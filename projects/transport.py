@@ -184,4 +184,5 @@ def run(name=None, fmod=None, extraname=None, Title=None):
 #   run('bara_stream_b')
 
 if __name__ == "__main__":
-    run(name='dwh_stream_f', Title='Deepwater Horizon Spill Transport')
+    run(name='dwh_stream_f', Title='Deepwater Horizon Spill Transport',
+        fmod='*N100')
