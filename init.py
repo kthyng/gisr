@@ -1233,7 +1233,7 @@ def gom_dwh_f(date, N, grid=None):
     ff = 1 # This is a forward-moving simulation
 
     # Time between outputs
-    tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
+    tseas = 3*3600 # 3 hours between outputs, in seconds, time between model outputs 
     ah = 20.
     av = 0. # m^2/s
 

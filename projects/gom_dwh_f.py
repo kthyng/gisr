@@ -54,7 +54,7 @@ def run():
         for n in xrange(rundays):
 
             # Run for each output during the day too
-            for nh in range(0,24,4):
+            for nh in range(0,24,3):
 
                 # Date for this loop
                 date = startdate + timedelta(days=n) + timedelta(hours=nh)
