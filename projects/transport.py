@@ -41,6 +41,10 @@ def load(name,fmod=None):
     # Which files to read in.
     if fmod is None:
         Files = glob.glob('tracks/' + name + '/*.nc')
+    elif len(fmod)>1:
+        Files = []
+        for i in xrange(len(fmod)):
+            Files.append(glob.glob('tracks/' + fmod[i]))
     else:
         Files = glob.glob('tracks/' + name + '/' + fmod + '.nc')
 
