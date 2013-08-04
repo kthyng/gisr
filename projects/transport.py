@@ -60,11 +60,11 @@ def load(name,fmod=None):
         if i == 0: # initialize U and V transports from first file
             U = d.variables['U'][:]
             V = d.variables['V'][:]
-            # T0 = T0temp
+            T0 = d.variables['T0'][:]
         else: # add in transports from subsequent simulations
             U = U + d.variables['U'][:]
             V = V + d.variables['V'][:]
-            # T0 = T0 + T0temp
+            T0 = T0 + d.variables['T0'][:]
 
         # Add initial drifter location (all drifters start at the same location)
         lon0 = d.variables['lonp'][0,0]
@@ -82,9 +82,9 @@ def load(name,fmod=None):
     # # psi_j2 = np.fliplr(np.cumsum(U[:,::-1], axis=1))
     # psi = psi_j2[:,:-1] - psi_i2[:-1,:]
 
-    return U, V, lon0, lat0
+    return U, V, lon0, lat0, T0
 
-def plot(name, U, V, lon0, lat0, extraname=None):
+def plot(name, U, V, lon0, lat0, T0, extraname=None, Title=None):
     '''
     Make plot of zoomed-in area near DWH spill of transport of drifters over 
     time.
@@ -113,9 +113,10 @@ def plot(name, U, V, lon0, lat0, extraname=None):
 
     fig = plt.figure(figsize=(16.0375,   9.9125))
     tracpy.plotting.background(grid=grid)
-    c = plt.contourf(grid['xpsi'], grid['ypsi'], (S/S.max())*100,             
+    pdb.set_trace()
+    c = plt.contourf(grid['xpsi'], grid['ypsi'], S/T0,             
             cmap='gray_r', extend='max', levels=levs)
-    plt.title('Deepwater Horizon Spill Transport')
+    plt.title(Title)
 
     # Add initial drifter location (all drifters start at the same location)
     x0, y0 = grid['basemap'](lon0, lat0)
@@ -153,7 +154,7 @@ def plot(name, U, V, lon0, lat0, extraname=None):
     # # plt.savefig('figures/dwh_stream_f/stream',bbox_inches='tight')
 
 
-def run(name=None, fmod=None, extraname=None):
+def run(name=None, fmod=None, extraname=None, Title=None):
 # def run(name,fmod=None, extraname=None):
     ''' Controls which project to run this for'''
 
@@ -162,15 +163,19 @@ def run(name=None, fmod=None, extraname=None):
     # plot(name, U, V, lon0, lat0)
     # Load in information
     if fmod is None:
-      U, V, lon0, lat0 = load(name)
+      U, V, lon0, lat0, T0 = load(name)
     else:
-      U, V, lon0, lat0 = load(name,fmod=fmod)
+      U, V, lon0, lat0, T0 = load(name,fmod=fmod)
 
     # Plot information
-    if extraname is None:
-      plot(name, U, V, lon0, lat0)
+    if extraname is None and Title is None:
+      plot(name, U, V, lon0, lat0, T0)
+    elif extraname is None:
+      plot(name, U, V, lon0, lat0, T0, Title=Title)
+    elif Title is None:
+      plot(name, U, V, lon0, lat0, T0, extraname=extraname)
     else:
-      plot(name, U, V, lon0, lat0, extraname=extraname)
+      plot(name, U, V, lon0, lat0, T0, extraname=extraname, Title=Title)
 
 # def run_dwh_stream_f():
 #   run('dwh_stream_f')
@@ -179,4 +184,4 @@ def run(name=None, fmod=None, extraname=None):
 #   run('bara_stream_b')
 
 if __name__ == "__main__":
-    run(name='dwh_stream_f')
+    run(name='dwh_stream_f', Title='Deepwater Horizon Spill Transport')
