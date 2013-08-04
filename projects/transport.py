@@ -204,5 +204,5 @@ def run(name=None, fmod=None, Title=None, dmax=None, N=7, extraname=None,
 
 if __name__ == "__main__":
     run(name='dwh_stream_f', Title='Deepwater Horizon Spill Transport',
-        fmod='*N100', dmax=4., N=9, llcrnrlon=-93.5, llcrnrlat=27.2, urcrnrlat=30.7
+        fmod='*N100', dmax=4., N=9, llcrnrlon=-93.5, llcrnrlat=27.2, urcrnrlat=30.7,
         colormap='gray_r')
