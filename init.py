@@ -1205,3 +1205,95 @@ def bara_stream_b(date, runend, N, grid=None):
 
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
             z0, zpar, do3d, doturb, name, grid, dostream, T0, U, V
+
+def gom_dwh_f(date, N, grid=None):
+    '''
+    Initialization for seeding drifters near the Deepwater Horizon
+    accident site to be run forward. for lagrangian streamfunctions
+
+    Optional inputs for making tests easy to run:
+        date    Input date for name in datetime format
+                e.g., datetime(2009, 11, 20, 0).
+        N       Number of drifters to seed
+        grid    If input, will not redo this step. 
+                Default is to load in grid.
+    '''
+
+    # Location of TXLA model output
+    # loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
+    # loc = 'http://omgsrv1.meas.ncsu.edu:8080/thredds/dodsC/fmrc/sabgom_tracer_out2/SABGOM_Model_Run_Collection_Tracer_out2_best.ncd'
+    # loc = 'http://omgsrv1.meas.ncsu.edu:8080/thredds/dodsC/fmrc/sabgom_tracer_out1/SABGOM_Model_Run_Collection_Tracer_out1_best.ncd'
+    loc = 'http://omgsrv1.meas.ncsu.edu:8080/thredds/dodsC/fmrc/sabgom/SABGOM_Forecast_Model_Run_Collection_best.ncd'
+    # loc = 'http://omgsrv1.meas.ncsu.edu:8080/thredds/sabgom_catalog.html'
+    # loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/fmrc/roms/out/ROMS_Output_Feature_Collection_Aggregation_best.ncd'
+
+    # Initialize parameters
+    nsteps = 5 # 5 time interpolation steps
+    ndays = 60
+    ff = 1 # This is a forward-moving simulation
+
+    # Time between outputs
+    tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
+    ah = 20.
+    av = 0. # m^2/s
+
+    if grid is None:
+        # if loc is the aggregated thredds server, the grid info is
+        # included in the same file
+        grid = inout.readgrid(loc)
+    else:
+        grid = grid
+
+    # Initial lon/lat locations for drifters
+    # These are the actual blowout coords for DWH (shifted to be in domain)
+    lon0 = np.array([-88.36594444444444])
+    lat0 = np.array([28.73813888888889])
+    # Interpolate to get starting positions in grid space
+    xstart0, ystart0, _ = tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
+    # Initialize seed locations 
+    ia = np.ceil(xstart0).astype(int) #[253]#,525]
+    ja = np.ceil(ystart0).astype(int) #[57]#,40]
+    # Change to get positions at the center of the given cell
+    lon0, lat0, _ = tools.interpolate2d(ia - 0.5, ja - 0.5, grid, 'm_ij2ll')
+
+    # surface drifters
+    z0 = 's'  
+    zpar = 29 
+
+    # for 3d flag, do3d=0 makes the run 2d and do3d=1 makes the run 3d
+    do3d = 0
+    doturb = 1
+
+    # Flag for streamlines. All the extra steps right after this are for streamlines.
+    dostream = 1
+    # convert date to number
+    datenum = netCDF.date2num(date, units)
+    # Number of model outputs to use
+    tout = np.int((ndays*(24*3600))/tseas)
+    # Figure out what files will be used for this tracking - to get tinds for
+    # the following calculation
+    nc, tinds = inout.setupROMSfiles(loc, datenum, ff, tout)
+    # Get fluxes at first time step in order to find initial drifter volume transport
+    uf, vf, dzt, zrt, zwt  = inout.readfields(tinds[0],grid,nc,z0,zpar)
+    nc.close()
+    # Initial total volume transport as a scalar quantity to be conserved, I think
+    T0 = (abs(uf[ia, ja, 0]) + abs(vf[ia, ja, 0]))/N
+    # Initialize arrays of lon0, lat0 and U, V for full number of drifters
+    lon0 = np.ones(N,order='F')*lon0
+    lat0 = np.ones(N,order='F')*lat0
+    T0 = np.ones(N,order='F')*T0
+
+    # Initialize the arrays to save the transports on the grid in the loop.
+    # These arrays aggregate volume transport when a drifter enters or exits a grid cell
+    # These should start at zero since we don't know which way things will travel yet
+    U = np.ma.zeros(grid['xu'].shape,order='F')
+    V = np.ma.zeros(grid['xv'].shape,order='F')
+
+    # simulation name, used for saving results into netcdf file
+    if date is None:
+        name = 'temp' #'5_5_D5_F'
+    else:
+        name = 'gom_dwh_f/' + date.isoformat()[0:13] + 'N' + str(N)
+
+    return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
+            z0, zpar, do3d, doturb, name, grid, dostream, T0, U, V

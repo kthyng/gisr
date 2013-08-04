@@ -12,5 +12,6 @@ import dwh_stream_f
 import galv_f
 import galv_fromb2f
 import transport
+import gom_dwh_f
 
 __authors__ = ['Kristen Thyng <kthyng@tamu.edu>']
