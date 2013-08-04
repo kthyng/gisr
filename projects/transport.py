@@ -168,6 +168,8 @@ def run(name=None, fmod=None, Title=None, dmax=None, N=None, extraname=None,
 # def run(name,fmod=None, extraname=None):
     ''' Controls which project to run this for'''
 
+    pdb.set_trace()
+
     # name = 'dwh_stream_f'
     # U, V, lon0, lat0 = load(name)
     # plot(name, U, V, lon0, lat0)
