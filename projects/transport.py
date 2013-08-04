@@ -44,12 +44,12 @@ def load(name,fmod=None):
     elif len(fmod)>1:
         Files = []
         for i in xrange(len(fmod)):
-            Files.append(glob.glob('tracks/' + fmod[i]))
+            Files = Files + glob.glob('tracks/' + fmod[i])
     else:
         Files = glob.glob('tracks/' + name + '/' + fmod + '.nc')
 
     Files.sort()
-    pdb.set_trace()
+
     # Load in U and V volume transports of drifters and add together for
     # all files
     for i, File in enumerate(Files):
