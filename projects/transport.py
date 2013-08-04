@@ -60,11 +60,11 @@ def load(name,fmod=None):
         if i == 0: # initialize U and V transports from first file
             U = d.variables['U'][:]
             V = d.variables['V'][:]
-            T0 = d.variables['T0'][:]
+            T0 = np.sum(d.variables['T0'][:])
         else: # add in transports from subsequent simulations
             U = U + d.variables['U'][:]
             V = V + d.variables['V'][:]
-            T0 = T0 + d.variables['T0'][:]
+            T0 = T0 + np.sum(d.variables['T0'][:])
 
         # Add initial drifter location (all drifters start at the same location)
         lon0 = d.variables['lonp'][0,0]
@@ -105,16 +105,17 @@ def plot(name, U, V, lon0, lat0, T0, extraname=None, Title=None):
                                     urcrnrlat=urcrnrlat)
 
     S = np.sqrt(op.resize(U,1)**2+op.resize(V,0)**2)
+    Splot = S/T0
     # from http://matplotlib.1069221.n5.nabble.com/question-about-contours-and-clim-td21111.html
     locator = ticker.MaxNLocator(7) # if you want no more than 10 contours
     locator.create_dummy_axis()
-    locator.set_bounds(0,7)#d.min(),d.max())
+    locator.set_bounds(Splot.min(),Splot.max())#d.min(),d.max())
     levs = locator()
 
     fig = plt.figure(figsize=(16.0375,   9.9125))
     tracpy.plotting.background(grid=grid)
     pdb.set_trace()
-    c = plt.contourf(grid['xpsi'], grid['ypsi'], S/T0,             
+    c = plt.contourf(grid['xpsi'], grid['ypsi'], Splot,             
             cmap='gray_r', extend='max', levels=levs)
     plt.title(Title)
 
@@ -124,7 +125,7 @@ def plot(name, U, V, lon0, lat0, T0, extraname=None, Title=None):
 
     # Inlaid colorbar
     cax = fig.add_axes([0.5, 0.2, 0.35, 0.02])
-    cb = colorbar(cax=cax,orientation='horizontal')
+    cb = plt.colorbar(cax=cax,orientation='horizontal')
     cb.set_label('Normalized drifter transport (%)')
 
     if extraname is None:
