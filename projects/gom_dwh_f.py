@@ -42,10 +42,10 @@ def run():
     Ns = np.array([100])#, 1000, 10000])
     # Ns = np.array([10, 20, 50, 100, 1000, 10000])
 
-    rundays = 4.75
+    rundays = 4
 
     # Do one initialization here to save grid
-    grid = tracpy.init.readgrid(loc)
+    grid = tracpy.inout.readgrid(loc)
 
     # loop through numbers of drifters for test
     for N in Ns:
