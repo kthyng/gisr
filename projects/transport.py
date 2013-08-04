@@ -84,7 +84,7 @@ def load(name,fmod=None):
 
     return U, V, lon0, lat0, T0
 
-def plot(name, U, V, lon0, lat0, T0, dmax=None, extraname=None, Title=None):
+def plot(name, U, V, lon0, lat0, T0, dmax=None, extraname=None, Title=None, N=7):
     '''
     Make plot of zoomed-in area near DWH spill of transport of drifters over 
     time.
@@ -111,7 +111,7 @@ def plot(name, U, V, lon0, lat0, T0, dmax=None, extraname=None, Title=None):
     else:
         dmax = dmax
     # from http://matplotlib.1069221.n5.nabble.com/question-about-contours-and-clim-td21111.html
-    locator = ticker.MaxNLocator(7) # if you want no more than 10 contours
+    locator = ticker.MaxNLocator(N) # if you want no more than 10 contours
     locator.create_dummy_axis()
     locator.set_bounds(0,dmax)#d.min(),d.max())
     levs = locator()
@@ -158,7 +158,7 @@ def plot(name, U, V, lon0, lat0, T0, dmax=None, extraname=None, Title=None):
     # # plt.savefig('figures/dwh_stream_f/stream',bbox_inches='tight')
 
 
-def run(name=None, fmod=None, Title=None, dmax=None):
+def run(name=None, fmod=None, Title=None, dmax=None, N=None):
 # def run(name,fmod=None, extraname=None):
     ''' Controls which project to run this for'''
 
@@ -177,7 +177,7 @@ def run(name=None, fmod=None, Title=None, dmax=None):
     elif dmax is None:
       plot(name, U, V, lon0, lat0, T0, Title=Title)
     elif Title is None:
-      plot(name, U, V, lon0, lat0, T0, dmax=dmax)
+      plot(name, U, V, lon0, lat0, T0, dmax=dmax, N=None)
     else:
       plot(name, U, V, lon0, lat0, T0, dmax=dmax, Title=Title)
 
@@ -189,4 +189,4 @@ def run(name=None, fmod=None, Title=None, dmax=None):
 
 if __name__ == "__main__":
     run(name='dwh_stream_f', Title='Deepwater Horizon Spill Transport',
-        fmod='*N100', dmax=7.)
+        fmod='*N100', dmax=4., N=9)
