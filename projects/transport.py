@@ -88,7 +88,8 @@ def load(name,fmod=None):
 
     return U, V, lon0, lat0, T0
 
-def plot(name, U, V, lon0, lat0, T0, dmax=None, extraname=None, Title=None, N=7):
+def plot(name, U, V, lon0, lat0, T0, dmax=None, extraname=None, Title=None, N=7,
+         llcrnrlon=-98.5, llcrnrlat=22.5, urcrnrlat=31.0, urcrnrlon=-87.5):
     '''
     Make plot of zoomed-in area near DWH spill of transport of drifters over 
     time.
@@ -103,7 +104,7 @@ def plot(name, U, V, lon0, lat0, T0, dmax=None, extraname=None, Title=None, N=7)
     '''
 
     # Smaller basemap parameters.
-    llcrnrlon=-93.5; llcrnrlat=27.2; urcrnrlat=30.7
+    # llcrnrlon=-93.5; llcrnrlat=27.2; urcrnrlat=30.7
     loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
     grid = tracpy.inout.readgrid(loc, llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat, 
                                     urcrnrlat=urcrnrlat)
@@ -162,7 +163,8 @@ def plot(name, U, V, lon0, lat0, T0, dmax=None, extraname=None, Title=None, N=7)
     # # plt.savefig('figures/dwh_stream_f/stream',bbox_inches='tight')
 
 
-def run(name=None, fmod=None, Title=None, dmax=None, N=None):
+def run(name=None, fmod=None, Title=None, dmax=None, N=None, extraname=None,
+        llcrnrlon=None, llcrnrlat=None, urcrnrlat=None, urcrnrlon=None):
 # def run(name,fmod=None, extraname=None):
     ''' Controls which project to run this for'''
 
@@ -170,20 +172,24 @@ def run(name=None, fmod=None, Title=None, dmax=None, N=None):
     # U, V, lon0, lat0 = load(name)
     # plot(name, U, V, lon0, lat0)
     # Load in information
-    if fmod is None:
-      U, V, lon0, lat0, T0 = load(name)
-    else:
-      U, V, lon0, lat0, T0 = load(name,fmod=fmod)
+    U, V, lon0, lat0, T0 = load(name,fmod=fmod)
+    # if fmod is None:
+    #   U, V, lon0, lat0, T0 = load(name)
+    # else:
+    #   U, V, lon0, lat0, T0 = load(name,fmod=fmod)
 
     # Plot information
-    if dmax is None and Title is None:
-      plot(name, U, V, lon0, lat0, T0)
-    elif dmax is None:
-      plot(name, U, V, lon0, lat0, T0, Title=Title)
-    elif Title is None:
-      plot(name, U, V, lon0, lat0, T0, dmax=dmax, N=None)
-    else:
-      plot(name, U, V, lon0, lat0, T0, dmax=dmax, Title=Title)
+    plot(name, U, V, lon0, lat0, T0, dmax=dmax, Title=Title, extraname=None,
+         N=N, llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat, 
+         urcrnrlat=urcrnrlat, urcrnrlon=urcrnrlon)
+    # if dmax is None and Title is None:
+    #   plot(name, U, V, lon0, lat0, T0)
+    # elif dmax is None:
+    #   plot(name, U, V, lon0, lat0, T0, Title=Title)
+    # elif Title is None:
+    #   plot(name, U, V, lon0, lat0, T0, dmax=dmax, N=None)
+    # else:
+    #   plot(name, U, V, lon0, lat0, T0, dmax=dmax, Title=Title)
 
 # def run_dwh_stream_f():
 #   run('dwh_stream_f')
@@ -193,4 +199,4 @@ def run(name=None, fmod=None, Title=None, dmax=None, N=None):
 
 if __name__ == "__main__":
     run(name='dwh_stream_f', Title='Deepwater Horizon Spill Transport',
-        fmod='*N100', dmax=4., N=9)
+        fmod='*N100', dmax=4., N=9, llcrnrlon=-93.5, llcrnrlat=27.2, urcrnrlat=30.7)
