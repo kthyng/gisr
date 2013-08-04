@@ -49,7 +49,7 @@ def load(name,fmod=None):
         Files = glob.glob('tracks/' + name + '/' + fmod + '.nc')
 
     Files.sort()
-
+    pdb.set_trace()
     # Load in U and V volume transports of drifters and add together for
     # all files
     for i, File in enumerate(Files):
