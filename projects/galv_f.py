@@ -17,6 +17,9 @@ import glob
 
 def run():
 
+    # Location of TXLA model output
+    loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
+
     # Make sure necessary directories exist
     if not os.path.exists('tracks'):
         os.makedirs('tracks')
@@ -57,16 +60,20 @@ def run():
 
                 # If the particle trajectories have not been run, run them
                 if not os.path.exists('tracks/' + name + '.nc'):
-                    lonp, latp, zp, t, grid = tracpy.run.run(loc, nstep, ndays, \
+                    lonp, latp, zp, t, grid, T0, U, V = tracpy.run.run(loc, nstep, ndays, \
                                                     ff, date, tseas, ah, av, \
                                                     lon0, lat0, z0, zpar, do3d, \
-                                                    doturb, name)
+                                                    doturb, name, grid=grid, \
+                                                    dostream=dostream, T0=T0, \
+                                                    U=U, V=V)
 
                 else: # if the files already exist, just read them in for plotting
                     d = netCDF.Dataset('tracks/' + name + '.nc')
                     lonp = d.variables['lonp'][:]
                     latp = d.variables['latp'][:]
-
+                    T0 = d.variables['T0'][:]
+                    U = d.variables['U'][:]
+                    V = d.variables['V'][:]
 
                 # If the particle trajectories have not been plotted, plot them
                 if not os.path.exists('figures/' + name + 'tracks.png'):

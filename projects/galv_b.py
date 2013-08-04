@@ -77,7 +77,6 @@ def run():
                     U = d.variables['U'][:]
                     V = d.variables['V'][:]
 
-
                 # If the particle trajectories have not been plotted, plot them
                 if not os.path.exists('figures/' + name + 'tracks.png'):
                     tracpy.plotting.tracks(lonp, latp, name, grid=grid)
