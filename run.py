@@ -43,7 +43,8 @@ if __name__ == "__main__":
     arg_switches = {"sensitivity":False, "outer_f":False, "galv_b":False,
                     "bara_b":False, "dwh_f":False, "galv_f":False,
                     "galv_fromb2f":False, "dwh_stream_f":False, 
-                    "bara_stream_b":False, "transport_dwh_stream_f":False}
+                    "bara_stream_b":False, "transport_dwh_stream_f":False,
+                    "gom_dwh_f":False}
 
     # Check to see if any input arguments were on the command line
     if len(sys.argv) > 1:
