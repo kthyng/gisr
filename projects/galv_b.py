@@ -45,7 +45,7 @@ def run():
 
     grid = tracpy.inout.readgrid(loc)
 
-   # loop through start dates for drifters
+    # loop through start dates for drifters
     for startdate in startdates:
         for n in xrange(rundays):
             # Run for each output during the day too
