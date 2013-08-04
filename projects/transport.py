@@ -107,7 +107,7 @@ def plot(name, U, V, lon0, lat0, T0, dmax=None, extraname=None, Title=None, N=7,
     # llcrnrlon=-93.5; llcrnrlat=27.2; urcrnrlat=30.7
     loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
     grid = tracpy.inout.readgrid(loc, llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat, 
-                                    urcrnrlat=urcrnrlat)
+                                    urcrnrlat=urcrnrlat, urcrnrlon=urcrnrlon)
 
     S = np.sqrt(op.resize(U,1)**2+op.resize(V,0)**2)
     Splot = (S/T0)*100
