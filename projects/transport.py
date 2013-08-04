@@ -71,8 +71,8 @@ def load(name,fmod=None):
             T0 = T0 + np.sum(d.variables['T0'][:])
 
         # Add initial drifter location (all drifters start at the same location)
-        lon0 = d.variables['lonp'][0,0]
-        lat0 = d.variables['latp'][0,0]
+        lon0 = d.variables['lonp'][:,0]
+        lat0 = d.variables['latp'][:,0]
         d.close()
 
     # old streamline code
@@ -89,7 +89,7 @@ def load(name,fmod=None):
     return U, V, lon0, lat0, T0
 
 def plot(name, U, V, lon0, lat0, T0, dmax, extraname, Title, N,
-         llcrnrlon, llcrnrlat, urcrnrlat, urcrnrlon):
+         llcrnrlon, llcrnrlat, urcrnrlat, urcrnrlon, colormap):
     '''
     Make plot of zoomed-in area near DWH spill of transport of drifters over 
     time.
@@ -121,13 +121,15 @@ def plot(name, U, V, lon0, lat0, T0, dmax, extraname, Title, N,
     locator.set_bounds(0,dmax)#d.min(),d.max())
     levs = locator()
 
-    fig = plt.figure(figsize=(16.0375,   9.9125))
+    fig = plt.figure(figsize=(12,10))
     tracpy.plotting.background(grid=grid)
     c = plt.contourf(grid['xpsi'], grid['ypsi'], Splot,             
-            cmap='gray_r', extend='max', levels=levs)
+            cmap=colormap, extend='max', levels=levs)
     plt.title(Title)
 
     # Add initial drifter location (all drifters start at the same location)
+    lon0 = lon0.mean()
+    lat0 = lat0.mean()
     x0, y0 = grid['basemap'](lon0, lat0)
     plt.plot(x0, y0, 'go', markersize=10)
 
@@ -164,7 +166,8 @@ def plot(name, U, V, lon0, lat0, T0, dmax, extraname, Title, N,
 
 
 def run(name=None, fmod=None, Title=None, dmax=None, N=7, extraname=None,
-        llcrnrlon=-98.5, llcrnrlat=22.5, urcrnrlat=31.0, urcrnrlon=-87.5):
+        llcrnrlon=-98.5, llcrnrlat=22.5, urcrnrlat=31.0, urcrnrlon=-87.5,
+        colormap='Blues'):
 # def run(name,fmod=None, extraname=None):
     ''' Controls which project to run this for'''
 
@@ -183,7 +186,7 @@ def run(name=None, fmod=None, Title=None, dmax=None, N=7, extraname=None,
     # Plot information
     plot(name, U, V, lon0, lat0, T0, dmax=dmax, Title=Title, extraname=extraname,
          N=N, llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat, 
-         urcrnrlat=urcrnrlat, urcrnrlon=urcrnrlon)
+         urcrnrlat=urcrnrlat, urcrnrlon=urcrnrlon, colormap=colormap)
     # if dmax is None and Title is None:
     #   plot(name, U, V, lon0, lat0, T0)
     # elif dmax is None:
@@ -201,4 +204,5 @@ def run(name=None, fmod=None, Title=None, dmax=None, N=7, extraname=None,
 
 if __name__ == "__main__":
     run(name='dwh_stream_f', Title='Deepwater Horizon Spill Transport',
-        fmod='*N100', dmax=4., N=9, llcrnrlon=-93.5, llcrnrlat=27.2, urcrnrlat=30.7)
+        fmod='*N100', dmax=4., N=9, llcrnrlon=-93.5, llcrnrlat=27.2, urcrnrlat=30.7
+        colormap='gray_r')
