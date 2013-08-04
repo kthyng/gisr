@@ -153,24 +153,24 @@ def plot(name, U, V, lon0, lat0, extraname=None):
     # # plt.savefig('figures/dwh_stream_f/stream',bbox_inches='tight')
 
 
-def run():
+def run(name=None, fmod=None, extraname=None):
 # def run(name,fmod=None, extraname=None):
     ''' Controls which project to run this for'''
 
-    name = 'dwh_stream_f'
-    U, V, lon0, lat0 = load(name)
-    plot(name, U, V, lon0, lat0)
-    # # Load in information
-    # if fmod is None:
-    #   U, V, lon0, lat0 = load(name)
-    # else:
-    #   U, V, lon0, lat0 = load(name,fmod=fmod)
+    # name = 'dwh_stream_f'
+    # U, V, lon0, lat0 = load(name)
+    # plot(name, U, V, lon0, lat0)
+    # Load in information
+    if fmod is None:
+      U, V, lon0, lat0 = load(name)
+    else:
+      U, V, lon0, lat0 = load(name,fmod=fmod)
 
-    # # Plot information
-    # if extraname is None:
-    #   plot(name, U, V, lon0, lat0)
-    # else:
-    #   plot(name, U, V, lon0, lat0, extraname=extraname)
+    # Plot information
+    if extraname is None:
+      plot(name, U, V, lon0, lat0)
+    else:
+      plot(name, U, V, lon0, lat0, extraname=extraname)
 
 # def run_dwh_stream_f():
 #   run('dwh_stream_f')
@@ -179,4 +179,4 @@ def run():
 #   run('bara_stream_b')
 
 if __name__ == "__main__":
-    run()
+    run(name='dwh_stream_f')
