@@ -32,14 +32,13 @@ def run():
     # Interesting time periods where backward drifters cross the shelf:
     # 5-23-10 to 5-28-10 and 6-21-10 to 6-26-10
     # Need 1 min to get correct model output out
-    startdates = np.array([datetime(years[0], 5, 23, 0, 1),
-                            datetime(years[0], 6, 21, 0, 1)])
+    startdates = np.array([datetime(years[0], 5, 23, 0, 1)])#,
+                            # datetime(years[0], 6, 21, 0, 1)])
 
     # how many days to start drifters from, starting from startdate
     rundays = 6
 
-    # Do one initialization here to save grid
-    _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, grid = init.galv_f()
+    grid = tracpy.inout.readgrid(loc)
 
     # loop through start dates for drifters
     for startdate in startdates:
@@ -51,8 +50,10 @@ def run():
                 date = startdate + timedelta(days=n) + timedelta(hours=nh)
 
                 # Read in simulation initialization
-                loc, nstep, ndays, ff, date, tseas, ah, av, lon0, lat0, z0, \
-                        zpar, do3d, doturb, name, grid = init.galv_f(date, grid=grid)
+                loc, nstep, ndays, ff, date, tseas, ah, av, \
+                        lon0, lat0, z0, zpar, do3d, doturb, \
+                        name, grid, dostream, T0, \
+                        U, V = init.galv_f(date, grid=grid)
 
                 # If the particle trajectories have not been run, run them
                 if not os.path.exists('tracks/' + name + '.nc'):

@@ -110,9 +110,6 @@ Drifter tracks and final locations are shown in Figure \ref{diffusionsize} for c
 % Gyre test: To evaluate tracker performance. Maybe also use older tracker as comparison.
 \subsection{Gyre Test}
 
-% Can I recreate the oil behavior seen in Bianchi paper data?
-\subsection{Barataria Bay}
-
 \subsection{Sensitivity to Waves, Tides, and Model Output Frequency}
 
 
@@ -212,6 +209,37 @@ Future work here: make sure that ``enough'' drifters are being used such that th
 % psi_j = np.cumsum(U, axis=0)
 % psi = psi_j - psi_i.
 % \end{verbatim}
+
+\section{Galveston Bay}
+
+Drifters were seeded at points near Galveston Bay for multiple purposes. First, simulations were run in the TX-LA shelf model moving both backward and forward from the same locations and times in order to investigate connectivity in time and space while ensuring that the drifters moved near Galveston Bay at some point. Second, simulations moving forward from the same locations and times near the Bay were also accomplished using a SUNTANS model of the Bay, in order to compare results between the models.
+
+\subsection{Shelf Simulations}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/matt/shelftracks.png}
+    \caption{}
+    \label{fig:shelftracks}
+\end{figure}
+
+\subsection{Bay Comparisons}
+
+\begin{figure}
+    \centering
+    \subfigure[Shelf Model]{\includegraphics[width=.49\textwidth]{figures/matt/kristentracks.png}}
+    \subfigure[Bay Model]{\includegraphics[width=.49\textwidth]{figures/matt/matttracks.png}}
+    \caption{}
+    \label{fig:baytracks}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \subfigure[Shelf Model]{\includegraphics[width=.49\textwidth]{figures/matt/kristenhexbin.png}}
+    \subfigure[Bay Model]{\includegraphics[width=.49\textwidth]{figures/matt/matthexbin.png}}
+    \caption{}
+    \label{fig:bayhexbin}
+\end{figure}
 
 % Now for some results
 \section{Results for Different Conditions}
