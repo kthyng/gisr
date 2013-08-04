@@ -88,8 +88,8 @@ def load(name,fmod=None):
 
     return U, V, lon0, lat0, T0
 
-def plot(name, U, V, lon0, lat0, T0, dmax=None, extraname=None, Title=None, N=7,
-         llcrnrlon=-98.5, llcrnrlat=22.5, urcrnrlat=31.0, urcrnrlon=-87.5):
+def plot(name, U, V, lon0, lat0, T0, dmax, extraname, Title, N,
+         llcrnrlon, llcrnrlat, urcrnrlat, urcrnrlon):
     '''
     Make plot of zoomed-in area near DWH spill of transport of drifters over 
     time.
@@ -163,12 +163,12 @@ def plot(name, U, V, lon0, lat0, T0, dmax=None, extraname=None, Title=None, N=7,
     # # plt.savefig('figures/dwh_stream_f/stream',bbox_inches='tight')
 
 
-def run(name=None, fmod=None, Title=None, dmax=None, N=None, extraname=None,
-        llcrnrlon=None, llcrnrlat=None, urcrnrlat=None, urcrnrlon=None):
+def run(name=None, fmod=None, Title=None, dmax=None, N=7, extraname=None,
+        llcrnrlon=-98.5, llcrnrlat=22.5, urcrnrlat=31.0, urcrnrlon=-87.5):
 # def run(name,fmod=None, extraname=None):
     ''' Controls which project to run this for'''
 
-    pdb.set_trace()
+    # pdb.set_trace()
 
     # name = 'dwh_stream_f'
     # U, V, lon0, lat0 = load(name)
@@ -181,7 +181,7 @@ def run(name=None, fmod=None, Title=None, dmax=None, N=None, extraname=None,
     #   U, V, lon0, lat0, T0 = load(name,fmod=fmod)
 
     # Plot information
-    plot(name, U, V, lon0, lat0, T0, dmax=dmax, Title=Title, extraname=None,
+    plot(name, U, V, lon0, lat0, T0, dmax=dmax, Title=Title, extraname=extraname,
          N=N, llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat, 
          urcrnrlat=urcrnrlat, urcrnrlon=urcrnrlon)
     # if dmax is None and Title is None:
