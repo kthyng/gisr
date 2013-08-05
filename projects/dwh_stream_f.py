@@ -83,7 +83,7 @@ def run():
     
     # Do transport plot
     tracpy.plotting.transport(name='dwh_stream_f', Title='Deepwater Horizon Spill Transport',
-        fmod='*N100', dmax=2.0, N=8, llcrnrlon=-93.5, llcrnrlat=27.2, urcrnrlat=30.7,
+        fmod='*N100', dmax=2.3, N=8, llcrnrlon=-93.5, llcrnrlat=27.2, urcrnrlat=30.7,
         colormap='gray_r')
 
 if __name__ == "__main__":
