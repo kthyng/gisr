@@ -82,46 +82,28 @@ def run():
                     tracpy.plotting.hist(lonp, latp, name, grid=grid, \
                                         which='hexbin')
 
-        #     # Save up tracks to plot together by month
-        #     if n == 0:
-        #         lonpsavem = lonp
-        #         latpsavem = latp
-        #     else:
-        #         lonpsavem = np.vstack((lonpsavem,lonp))
-        #         latpsavem = np.vstack((latpsavem,latp))
-        #     if n == 0: # initially, give month a value
-        #         month = date.month
-        #     # want to know when we are at a new month or the end of the year
-        #     elif (date.month != month) or \
-        #             (date.month == 12 and date.day == 31): 
-        #         # First plot previous month
-        #         # take off day and month and add on previous month instead
-        #         name = name[:-5] + str(month).zfill(2)
-        #         tracpy.plotting.tracks(lonpsavem, latpsavem, name, grid=grid)
-        #         tracpy.plotting.hist(lonpsavem, latpsavem, name, grid=grid, \
-        #                             which='hexbin', bins=(40,40))
-        #         # Reset month to next month value
-        #         month = date.month
-        #         # Save month arrays for year plot
-        #         if month == 1:
-        #             lonpsavey = lonp
-        #             latpsavey = latp
-        #         else:
-        #             lonpsavey = np.vstack((lonpsavey,lonpsavem))
-        #             latpsavey = np.vstack((latpsavey,latpsavem))
-        #         # Reset save arrays for month plots
-        #         lonpsavem = lonp
-        #         latpsavem = latp
+                # If the particle trajectories have not been run, run them
+                if not os.path.exists('tracks/' + name + '.nc'):
+                    lonp, latp, zp, t, grid, T0, U, V = tracpy.run.run(loc, nstep, ndays, \
+                                                    ff, date, tseas, ah, av, \
+                                                    lon0, lat0, z0, zpar, do3d, \
+                                                    doturb, name, grid=grid, \
+                                                    dostream=dostream, T0=T0, \
+                                                    U=U, V=V)
 
-        # # Plot year summaries
-        # name = str(year)
-        # tracpy.plotting.tracks(lonpsavey, latpsavey, name, grid=grid)
-        # tracpy.plotting.hist(lonpsavey, latpsavey, name, grid=grid, \
-        #                     which='hexbin', bins=(40,40))
-
-        # ## Weatherband plotting
-        # # Read in all tracks
-        # files = np.sort(glob.glob('tracks/galv_b/*.nc')) # sorted list of file names
+                elif not os.path.exists('figures/' + name + 'tracks.png') or \
+                     not os.path.exists('figures/' + name + 'histhexbin.png'):
+                    d = netCDF.Dataset('tracks/' + name + '.nc')
+                    lonp = d.variables['lonp'][:]
+                    latp = d.variables['latp'][:]
+                    T0 = d.variables['T0'][:]
+                    U = d.variables['U'][:]
+                    V = d.variables['V'][:]
+                    tracpy.plotting.tracks(lonp, latp, name, grid=grid)
+                    tracpy.plotting.hist(lonp, latp, name, grid=grid, which='hexbin')
+    
+    # Do transport plot
+    tracpy.plotting.transport(name='galv_f', Title='Transport to Galveston', dmax=1.5)
 
 # This is so the script can be run using reference 
 # projects/[projectname].py
