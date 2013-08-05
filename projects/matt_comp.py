@@ -8,7 +8,6 @@ import tracpy
 import init
 import netCDF4 as netCDF
 from matplotlib.mlab import *
-import projects
 from matplotlib.tri import Triangulation
 
 def run():
@@ -142,9 +141,9 @@ def run():
     plot(lonf[:,0],latf[:,0],'go',alpha=.4)
     savefig('figures/matt/shelf_forwardonlytracks.png',bbox_inches='tight')
 
-    # Overall shelf transport
-    projects.transport.run(name='galv_b', Title='Transport to Galveston', dmax=1.5)
-    projects.transport.run(name='galv_f', Title='Transport from Galveston', dmax=1.5)
+    # # Overall shelf transport
+    # projects.transport.run(name='galv_b', Title='Transport to Galveston', dmax=1.5)
+    # projects.transport.run(name='galv_f', Title='Transport from Galveston', dmax=1.5)
 
 
     ## Galveston histograms ##
