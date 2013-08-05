@@ -42,7 +42,7 @@ def run():
 
     # how many days to start drifters from, starting from startdate
     rundays = 6
-    
+
     grid = tracpy.inout.readgrid(loc)
 
     # loop through start dates for drifters
@@ -55,6 +55,7 @@ def run():
                 date = startdate + timedelta(days=n) + timedelta(hours=nh)
 
                 # Read in simulation initialization
+                pdb.set_trace()
                 loc, nstep, ndays, ff, date, tseas, ah, av, \
                         lon0, lat0, z0, zpar, do3d, doturb, \
                         name, grid, dostream, T0, \
