@@ -56,7 +56,8 @@ def run():
                 date = startdate + timedelta(days=n) + timedelta(hours=nh)
 
                 # Read in simulation initialization
-                print sys.path
+                print dir(init)
+                print init.__file__
                 loc, nstep, ndays, ff, date, tseas, ah, av, \
                         lon0, lat0, z0, zpar, do3d, doturb, \
                         name, grid, dostream, T0, \
