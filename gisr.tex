@@ -113,7 +113,7 @@ Drifter tracks and final locations are shown in Figure \ref{diffusionsize} for c
 \subsection{Sensitivity to Waves, Tides, and Model Output Frequency}
 
 
-\section{Drifter Transport}
+\section{Drifter Transport} \label{sec:transport}
 
 \subsection{Methodology}
 
@@ -218,28 +218,54 @@ Shelf model output is available every four hours and this output was subdivided 
 
 \subsection{Shelf Simulations}
 
+Drifters were seeded near Galveston Bay and tracked both backward (for 90 days) and forward (for 60 days) from the same locations and time. These tracks were then combined together, with the backward tracks flipped in time, to create long drifter tracks that move near Galveston Bay. Figure \ref{fig:shelftracks} shows these tracks from start to finish, chronologically.
+
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{figures/matt/shelftracks.png}
-    \caption{}
+    \caption{Drifter tracks that move near Galveston Bay and beyond.}
     \label{fig:shelftracks}
 \end{figure}
 
+\begin{figure}
+    \centering
+    \subfigure[Tracks]{\includegraphics[width=.49\textwidth]{figures/matt/shelf_backonly.png}}
+    \subfigure[Transport]{\includegraphics[width=.49\textwidth]{figures/galv_b/transport}}
+    \caption{Drifter tracks that move to near Galveston Bay and beyond.}
+    \label{fig:galv_b}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \subfigure[Tracks]{\includegraphics[width=.49\textwidth]{figures/matt/shelf_forwardonly.png}}
+    \subfigure[Transport]{\includegraphics[width=.49\textwidth]{figures/galv_f/transport}}
+    \caption{Drifter tracks that move from near Galveston Bay and beyond.}
+    \label{fig:galv_f}
+\end{figure}
+
+Unfortunately, there are so many tracks that it is hard to tell what is going on, other than that there is a lot going on. Alternatively, separate views of the tracks may be informative. The 90-day backward tracks from near Galveston Bay are shown as tracks and for transport in Figure \ref{fig:galv_b} (see Section \ref{sec:transport} for details on transport). The forward simulations, Figure \ref{fig:galv_f}, are not as dynamic as the backward simulations, but are further studied near the Bay in the next section.
+
+Figures \ref{fig:shelftracks} and \ref{fig:galv_b} show that a wide variety of area can have an effect on Galveston Bay, and this will certainly change with wind conditions.
+
 \subsection{Bay Comparisons}
+
+Tracks moving forward in time from outside Galveston Bay are shown in Figure \ref{fig:baytracks} for the shelf and the Bay models. Drifters in the more highly-resolved SUNTANS Bay model have regular pulsing with the tides, which leads to regular, realistic tracks. The shelf model does not model tides and cannot resolve the complicate channels in the Bay nearly as well, so while drifters are able to make it into the Bay in the shelf model and travel around, more realistic paths are seen in the Bay model.
 
 \begin{figure}
     \centering
     \subfigure[Shelf Model]{\includegraphics[width=.49\textwidth]{figures/matt/kristentracks.png}}
     \subfigure[Bay Model]{\includegraphics[width=.49\textwidth]{figures/matt/matttracks.png}}
-    \caption{}
+    \caption{Drifter tracks moving forward from outside Galveston Bay for two separate models. Gray lines indicate separate drifter tracks and red circles indicate ending locations after 60 days.}
     \label{fig:baytracks}
 \end{figure}
+
+This is also shown in Figure \ref{fig:bayhexbin} in histograms of the drifter final locations that moved forward in time from outside Galveston Bay. The overall behavior is generally the same between the two models, but clearly much more nuanced events occur in the Bay model, leading to more drifters ending up in the Bay and along the western barrier island.
 
 \begin{figure}
     \centering
     \subfigure[Shelf Model]{\includegraphics[width=.49\textwidth]{figures/matt/kristenhexbin.png}}
     \subfigure[Bay Model]{\includegraphics[width=.49\textwidth]{figures/matt/matthexbin.png}}
-    \caption{}
+    \caption{Histograms of the final locations of drifters moving forward in time from outside Galveston Bay. Green circles indicate the drifter starting locations and the numerical grid is overlaid for both models.}
     \label{fig:bayhexbin}
 \end{figure}
 
