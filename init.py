@@ -58,8 +58,7 @@ import pdb
 import glob
 from datetime import datetime, timedelta
 from matplotlib.mlab import *
-import inout
-import tools
+import tracpy
 
 units = 'seconds since 1970-01-01'
 
@@ -125,7 +124,7 @@ def sensitivity(loc=None, nsteps=None, ff=None, ah=None, grid=None, nlon=None, n
     # lonr = grid.variables['lon_rho'][:]
     # latr = grid.variables['lat_rho'][:]
     if grid is None:
-        grid = inout.readgrid(loc)
+        grid = tracpy.inout.readgrid(loc)
     else:
         grid = grid
 
@@ -141,7 +140,7 @@ def sensitivity(loc=None, nsteps=None, ff=None, ah=None, grid=None, nlon=None, n
     lon0,lat0 = np.meshgrid(np.linspace(-98.5,-87.5,nlon),np.linspace(22.5,31,nlat)) # whole domain, 10 km
 
     # Eliminate points that are outside domain or in masked areas
-    lon0,lat0 = tools.check_points(lon0,lat0,grid)
+    lon0,lat0 = tracpy.tools.check_points(lon0,lat0,grid)
 
     ## Choose method for vertical placement of drifters
     z0 = 's'  #'salt' #'s' #'z' #'salt' #'s' 
@@ -199,7 +198,7 @@ def outer_f(date=None, grid=None):
     if grid is None:
         # if loc is the aggregated thredds server, the grid info is
         # included in the same file
-        grid = inout.readgrid(loc)
+        grid = tracpy.inout.readgrid(loc)
     else:
         grid = grid
 
@@ -217,12 +216,12 @@ def outer_f(date=None, grid=None):
     j0 = np.hstack((j0a,j0b,j0d))
 
     # Convert to lon/lat
-    lon0, lat0, _ = tools.interpolate2d(i0, j0, grid,'m_ij2ll',
+    lon0, lat0, _ = tracpy.tools.interpolate2d(i0, j0, grid,'m_ij2ll',
                                         mode='constant', cval=np.nan)
 
     # pdb.set_trace()
     # Eliminate points that are outside domain or in masked areas
-    lon0,lat0 = tools.check_points(lon0,lat0,grid)
+    lon0,lat0 = tracpy.tools.check_points(lon0,lat0,grid)
     # surface drifters
     z0 = 's'  
     zpar = 29 
@@ -269,7 +268,7 @@ def galv_b(date=None, grid=None):
     if grid is None:
         # if loc is the aggregated thredds server, the grid info is
         # included in the same file
-        grid = inout.readgrid(loc)
+        grid = tracpy.inout.readgrid(loc)
     else:
         grid = grid
 
@@ -467,15 +466,15 @@ def galv_b(date=None, grid=None):
         29.46469459,  29.46449752,  29.4640883 ,  29.4996813 ,  29.49898067])
 
     # # Eliminate points that are outside domain or in masked areas
-    # lon0,lat0 = tools.check_points(lon0,lat0,grid)
+    # lon0,lat0 = tracpy.tools.check_points(lon0,lat0,grid)
 
     # Interpolate to get starting positions in grid space
-    xstart0, ystart0, _ = tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
+    xstart0, ystart0, _ = tracpy.tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
     # Initialize seed locations 
     ia = np.ceil(xstart0).astype(int) #[253]#,525]
     ja = np.ceil(ystart0).astype(int) #[57]#,40]
     # Change to get positions at the center of the given cell
-    lon0, lat0, _ = tools.interpolate2d(ia - 0.5, ja - 0.5, grid, 'm_ij2ll')
+    lon0, lat0, _ = tracpy.tools.interpolate2d(ia - 0.5, ja - 0.5, grid, 'm_ij2ll')
     N = 1 #lon0.size since there is only one drifter per box in this setup
 
     # surface drifters
@@ -494,9 +493,9 @@ def galv_b(date=None, grid=None):
     tout = np.int((ndays*(24*3600))/tseas)
     # Figure out what files will be used for this tracking - to get tinds for
     # the following calculation
-    nc, tinds = inout.setupROMSfiles(loc, datenum, ff, tout)
+    nc, tinds = tracpy.inout.setupROMSfiles(loc, datenum, ff, tout)
     # Get fluxes at first time step in order to find initial drifter volume transport
-    uf, vf, dzt, zrt, zwt  = inout.readfields(tinds[0],grid,nc,z0,zpar)
+    uf, vf, dzt, zrt, zwt  = tracpy.inout.readfields(tinds[0],grid,nc,z0,zpar)
     nc.close()
     # Initial total volume transport as a scalar quantity to be conserved, I think
     T0 = (abs(uf[ia, ja, 0]) + abs(vf[ia, ja, 0]))/N
@@ -546,7 +545,7 @@ def galv_fromb2f(date=None, grid=None):
     if grid is None:
         # if loc is the aggregated thredds server, the grid info is
         # included in the same file
-        grid = inout.readgrid(loc)
+        grid = tracpy.inout.readgrid(loc)
     else:
         grid = grid
 
@@ -597,7 +596,7 @@ def galv_f(date=None, grid=None):
     if grid is None:
         # if loc is the aggregated thredds server, the grid info is
         # included in the same file
-        grid = inout.readgrid(loc)
+        grid = tracpy.inout.readgrid(loc)
     else:
         grid = grid
 
@@ -795,15 +794,15 @@ def galv_f(date=None, grid=None):
         29.46469459,  29.46449752,  29.4640883 ,  29.4996813 ,  29.49898067])
 
     # # Eliminate points that are outside domain or in masked areas
-    # lon0,lat0 = tools.check_points(lon0,lat0,grid)
+    # lon0,lat0 = tracpy.tools.check_points(lon0,lat0,grid)
 
     # Interpolate to get starting positions in grid space
-    xstart0, ystart0, _ = tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
+    xstart0, ystart0, _ = tracpy.tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
     # Initialize seed locations 
     ia = np.ceil(xstart0).astype(int) #[253]#,525]
     ja = np.ceil(ystart0).astype(int) #[57]#,40]
     # Change to get positions at the center of the given cell
-    lon0, lat0, _ = tools.interpolate2d(ia - 0.5, ja - 0.5, grid, 'm_ij2ll')
+    lon0, lat0, _ = tracpy.tools.interpolate2d(ia - 0.5, ja - 0.5, grid, 'm_ij2ll')
     N = 1 #lon0.size since there is only one drifter per box in this setup
 
     # surface drifters
@@ -822,9 +821,9 @@ def galv_f(date=None, grid=None):
     tout = np.int((ndays*(24*3600))/tseas)
     # Figure out what files will be used for this tracking - to get tinds for
     # the following calculation
-    nc, tinds = inout.setupROMSfiles(loc, datenum, ff, tout)
+    nc, tinds = tracpy.inout.setupROMSfiles(loc, datenum, ff, tout)
     # Get fluxes at first time step in order to find initial drifter volume transport
-    uf, vf, dzt, zrt, zwt  = inout.readfields(tinds[0],grid,nc,z0,zpar)
+    uf, vf, dzt, zrt, zwt  = tracpy.inout.readfields(tinds[0],grid,nc,z0,zpar)
     nc.close()
     # Initial total volume transport as a scalar quantity to be conserved, I think
     T0 = (abs(uf[ia, ja, 0]) + abs(vf[ia, ja, 0]))/N
@@ -892,7 +891,7 @@ def bara_b(ndatum=0, hour=0, grid=None):
     if grid is None:
         # if loc is the aggregated thredds server, the grid info is
         # included in the same file
-        grid = inout.readgrid(loc)
+        grid = tracpy.inout.readgrid(loc)
     else:
         grid = grid
 
@@ -908,10 +907,10 @@ def bara_b(ndatum=0, hour=0, grid=None):
     # Choose N value for hour
     Nh = np.floor(N[H==hour])
 
-    lon0, lat0 = tools.seed(lon, lat, dlon=dlon, dlat=dlat, N=Nh)
+    lon0, lat0 = tracpy.tools.seed(lon, lat, dlon=dlon, dlat=dlat, N=Nh)
 
     # Eliminate points that are outside domain or in masked areas
-    lon0,lat0 = tools.check_points(lon0,lat0,grid)
+    lon0,lat0 = tracpy.tools.check_points(lon0,lat0,grid)
 
     # surface drifters
     z0 = 's'  
@@ -959,7 +958,7 @@ def dwh_f(date=None, grid=None):
     if grid is None:
         # if loc is the aggregated thredds server, the grid info is
         # included in the same file
-        grid = inout.readgrid(loc)
+        grid = tracpy.inout.readgrid(loc)
     else:
         grid = grid
 
@@ -968,7 +967,7 @@ def dwh_f(date=None, grid=None):
                             np.linspace(28.1,28.9,15))
 
     # Eliminate points that are outside domain or in masked areas
-    lon0,lat0 = tools.check_points(lon0,lat0,grid)
+    lon0,lat0 = tracpy.tools.check_points(lon0,lat0,grid)
 
     # surface drifters
     z0 = 's'  
@@ -1016,7 +1015,7 @@ def dwh_stream_f(date, N, grid=None):
     if grid is None:
         # if loc is the aggregated thredds server, the grid info is
         # included in the same file
-        grid = inout.readgrid(loc)
+        grid = tracpy.inout.readgrid(loc)
     else:
         grid = grid
 
@@ -1029,12 +1028,12 @@ def dwh_stream_f(date, N, grid=None):
     # lon0 = np.array([-88.50377451891225])
     # lat0 = np.array([28.888202179642793])
     # Interpolate to get starting positions in grid space
-    xstart0, ystart0, _ = tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
+    xstart0, ystart0, _ = tracpy.tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
     # Initialize seed locations 
     ia = np.ceil(xstart0).astype(int) #[253]#,525]
     ja = np.ceil(ystart0).astype(int) #[57]#,40]
     # Change to get positions at the center of the given cell
-    lon0, lat0, _ = tools.interpolate2d(ia - 0.5, ja - 0.5, grid, 'm_ij2ll')
+    lon0, lat0, _ = tracpy.tools.interpolate2d(ia - 0.5, ja - 0.5, grid, 'm_ij2ll')
 
     # surface drifters
     z0 = 's'  
@@ -1052,9 +1051,9 @@ def dwh_stream_f(date, N, grid=None):
     tout = np.int((ndays*(24*3600))/tseas)
     # Figure out what files will be used for this tracking - to get tinds for
     # the following calculation
-    nc, tinds = inout.setupROMSfiles(loc, datenum, ff, tout)
+    nc, tinds = tracpy.inout.setupROMSfiles(loc, datenum, ff, tout)
     # Get fluxes at first time step in order to find initial drifter volume transport
-    uf, vf, dzt, zrt, zwt  = inout.readfields(tinds[0],grid,nc,z0,zpar)
+    uf, vf, dzt, zrt, zwt  = tracpy.inout.readfields(tinds[0],grid,nc,z0,zpar)
     nc.close()
     # Save initial volume transport of each drifter. Initial volume is equal to
     # the velocity of the initial drifter locations times the flux and divided
@@ -1146,7 +1145,7 @@ def bara_stream_b(date, runend, N, grid=None):
     if grid is None:
         # if loc is the aggregated thredds server, the grid info is
         # included in the same file
-        grid = inout.readgrid(loc)
+        grid = tracpy.inout.readgrid(loc)
     else:
         grid = grid
 
@@ -1159,12 +1158,12 @@ def bara_stream_b(date, runend, N, grid=None):
     # lon0 = np.array([-88.50377451891225])
     # lat0 = np.array([28.888202179642793])
     # Interpolate to get starting positions in grid space
-    xstart0, ystart0, _ = tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
+    xstart0, ystart0, _ = tracpy.tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
     # Initialize seed locations 
     ia = np.ceil(xstart0).astype(int) #[253]#,525]
     ja = np.ceil(ystart0).astype(int) #[57]#,40]
     # Change to get positions at the center of the given cell
-    lon0, lat0, _ = tools.interpolate2d(ia - 0.5, ja - 0.5, grid, 'm_ij2ll')
+    lon0, lat0, _ = tracpy.tools.interpolate2d(ia - 0.5, ja - 0.5, grid, 'm_ij2ll')
 
     # surface drifters
     z0 = 's'  
@@ -1182,9 +1181,9 @@ def bara_stream_b(date, runend, N, grid=None):
     tout = np.int((ndays*(24*3600))/tseas)
     # Figure out what files will be used for this tracking - to get tinds for
     # the following calculation
-    nc, tinds = inout.setupROMSfiles(loc, datenum, ff, tout)
+    nc, tinds = tracpy.inout.setupROMSfiles(loc, datenum, ff, tout)
     # Get fluxes at first time step in order to find initial drifter volume transport
-    uf, vf, dzt, zrt, zwt  = inout.readfields(tinds[0],grid,nc,z0,zpar)
+    uf, vf, dzt, zrt, zwt  = tracpy.inout.readfields(tinds[0],grid,nc,z0,zpar)
     # Initial total volume transport as a scalar quantity to be conserved, I think
     T0 = (abs(uf[ia, ja, 0]) + abs(vf[ia, ja, 0]))/N
     # Initialize arrays of lon0, lat0 and U, V for full number of drifters
@@ -1240,7 +1239,7 @@ def gom_dwh_f(date, N, grid=None):
     if grid is None:
         # if loc is the aggregated thredds server, the grid info is
         # included in the same file
-        grid = inout.readgrid(loc)
+        grid = tracpy.inout.readgrid(loc)
     else:
         grid = grid
 
@@ -1249,12 +1248,12 @@ def gom_dwh_f(date, N, grid=None):
     lon0 = np.array([-88.36594444444444])
     lat0 = np.array([28.73813888888889])
     # Interpolate to get starting positions in grid space
-    xstart0, ystart0, _ = tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
+    xstart0, ystart0, _ = tracpy.tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
     # Initialize seed locations 
     ia = np.ceil(xstart0).astype(int) #[253]#,525]
     ja = np.ceil(ystart0).astype(int) #[57]#,40]
     # Change to get positions at the center of the given cell
-    lon0, lat0, _ = tools.interpolate2d(ia - 0.5, ja - 0.5, grid, 'm_ij2ll')
+    lon0, lat0, _ = tracpy.tools.interpolate2d(ia - 0.5, ja - 0.5, grid, 'm_ij2ll')
 
     # surface drifters
     z0 = 's'  
@@ -1272,9 +1271,9 @@ def gom_dwh_f(date, N, grid=None):
     tout = np.int((ndays*(24*3600))/tseas)
     # Figure out what files will be used for this tracking - to get tinds for
     # the following calculation
-    nc, tinds = inout.setupROMSfiles(loc, datenum, ff, tout)
+    nc, tinds = tracpy.inout.setupROMSfiles(loc, datenum, ff, tout)
     # Get fluxes at first time step in order to find initial drifter volume transport
-    uf, vf, dzt, zrt, zwt  = inout.readfields(tinds[0],grid,nc,z0,zpar)
+    uf, vf, dzt, zrt, zwt  = tracpy.inout.readfields(tinds[0],grid,nc,z0,zpar)
     nc.close()
     # Initial total volume transport as a scalar quantity to be conserved, I think
     T0 = (abs(uf[ia, ja, 0]) + abs(vf[ia, ja, 0]))/N
