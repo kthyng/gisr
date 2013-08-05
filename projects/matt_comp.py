@@ -8,6 +8,7 @@ import tracpy
 import init
 import netCDF4 as netCDF
 from matplotlib.mlab import *
+from matplotlib.pyplot import *
 from matplotlib.tri import Triangulation
 
 def run():
