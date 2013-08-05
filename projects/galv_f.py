@@ -103,7 +103,7 @@ def run():
                     tracpy.plotting.hist(lonp, latp, name, grid=grid, which='hexbin')
     
     # Do transport plot
-    tracpy.plotting.transport(name='galv_f', Title='Transport to Galveston', dmax=1.5)
+    tracpy.plotting.transport(name='galv_f', Title='Transport from Galveston', dmax=1.5)
 
 # This is so the script can be run using reference 
 # projects/[projectname].py
