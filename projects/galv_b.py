@@ -14,6 +14,7 @@ import tracpy
 import init
 from datetime import datetime, timedelta
 import glob
+import sys
 
 def run():
 
@@ -55,7 +56,7 @@ def run():
                 date = startdate + timedelta(days=n) + timedelta(hours=nh)
 
                 # Read in simulation initialization
-                pdb.set_trace()
+                print sys.path
                 loc, nstep, ndays, ff, date, tseas, ah, av, \
                         lon0, lat0, z0, zpar, do3d, doturb, \
                         name, grid, dostream, T0, \
