@@ -97,6 +97,11 @@ def run():
                 # if not os.path.exists('figures/' + name2 + '.png'):
                 #     tracpy.plotting.hist(lonp[ind,:], latp[ind,:], name2, grid=grid, \
                 #                         which='hexbin')
+    
+    # Do transport plot
+    tracpy.plotting.transport(name='dwh_stream_f', Title='Deepwater Horizon Spill Transport',
+        fmod='*N100', dmax=4., N=9, llcrnrlon=-93.5, llcrnrlat=27.2, urcrnrlat=30.7,
+        colormap='gray_r')
 
 if __name__ == "__main__":
     run()
