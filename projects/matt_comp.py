@@ -161,7 +161,7 @@ def run():
     # last axis was for colorbar so grab inital one
     f.axes[0].plot(xmstart,ymstart,'go',alpha=.3) 
     # add grid
-    points = loadtxt('points.dat')
+    points = np.loadtxt('points.dat')
     lonp,latp = p(points[:,0], points[:,1], inverse=True)
     triang = Triangulation(lonp,latp)
     f.axes[0].triplot(triang)
