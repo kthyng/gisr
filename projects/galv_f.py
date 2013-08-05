@@ -67,30 +67,6 @@ def run():
                                                     dostream=dostream, T0=T0, \
                                                     U=U, V=V)
 
-                else: # if the files already exist, just read them in for plotting
-                    d = netCDF.Dataset('tracks/' + name + '.nc')
-                    lonp = d.variables['lonp'][:]
-                    latp = d.variables['latp'][:]
-                    T0 = d.variables['T0'][:]
-                    U = d.variables['U'][:]
-                    V = d.variables['V'][:]
-
-                # If the particle trajectories have not been plotted, plot them
-                if not os.path.exists('figures/' + name + 'tracks.png'):
-                    tracpy.plotting.tracks(lonp, latp, name, grid=grid)
-                if not os.path.exists('figures/' + name + 'histhexbin.png'):
-                    tracpy.plotting.hist(lonp, latp, name, grid=grid, \
-                                        which='hexbin')
-
-                # If the particle trajectories have not been run, run them
-                if not os.path.exists('tracks/' + name + '.nc'):
-                    lonp, latp, zp, t, grid, T0, U, V = tracpy.run.run(loc, nstep, ndays, \
-                                                    ff, date, tseas, ah, av, \
-                                                    lon0, lat0, z0, zpar, do3d, \
-                                                    doturb, name, grid=grid, \
-                                                    dostream=dostream, T0=T0, \
-                                                    U=U, V=V)
-
                 elif not os.path.exists('figures/' + name + 'tracks.png') or \
                      not os.path.exists('figures/' + name + 'histhexbin.png'):
                     d = netCDF.Dataset('tracks/' + name + '.nc')
