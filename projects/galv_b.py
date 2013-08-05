@@ -42,7 +42,7 @@ def run():
 
     # how many days to start drifters from, starting from startdate
     rundays = 6
-
+    
     grid = tracpy.inout.readgrid(loc)
 
     # loop through start dates for drifters

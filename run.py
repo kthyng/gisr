@@ -24,7 +24,6 @@ from datetime import datetime, timedelta
 import time
 import tracpy
 import init
-import projects
 import subprocess
 
 # Units for time conversion with netCDF.num2date and .date2num
@@ -44,7 +43,7 @@ if __name__ == "__main__":
                     "bara_b":False, "dwh_f":False, "galv_f":False,
                     "galv_fromb2f":False, "dwh_stream_f":False, 
                     "bara_stream_b":False, "transport_dwh_stream_f":False,
-                    "gom_dwh_f":False}
+                    "gom_dwh_f":False, "matt_comp":False}
 
     # Check to see if any input arguments were on the command line
     if len(sys.argv) > 1:
@@ -103,9 +102,9 @@ if __name__ == "__main__":
             log_name.append('%s-%s' % (date,key))
 
             # # Set up command
-            # cmd_list.append('python2.7 projects/%s.py' % key)
+            cmd_list.append('python2.7 projects/%s.py' % key)
             # Set up command
-            cmd_list.append('python2.7 %s.py' % key)
+            # cmd_list.append('python2.7 %s.py' % key)
                             
             # if this is a linux machine, keep track of which 
             # core we are using
