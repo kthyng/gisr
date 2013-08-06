@@ -144,12 +144,12 @@ def run():
 
     ## Galveston histograms ##
     # Smaller basemap parameters.
-    llcrnrlon=-95.6; llcrnrlat=28.3; urcrnrlon=-93.8; urcrnrlat=29.8;
+    llcrnrlon=-95.6; llcrnrlat=28.4; urcrnrlon=-93.8; urcrnrlat=29.8;
     loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
     smallgrid = tracpy.inout.readgrid(loc, llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat, 
                                     urcrnrlat=urcrnrlat, urcrnrlon=urcrnrlon)
 
-        # Matt histogram
+    # Matt histogram
     tracpy.plotting.hist(lonm, latm, 'matt/matt', grid=smallgrid, which='hexbin', bins=(160,160))
     xmstart, ymstart = smallgrid['basemap'](lonmstart,latmstart)
     f = gcf()
@@ -173,7 +173,7 @@ def run():
     c_lcc[:,1] = yp
     np.savetxt('projects/suntans/cells.dat', c_lcc)
     grd = Grid('projects/suntans')
-    grd.plotmesh(ax=ax, edgecolors=('lightgrey',), facecolors=('None',))
+    grd.plotmesh(ax=ax, edgecolors=('lightgrey',), facecolors=('None',), zorder=0)
     # plt.show()
     # triang = Triangulation(xp,yp)
     # f.axes[0].triplot(triang)
