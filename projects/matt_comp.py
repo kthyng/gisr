@@ -177,7 +177,7 @@ def run():
     # plt.show()
     # triang = Triangulation(xp,yp)
     # f.axes[0].triplot(triang)
-    savefig('figures/matt/matthexbin.png',bbox_inches='tight')
+    savefig('figures/matt/matthisthexbin.png',bbox_inches='tight')
 
     # Matt tracks
     tracpy.plotting.tracks(lonm, latm, 'matt/matt', grid=smallgrid)
@@ -259,7 +259,7 @@ def run():
     f.axes[0].plot(xr,yr,xr.T,yr.T,color='lightgrey',zorder=0)
     # last axis was for colorbar so grab inital one
     f.axes[0].plot(xf[0:384,0],yf[0:384,0],'go',alpha=.3) # just plot them once
-    savefig('figures/matt/kristenhexbin.png',bbox_inches='tight')
+    savefig('figures/matt/kristenhisthexbin.png',bbox_inches='tight')
 
     # Shelf tracks
     tracpy.plotting.tracks(lonf, latf, 'matt/kristen', grid=smallgrid)
