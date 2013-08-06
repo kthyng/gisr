@@ -1,6 +1,5 @@
 '''
-Script to run the forward Galveston drifter simulation. Start the 
-drifters near Galveston and run them forward.
+Script to run drifters forward from every shelf model grid cell.
 '''
 
 import matplotlib as mpl
@@ -23,19 +22,20 @@ def run():
     # Make sure necessary directories exist
     if not os.path.exists('tracks'):
         os.makedirs('tracks')
-    if not os.path.exists('tracks/galv_f'):
-        os.makedirs('tracks/galv_f')
+    if not os.path.exists('tracks/allgrid_f'):
+        os.makedirs('tracks/allgrid_f')
     if not os.path.exists('figures'):
         os.makedirs('figures')
-    if not os.path.exists('figures/galv_f'):
-        os.makedirs('figures/galv_f')
+    if not os.path.exists('figures/allgrid_f'):
+        os.makedirs('figures/allgrid_f')
 
     # Parameters to be rotated through
     years = np.array([2010])
     # Interesting time periods where backward drifters cross the shelf:
     # 5-23-10 to 5-28-10 and 6-21-10 to 6-26-10
     # Need 1 min to get correct model output out
-    startdates = np.array([datetime(years[0], 5, 23, 0, 1)])#,
+    # This will end up with results finishing from 5-23 through 5-28-10
+    startdates = np.array([datetime(years[0], 2, 22, 0, 1)])#,
                             # datetime(years[0], 6, 21, 0, 1)])
 
     # how many days to start drifters from, starting from startdate
@@ -56,8 +56,8 @@ def run():
                 loc, nstep, ndays, ff, date, tseas, ah, av, \
                         lon0, lat0, z0, zpar, do3d, doturb, \
                         name, grid, dostream, T0, \
-                        U, V = init.galv_f(date, grid=grid)
-
+                        U, V = init.allgrid_f(date, grid=grid)
+         
                 # If the particle trajectories have not been run, run them
                 if not os.path.exists('tracks/' + name + '.nc'):
                     lonp, latp, zp, t, grid, T0, U, V = tracpy.run.run(loc, nstep, ndays, \
@@ -79,7 +79,7 @@ def run():
                     tracpy.plotting.hist(lonp, latp, name, grid=grid, which='hexbin')
     
     # Do transport plot
-    tracpy.plotting.transport(name='galv_f', Title='Transport from Galveston', dmax=1.5)
+    tracpy.plotting.transport(name='allgrid_f', Title='Transport', dmax=1.5)
 
 # This is so the script can be run using reference 
 # projects/[projectname].py
