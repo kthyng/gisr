@@ -155,11 +155,12 @@ def run():
                                     urcrnrlat=urcrnrlat, urcrnrlon=urcrnrlon)
 
     # Matt histogram
-    tracpy.plotting.hist(lonm, latm, 'matt/matt', grid=smallgrid, which='hexbin', bins=(160,160))
-    xmstart, ymstart = smallgrid['basemap'](lonmstart,latmstart)
-    f = gcf()
-    # last axis was for colorbar so grab inital one
-    f.axes[0].plot(xmstart,ymstart,'go',alpha=.3) 
+tracpy.plotting.hist(lonm, latm, 'matt/matt', grid=smallgrid, which='hexbin', bins=(160,160))
+xmstart, ymstart = smallgrid['basemap'](lonmstart,latmstart)
+f = gcf()
+ax = f.axes[0]
+# last axis was for colorbar so grab inital one
+ax.plot(xmstart,ymstart,'go',alpha=.3) 
     # add grid
     from sunpy import Grid # suntans code
     p_utm = np.loadtxt('projects/suntans/points_utm.dat')
@@ -177,7 +178,7 @@ def run():
     c_lcc[:,1] = yp
     np.savetxt('projects/suntans/cells.dat', c_lcc)
     grd = Grid('projects/suntans')
-    grd.plotmesh(edgecolors=('lightgrey',), facecolors=('None',))
+    grd.plotmesh(ax=ax, edgecolors=('lightgrey',), facecolors=('None',))
     # plt.show()
     # triang = Triangulation(xp,yp)
     # f.axes[0].triplot(triang)

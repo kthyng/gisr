@@ -190,7 +190,10 @@ class Grid(object):
         Plots the outline of the grid mesh
         """
         fig = plt.gcf()
-        ax = fig.gca()
+        if 'ax' in kwargs.keys():
+            ax = kwargs['ax']
+        else:
+            ax = fig.gca()
     
         xlim=self.xlims
         ylim=self.ylims
