@@ -60,11 +60,16 @@ def run():
         date = tp[-1]
 
         # get final positions, which are start positions for this run
-        lon0 = d.variables['lonp'][:,-1]
-        lat0 = d.variables['latp'][:,-1]
         # don't check points because they are already within the domain from
         # running backward
-        # lon0,lat0 = tracpy.tools.check_points(lon0,lat0,grid)
+        lonp = d.variables['lonp'][:]
+        latp = d.variables['latp'][:]
+        # These stopped in the backward run at different times potentially
+        # and should therefore be run forward starting at different times
+        lon0, lat0 = tracpy.tools.find_final(lonp, latp, ind=-1) # find final
+
+        # TO DO THIS, I NEED TO BE ABLE TO TELL THE TRACPY RUN FILE
+        # DIFFERENT DATES OR FLAGS FOR EACH DRIFTER -- different start dates
 
         # Read in simulation initialization
         loc, nstep, ndays, ff, tseas, ah, av, z0, \
