@@ -57,7 +57,7 @@ def run():
         tp = d.variables['tp'][:]
 
         # find last time step, which is start date
-        date = tp[-1]
+        date = netCDF.num2date(tp[-1], units)
 
         # get final positions, which are start positions for this run
         lon0 = d.variables['lonp'][:,-1]
