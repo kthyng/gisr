@@ -18,6 +18,9 @@ units = 'seconds since 1970-01-01'
 
 def run():
 
+    # Location of TXLA model output
+    loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
+
     # Make sure necessary directories exist
     if not os.path.exists('tracks'):
         os.makedirs('tracks')
@@ -28,21 +31,21 @@ def run():
     if not os.path.exists('figures/galv_fromb2f'):
         os.makedirs('figures/galv_fromb2f')
 
-    # Parameters to be rotated through
-    years = np.array([2010])
-    # oil spill from April 20 - July 15, 2010
-    # startdate = datetime(years[0], 4, 20, 0, 1)
-    # Interesting time periods where backward drifters cross the shelf:
-    # 5-23-10 to 5-28-10 and 6-21-10 to 6-26-10
-    # Need 1 min to get correct model output out
-    startdates = np.array([datetime(years[0], 5, 23, 0, 1)])#,
-                            # datetime(years[0], 6, 21, 0, 1)])
+    # # Parameters to be rotated through
+    # years = np.array([2010])
+    # # oil spill from April 20 - July 15, 2010
+    # # startdate = datetime(years[0], 4, 20, 0, 1)
+    # # Interesting time periods where backward drifters cross the shelf:
+    # # 5-23-10 to 5-28-10 and 6-21-10 to 6-26-10
+    # # Need 1 min to get correct model output out
+    # startdates = np.array([datetime(years[0], 5, 23, 0, 1)])#,
+    #                         # datetime(years[0], 6, 21, 0, 1)])
 
-    # how many days to start drifters from, starting from startdate
-    rundays = 6
+    # # how many days to start drifters from, starting from startdate
+    # rundays = 6
 
     # Do one initialization here to save grid
-    _, _, _, _, _, _, _, _, _, _, _, _, grid = init.galv_fromb2f()
+    grid = tracpy.inout.readgrid(loc)
 
     # loop through start dates for drifters
     # pdb.set_trace()
@@ -52,10 +55,9 @@ def run():
 
         d = netCDF.Dataset(File)
         tp = d.variables['tp'][:]
-        backward_startdate = netCDF.num2date(tp[0],units)
 
-        # calculate last time step (since wasn't saved correctly), which is start date
-        date = backward_startdate-timedelta(minutes=48)*(len(tp)-1)
+        # find last time step, which is start date
+        date = tp[-1]
 
         # get final positions, which are start positions for this run
         lon0 = d.variables['lonp'][:,-1]
