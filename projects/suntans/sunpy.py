@@ -192,6 +192,7 @@ class Grid(object):
         fig = plt.gcf()
         if 'ax' in kwargs.keys():
             ax = kwargs['ax']
+            kwargs.pop('ax')
         else:
             ax = fig.gca()
     

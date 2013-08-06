@@ -142,11 +142,6 @@ def run():
     plot(lonf[:,0],latf[:,0],'go',alpha=.4)
     savefig('figures/matt/shelf_forwardonlytracks.png',bbox_inches='tight')
 
-    # # Overall shelf transport
-    # projects.transport.run(name='galv_b', Title='Transport to Galveston', dmax=1.5)
-    # projects.transport.run(name='galv_f', Title='Transport from Galveston', dmax=1.5)
-
-
     ## Galveston histograms ##
     # Smaller basemap parameters.
     llcrnrlon=-95.6; llcrnrlat=28.3; urcrnrlon=-93.8; urcrnrlat=29.8;
@@ -154,13 +149,13 @@ def run():
     smallgrid = tracpy.inout.readgrid(loc, llcrnrlon=llcrnrlon, llcrnrlat=llcrnrlat, 
                                     urcrnrlat=urcrnrlat, urcrnrlon=urcrnrlon)
 
-    # Matt histogram
-tracpy.plotting.hist(lonm, latm, 'matt/matt', grid=smallgrid, which='hexbin', bins=(160,160))
-xmstart, ymstart = smallgrid['basemap'](lonmstart,latmstart)
-f = gcf()
-ax = f.axes[0]
-# last axis was for colorbar so grab inital one
-ax.plot(xmstart,ymstart,'go',alpha=.3) 
+        # Matt histogram
+    tracpy.plotting.hist(lonm, latm, 'matt/matt', grid=smallgrid, which='hexbin', bins=(160,160))
+    xmstart, ymstart = smallgrid['basemap'](lonmstart,latmstart)
+    f = gcf()
+    ax = f.axes[0]
+    # last axis was for colorbar so grab inital one
+    ax.plot(xmstart,ymstart,'go',alpha=.3) 
     # add grid
     from sunpy import Grid # suntans code
     p_utm = np.loadtxt('projects/suntans/points_utm.dat')
