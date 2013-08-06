@@ -176,7 +176,7 @@ def run():
     c_lcc[:,0] = xp
     c_lcc[:,1] = yp
     np.savetxt('projects/suntans/cells.dat', c_lcc)
-    grd = Grid('projects/suntans/')
+    grd = Grid('projects/suntans')
     grd.plotmesh(edgecolors=('lightgrey',), facecolors=('None',))
     # plt.show()
     # triang = Triangulation(xp,yp)
