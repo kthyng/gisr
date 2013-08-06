@@ -162,20 +162,20 @@ def run():
     f.axes[0].plot(xmstart,ymstart,'go',alpha=.3) 
     # add grid
     from sunpy import Grid # suntans code
-    p_utm = np.loadtxt('points_utm.dat')
+    p_utm = np.loadtxt('projects/suntans/points_utm.dat')
     lonp, latp = p(p_utm[:,0], p_utm[:,1], inverse=True)
     xp, yp = smallgrid['basemap'](lonp, latp)
     p_lcc = np.zeros(p_utm.shape)
     p_lcc[:,0] = xp
     p_lcc[:,1] = yp
-    np.savetxt('points.dat', p_lcc)
-    c_utm = np.loadtxt('cells_utm.dat')
+    np.savetxt('projects/suntans/points.dat', p_lcc)
+    c_utm = np.loadtxt('projects/suntans/cells_utm.dat')
     c_lcc = c_utm.copy()
     lonp, latp = p(c_utm[:,0], c_utm[:,1], inverse=True)
     xp, yp = smallgrid['basemap'](lonp, latp)
     c_lcc[:,0] = xp
     c_lcc[:,1] = yp
-    np.savetxt('cells.dat', c_lcc)
+    np.savetxt('projects/suntans/cells.dat', c_lcc)
     grd = Grid('./')
     grd.plotmesh(edgecolors=('lightgrey',), facecolors=('None',))
     # plt.show()
