@@ -1316,7 +1316,7 @@ def allgrid_f(date=None, grid=None):
 
     # Initialize parameters
     nsteps = 5 # 5 time interpolation steps
-    ndays = 90
+    ndays = .5#90
     ff = 1 # This is a forward-moving simulation
 
     # Time between outputs
@@ -1386,4 +1386,4 @@ def allgrid_f(date=None, grid=None):
         name = 'allgrid_f/' + date.isoformat()[0:13] 
 
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
-            z0, zpar, do3d, doturb, name, grid, dostream, T0, U, V
+            z0, zpar, do3d, doturb, name, grid, dostream, T0.data, U, V
