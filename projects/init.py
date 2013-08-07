@@ -1316,7 +1316,7 @@ def allgrid_f(date=None, grid=None):
 
     # Initialize parameters
     nsteps = 5 # 5 time interpolation steps
-    ndays = .5#90
+    ndays = 90
     ff = 1 # This is a forward-moving simulation
 
     # Time between outputs
