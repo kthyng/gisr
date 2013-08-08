@@ -15,5 +15,6 @@ import transport
 import gom_dwh_f
 import matt_comp
 import allgrid_f
+import galvcon_b
 
 __authors__ = ['Kristen Thyng <kthyng@tamu.edu>']
