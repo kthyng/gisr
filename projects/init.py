@@ -1333,8 +1333,9 @@ def allgrid_f(date=None, grid=None):
 
     # Initial lon/lat locations for drifters
     # Use the center of all grid cells
-    lon0 = grid['lonr'][1:-1,1:-1]
-    lat0 = grid['latr'][1:-1,1:-1]
+    dx = 3; dy = 3;
+    lon0 = grid['lonr'][1:-1:dx,1:-1:dy]
+    lat0 = grid['latr'][1:-1:dx,1:-1:dy]
 
     # Eliminate points that are outside domain or in masked areas
     lon0, lat0 = tracpy.tools.check_points(lon0, lat0, grid)
@@ -1387,3 +1388,87 @@ def allgrid_f(date=None, grid=None):
 
     return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
             z0, zpar, do3d, doturb, name, grid, dostream, T0.data, U, V
+
+
+def galvcon_b(N, date=None, grid=None):
+    '''
+    Initialization for seeding drifters near Galveston Bay to be run
+    backward over a long period of time to look at Bay connectivity.
+
+    Optional inputs for making tests easy to run:
+        date    Input date for name in datetime format
+                e.g., datetime(2009, 11, 20, 0). If date not input,
+                name will be 'temp' 
+        grid    If input, will not redo this step. 
+                Default is to load in grid.
+    '''
+
+    # Location of TXLA model output
+    loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
+
+    # Initialize parameters
+    nsteps = 5 # 5 time interpolation steps
+    ndays = 90
+    ff = -1 # This is a backward-moving simulation
+
+    # Time between outputs
+    tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
+    ah = 20.
+    av = 0. # m^2/s
+
+    if grid is None:
+        # if loc is the aggregated thredds server, the grid info is
+        # included in the same file
+        grid = tracpy.inout.readgrid(loc)
+    else:
+        grid = grid
+
+    # Initial lon/lat locations for drifters
+    # Choosing a point source an each of the two openings to the Bay.
+    # Rho indices ia=[257,279] and ja=[152,160], so already at center of cells
+    ia0 = (257,279); ja0 = (152,160);
+    ia = np.concatenate((np.ones(N/2,np.dtype(int))*ia0[0], np.ones(N/2,np.dtype(int))*ia0[1]))
+    ja = np.concatenate((np.ones(N/2,np.dtype(int))*ja0[0], np.ones(N/2,np.dtype(int))*ja0[1]))
+    lon0 = grid['lonr'][ia,ja]
+    lat0 = grid['latr'][ia,ja]
+
+    # Start at centers in grid space too
+    xstart0, ystart0 = ia - 0.5, ja - 0.5
+
+    # surface drifters
+    z0 = 's'  
+    zpar = 29 
+
+    # for 3d flag, do3d=0 makes the run 2d and do3d=1 makes the run 3d
+    do3d = 0
+    doturb = 1
+
+    # Flag for streamlines. All the extra steps right after this are for streamlines.
+    dostream = 1
+    # convert date to number
+    datenum = netCDF.date2num(date, units)
+    # Number of model outputs to use
+    tout = np.int((ndays*(24*3600))/tseas)
+    # Figure out what files will be used for this tracking - to get tinds for
+    # the following calculation
+    nc, tinds = tracpy.inout.setupROMSfiles(loc, datenum, ff, tout)
+    # Get fluxes at first time step in order to find initial drifter volume transport
+    uf, vf, dzt, zrt, zwt  = tracpy.inout.readfields(tinds[0],grid,nc,z0,zpar)
+    nc.close()
+    # Initial total volume transport as a scalar quantity to be conserved, I think
+    T0 = ((abs(uf[ia, ja, 0]) + abs(vf[ia, ja, 0]))/(N/2.)).data
+
+    # Initialize the arrays to save the transports on the grid in the loop.
+    # These arrays aggregate volume transport when a drifter enters or exits a grid cell
+    # These should start at zero since we don't know which way things will travel yet
+    U = np.ma.zeros(grid['xu'].shape,order='F')
+    V = np.ma.zeros(grid['xv'].shape,order='F')
+
+    # simulation name, used for saving results into netcdf file
+    if date is None:
+        name = 'temp' #'5_5_D5_F'
+    else:
+        name = 'galvcon_b/' + date.isoformat()[0:13] 
+
+    return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
+            z0, zpar, do3d, doturb, name, grid, dostream, T0, U, V
