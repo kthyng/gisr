@@ -1390,31 +1390,28 @@ def allgrid_f(date=None, grid=None):
             z0, zpar, do3d, doturb, name, grid, dostream, T0.data, U, V
 
 
-def galvcon_b(N, date=None, grid=None):
+def galvcon_b(date, loc, grid=None):
     '''
     Initialization for seeding drifters near Galveston Bay to be run
     backward over a long period of time to look at Bay connectivity.
 
     Optional inputs for making tests easy to run:
-        date    Input date for name in datetime format
-                e.g., datetime(2009, 11, 20, 0). If date not input,
-                name will be 'temp' 
         grid    If input, will not redo this step. 
                 Default is to load in grid.
     '''
 
-    # Location of TXLA model output
-    loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
-
     # Initialize parameters
     nsteps = 5 # 5 time interpolation steps
-    ndays = 90
+    ndays = 180 # in days, about 6 months
     ff = -1 # This is a backward-moving simulation
 
     # Time between outputs
     tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
     ah = 20.
     av = 0. # m^2/s
+
+    # Can use a subset of the drifters in order to test sensitivity to N
+    N = 1000
 
     if grid is None:
         # if loc is the aggregated thredds server, the grid info is
@@ -1464,11 +1461,5 @@ def galvcon_b(N, date=None, grid=None):
     U = np.ma.zeros(grid['xu'].shape,order='F')
     V = np.ma.zeros(grid['xv'].shape,order='F')
 
-    # simulation name, used for saving results into netcdf file
-    if date is None:
-        name = 'temp' #'5_5_D5_F'
-    else:
-        name = 'galvcon_b/' + date.isoformat()[0:13] 
-
-    return loc, nsteps, ndays, ff, date, tseas, ah, av, lon0, lat0, \
-            z0, zpar, do3d, doturb, name, grid, dostream, T0, U, V
+    return nsteps, ndays, ff, tseas, ah, av, lon0, lat0, \
+            z0, zpar, do3d, doturb, grid, dostream, N, T0, U, V
