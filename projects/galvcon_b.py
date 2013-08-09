@@ -33,7 +33,8 @@ def run():
     grid = tracpy.inout.readgrid(loc)
 
     # Start from the beginning and add days on for loop
-    date = datetime(2004, 1, 1, 0, 1)
+    startdate = datetime(2004, 1, 1, 0, 1)
+    date = startdate
 
     # initialize counter for number of hours to increment through simulation by
     nh = 0
@@ -68,7 +69,7 @@ def run():
 
         # Increment by 4 hours for next loop
         nh = nh + 4
-        date = date + timedelta(hours=nh)
+        date = startdate + timedelta(hours=nh)
    
     # Do transport plot
     tracpy.plotting.transport(name='galvcon_b', Title='Transport to Galveston', dmax=1.5)
