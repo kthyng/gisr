@@ -68,12 +68,12 @@ if __name__ == "__main__":
     else:
         if 'Linux' in os.uname(): # Linux
             # Find number of cores on a Linux box
-            temp = os.popen('less /proc/cpuinfo | grep processor', close_fds=True).read()
+            temp = os.popen('less /proc/cpuinfo | grep processor').read()
             max_processes = temp.count('processor')
 
         elif 'Darwin' in os.uname(): # Mac
             # Find number of cores on a mac
-            max_processes = os.popen('system_profiler | grep "Cores"', close_fds=True).read()[-2]
+            max_processes = os.popen('system_profiler | grep "Cores"').read()[-2]
 
     # Make list of how many processes can run
     proc_count = list(np.arange(1,max_processes+1))
@@ -129,8 +129,8 @@ if __name__ == "__main__":
             log_file.write('Started ' + date)
             print cmd_list[0]
             print log_file
-            process_queue.append(subprocess.Popen(cmd_list.pop(0),shell=True,
-                stdout=log_file,stderr=log_file))
+            process_queue.append(subprocess.Popen(cmd_list.pop(0), shell=True,
+                stdout=log_file, stderr=log_file, close_fds=True))
 
     # Compile tex document with figures in it. 
     # Run twice to get references correct.
