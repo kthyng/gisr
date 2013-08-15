@@ -68,12 +68,12 @@ if __name__ == "__main__":
     else:
         if 'Linux' in os.uname(): # Linux
             # Find number of cores on a Linux box
-            temp = os.popen('less /proc/cpuinfo | grep processor').read()
+            temp = os.popen('less /proc/cpuinfo | grep processor', close_fds=True).read()
             max_processes = temp.count('processor')
 
         elif 'Darwin' in os.uname(): # Mac
             # Find number of cores on a mac
-            max_processes = os.popen('system_profiler | grep "Cores"').read()[-2]
+            max_processes = os.popen('system_profiler | grep "Cores"', close_fds=True).read()[-2]
 
     # Make list of how many processes can run
     proc_count = list(np.arange(1,max_processes+1))
