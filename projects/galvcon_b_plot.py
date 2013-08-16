@@ -15,7 +15,7 @@ Files = glob.glob('tracks/galvcon_b/*.nc')
 Files.sort()
 
 # number of days to look at
-ndays = 30
+ndays = 20
 # d drifters for quiver
 dd = 2
 
