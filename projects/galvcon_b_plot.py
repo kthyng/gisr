@@ -35,41 +35,41 @@ grid = tracpy.inout.readgrid(loc)
 
 for File in Files:
 
-	# Find tinds for track in full model output set
-	track = netCDF.Dataset(File)
-	tp = track.variables['tp'][:]
-	tstart = find(tp.min() == t)[-1]
-	# time indices for ndays with 6 outputs per day (4 hour frequency)
-	tinds = np.arange(tstart, tstart-ndays*6, -1) #find(tp.max() == t))
+# Find tinds for track in full model output set
+track = netCDF.Dataset(File)
+tp = track.variables['tp'][:]
+tstart = find(tp.max() == t)
+# time indices for ndays with 6 outputs per day (4 hour frequency)
+tinds = np.arange(tstart, tstart-ndays*6, -1) #find(tp.max() == t))
 
-	# Plot a wind array from a representative location in the TXLA domain as a wind legend
-	# Read in model output
-	wi = d.variables['sustr'][tinds,jind,iind] # alongshore component of wind stress
-	wj = d.variables['svstr'][tinds,jind,iind] # acrossshore component of wind stress
-	theta = d.variables['angle'][jind, iind]
+# Plot a wind array from a representative location in the TXLA domain as a wind legend
+# Read in model output
+wi = d.variables['sustr'][tinds,jind,iind] # alongshore component of wind stress
+wj = d.variables['svstr'][tinds,jind,iind] # acrossshore component of wind stress
+theta = d.variables['angle'][jind, iind]
 
-	# Rotate model output onto Cartesian axes
-	wx = wi*np.cos(theta) - wj*np.sin(theta)
-	wy = wi*np.sin(theta) + wj*np.cos(theta)
+# Rotate model output onto Cartesian axes
+wx = wi*np.cos(theta) - wj*np.sin(theta)
+wy = wi*np.sin(theta) + wj*np.cos(theta)
 
-	# # Average model output
-	# wxm = np.mean(wx,0)
-	# wym = np.mean(wy,0)
+# # Average model output
+# wxm = np.mean(wx,0)
+# wym = np.mean(wy,0)
 
-	lonp = track.variables['lonp'][:,:len(tinds)]
-	latp = track.variables['latp'][:,:len(tinds)]
-	name = 'galvcon_b/10days/' + File[17:30]
-	tracpy.plotting.tracks(lonp, latp, name, grid)
+lonp = track.variables['lonp'][:,:len(tinds)]
+latp = track.variables['latp'][:,:len(tinds)]
+name = 'galvcon_b/10days/' + File[17:30]
+tracpy.plotting.tracks(lonp, latp, name, grid)
 
-	# Plot wind arrows
-	lonv = np.linspace(-95.2, -88.3, len(wx))
-	latv = np.ones(lonv.shape)*25.5
-	x0, y0 = grid['basemap'](lonv, latv)
-	plt.quiver(x0, y0, wx, wy, scale=5, color='grey', width=.003, alpha=.8)
-	plt.savefig('figures/' + name + 'tracks.png',bbox_inches='tight')
-	plt.close()
+# Plot wind arrows
+lonv = np.linspace(-95.2, -88.3, len(wx))
+latv = np.ones(lonv.shape)*25.5
+x0, y0 = grid['basemap'](lonv, latv)
+plt.quiver(x0, y0, wx, wy, scale=5, color='grey', width=.003, alpha=.8)
+plt.savefig('figures/' + name + 'tracks.png',bbox_inches='tight')
+plt.close()
 
-	track.close()
+track.close()
 
 d.close()
 
