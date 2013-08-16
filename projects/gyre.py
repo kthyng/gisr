@@ -15,6 +15,7 @@ import tracpy
 import init
 from datetime import datetime, timedelta
 import glob
+from matplotlib.mlab import find
 
 units = 'seconds since 1970-01-01'
 
