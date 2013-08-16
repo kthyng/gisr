@@ -66,6 +66,7 @@ def run():
             latp = d.variables['latp'][:]
             tracpy.plotting.tracks(lonp, latp, name, grid=grid)
             tracpy.plotting.hist(lonp, latp, name, grid=grid, which='hexbin')
+            d.close()
 
         # Increment by 4 hours for next loop
         nh = nh + 4
