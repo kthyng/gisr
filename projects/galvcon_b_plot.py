@@ -65,7 +65,7 @@ for File in Files[0:3]:
 	lonv = np.linspace(-95.2, -88.3, len(wx))
 	latv = np.ones(lonv.shape)*25.5
 	x0, y0 = grid['basemap'](lonv, latv)
-	plt.quiver(x0, y0, wx, wy, scale=7, color='grey', width=.003, alpha=.8)
+	plt.quiver(x0, y0, wx, wy, scale=5, color='grey', width=.003, alpha=.8)
 	plt.savefig('figures/' + name + 'tracks.png',bbox_inches='tight')
 	plt.close()
 
