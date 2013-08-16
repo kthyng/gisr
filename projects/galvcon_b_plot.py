@@ -56,9 +56,9 @@ for File in Files:
 	# wxm = np.mean(wx,0)
 	# wym = np.mean(wy,0)
 
-	lonp = track.variables['lonp'][:]
-	latp = track.variables['latp'][:]
-	name = 'galvcon_b/' + File[17:30]
+	lonp = track.variables['lonp'][:len(tinds)]
+	latp = track.variables['latp'][:len(tinds)]
+	name = 'galvcon_b/10days/' + File[17:30]
 	tracpy.plotting.tracks(lonp, latp, name, grid)
 
 	# Plot wind arrows
