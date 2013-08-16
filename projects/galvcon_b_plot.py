@@ -27,8 +27,10 @@ theta = d.variables['angle'][jind, iind]
 # # Interpolate theta to be on psi grid
 # theta = op.resize(op.resize(theta,0),1)
 
+# model times
+t = d.variables['ocean_time'][:]
+
 grid = tracpy.inout.readgrid(loc)
-d.close()
 
 for File in Files[0:3]:
 
@@ -65,6 +67,7 @@ for File in Files[0:3]:
 
 	track.close()
 
+d.close()
 
 if __name__ == "__main__":
     run()    
