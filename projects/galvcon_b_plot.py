@@ -12,6 +12,7 @@ import glob
 from matplotlib.mlab import find
 
 Files = glob.glob('tracks/galvcon_b/*.nc')
+Files.sort()
 
 # number of days to look at
 ndays = 10
@@ -69,5 +70,5 @@ for File in Files[0:3]:
 
 d.close()
 
-if __name__ == "__main__":
-    run()    
+# if __name__ == "__main__":
+#     run()    
