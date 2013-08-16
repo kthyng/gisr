@@ -43,7 +43,7 @@ for File in Files:
 	tinds = np.arange(tstart, tstart-ndays*6, -1) #find(tp.max() == t))
 
 	# Plot a wind array from a representative location in the TXLA domain as a wind legend
-	# Read in model output
+	# Read in model output. Negative sign since backward in time
 	wi = d.variables['sustr'][tinds,jind,iind] # alongshore component of wind stress
 	wj = d.variables['svstr'][tinds,jind,iind] # acrossshore component of wind stress
 	theta = d.variables['angle'][jind, iind]
@@ -51,6 +51,10 @@ for File in Files:
 	# Rotate model output onto Cartesian axes
 	wx = wi*np.cos(theta) - wj*np.sin(theta)
 	wy = wi*np.sin(theta) + wj*np.cos(theta)
+
+	# Negative sign since backward in time
+	wx = -wx
+	wy = -wy
 
 	# # Average model output
 	# wxm = np.mean(wx,0)
