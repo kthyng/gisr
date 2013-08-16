@@ -57,7 +57,7 @@ for File in Files[0:3]:
 
 	lonp = track.variables['lonp'][:]
 	latp = track.variables['latp'][:]
-	tracpy.plotting.tracks(lonp, latp, 'galvcon_b/' + date.isoformat()[0:13], grid)
+	tracpy.plotting.tracks(lonp, latp, 'galvcon_b/' + File[17:30], grid)
 
 	# Plot wind arrows
 	lonv = np.linspace(-95.2, -88.3, len(wx))
