@@ -33,7 +33,7 @@ def run():
     grid = tracpy.inout.readgrid(loc)
 
     # Start from the beginning and add days on for loop
-    startdate = datetime(2004, 1, 1, 0, 1)
+    startdate = datetime(2005, 1, 1, 0, 1)
     date = startdate
 
     # initialize counter for number of hours to increment through simulation by
