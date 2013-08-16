@@ -33,7 +33,7 @@ t = d.variables['ocean_time'][:]
 
 grid = tracpy.inout.readgrid(loc)
 
-for File in Files[0:3]:
+for File in Files:
 
 	# Find tinds for track in full model output set
 	track = netCDF.Dataset(File)
