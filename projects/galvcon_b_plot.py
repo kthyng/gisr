@@ -9,6 +9,7 @@ import tracpy
 import init
 from datetime import datetime, timedelta
 import glob
+from matplotlib.mlab import find
 
 Files = glob.glob('tracks/galvcon_b/*.nc')
 
