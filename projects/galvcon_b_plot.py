@@ -41,8 +41,8 @@ for File in Files:
 	track = netCDF.Dataset(File)
 	tp = track.variables['tp'][:]
 	tstart = find(tp.max() == t)
-	# time indices for ndays with 6 outputs per day (4 hour frequency)
-	tinds = np.arange(tstart, tstart-ndays*6, -1) #find(tp.max() == t))
+	# time indices for ndays with 6 outputs per day (4 hour frequency) (5 interpolation steps)
+	tinds = np.arange(tstart, tstart-ndays*6*5, -1) #find(tp.max() == t))
 
 	# Plot a wind array from a representative location in the TXLA domain as a wind legend
 	# Read in model output. Negative sign since backward in time
