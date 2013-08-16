@@ -15,7 +15,9 @@ Files = glob.glob('tracks/galvcon_b/*.nc')
 Files.sort()
 
 # number of days to look at
-ndays = 10
+ndays = 20
+# d drifters for quiver
+dd = 2
 
 # Choose a particular wind location
 iind= 330; jind = 90;
@@ -62,14 +64,14 @@ for File in Files:
 
 	lonp = track.variables['lonp'][:,:len(tinds)]
 	latp = track.variables['latp'][:,:len(tinds)]
-	name = 'galvcon_b/10days/' + File[17:30]
+	name = 'galvcon_b/' + str(ndays) + 'days/' + File[17:30]
 	tracpy.plotting.tracks(lonp, latp, name, grid)
 
 	# Plot wind arrows
 	lonv = np.linspace(-95.2, -88.3, len(wx))
 	latv = np.ones(lonv.shape)*25.5
 	x0, y0 = grid['basemap'](lonv, latv)
-	plt.quiver(x0, y0, wx, wy, scale=5, color='grey', width=.003, alpha=.8)
+	plt.quiver(x0[::dd], y0[::dd], wx[::dd], wy[::dd], scale=5, color='grey', width=.003, alpha=.8)
 	plt.savefig('figures/' + name + 'tracks.png',bbox_inches='tight')
 	plt.close()
 
