@@ -41,6 +41,87 @@
 % Summarize literature on particle tracking, particularly applications of tracmass. Include potentially pitfalls and things to be aware of.
 \subsection{Particle Tracking}
 
+\subsection{Timing}
+
+On Rainier:
+
+galvcon_b: 5 days: 1 model output read in at a time: \\
+\begin{verbatim}
+run time:           40.5501658916
+---------------------------------------------
+Time spent on:
+    Initial stuff:      1.68 (4.14%)
+    Reading in fields:  37.73 (93.06%)
+    Z interpolation:    0.00 (0.00%)
+    Tracmass:       0.27 (0.66%)
+\end{verbatim}
+
+galvcon_b: 5 days: 1 model output read in, new formulation: \\
+\begin{verbatim}
+run time:           68.2703919411
+---------------------------------------------
+Time spent on:
+    Initial stuff:      1.60 (2.35%)
+    Reading in fields:  66.14 (96.88%)
+    Z interpolation:    0.00 (0.00%)
+    Tracmass:       0.35 (0.51%)
+\end{verbatim}
+
+galvcon_b: 5 days: 10 model output read in at a time: \\
+\begin{verbatim}
+run time:           36.4923648834
+---------------------------------------------
+Time spent on:
+    Initial stuff:      1.65 (4.51%)
+    Reading in fields:  34.30 (93.98%)
+    Z interpolation:    0.00 (0.00%)
+    Tracmass:       0.37 (1.01%)
+\end{verbatim}
+
+galvcon_b: 30 days: 1 model output read in at a time: \\
+\begin{verbatim}
+run time:           255.796955109
+---------------------------------------------
+Time spent on:
+    Initial stuff:      1.66 (0.65%)
+    Reading in fields:  247.67 (96.82%)
+    Z interpolation:    0.00 (0.00%)
+    Tracmass:       1.44 (0.56%)
+\end{verbatim}
+
+galvcon_b: 30 days: 10 model output read in at a time: \\
+\begin{verbatim}
+run time:           217.657314062
+---------------------------------------------
+Time spent on:
+    Initial stuff:      1.83 (0.84%)
+    Reading in fields:  212.95 (97.84%)
+    Z interpolation:    0.00 (0.00%)
+    Tracmass:       1.91 (0.88%)
+\end{verbatim}
+
+galvcon_b: 30 days: 30 model output read in at a time: \\
+\begin{verbatim}
+run time:           230.847060919
+---------------------------------------------
+Time spent on:
+    Initial stuff:      1.78 (0.77%)
+    Reading in fields:  224.09 (97.07%)
+    Z interpolation:    0.00 (0.00%)
+    Tracmass:       3.78 (1.64%)
+\end{verbatim}
+
+
+On Hafen:
+
+galvcon_b: 30 days: 50 model output read in at a time: \\
+\begin{verbatim}
+\end{verbatim}
+
+galvcon_b: 30 days: 10 model output read in at a time: \\
+\begin{verbatim}
+\end{verbatim}
+
 
 % How does the tracking code work in general?
 \section{Tracking Algorithm Sensitivity and Details}

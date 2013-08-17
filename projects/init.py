@@ -1402,7 +1402,7 @@ def galvcon_b(date, loc, grid=None):
 
     # Initialize parameters
     nsteps = 5 # 5 time interpolation steps
-    ndays = 180 # in days, about 6 months
+    ndays = 30#180 # in days, about 6 months
     ff = -1 # This is a backward-moving simulation
 
     # Time between outputs
