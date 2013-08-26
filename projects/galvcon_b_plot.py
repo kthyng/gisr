@@ -90,8 +90,8 @@ for File in Files:
 	# Plot arrows
 	plt.quiver(x0[::dd], y0[::dd], wx[::dd], wy[::dd], scale=5, color='grey', width=.003, alpha=.8)
 	# Plot date below wind
-	for i in xrange(ind.size):
-		plt.text(x0[ind[i]], y0[ind[i]]-2000, dates[tinds_model][ind[i]].isoformat()[0:10], fontsize=10, alpha=0.5)
+	for i in xrange(x0[ind].size):
+		plt.text(x0[ind][i], y0[ind][i]-50000, dates[tinds_model][ind][i].isoformat()[0:10], fontsize=10, alpha=0.5)
 	plt.savefig('figures/' + name + 'tracks.png',bbox_inches='tight')
 	plt.close()
 
