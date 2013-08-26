@@ -33,6 +33,9 @@ theta = d.variables['angle'][jind, iind]
 # model times
 t = d.variables['ocean_time'][:]
 
+# Relative times for outputs
+trel = (t-t[0])/(3600.*24) # output times in days
+
 grid = tracpy.inout.readgrid(loc)
 
 for File in Files:
@@ -72,7 +75,15 @@ for File in Files:
 	lonv = np.linspace(-95.2, -88.3, len(wx))
 	latv = np.ones(lonv.shape)*25.5
 	x0, y0 = grid['basemap'](lonv, latv)
+	# Plot start and end indicators
+	plt.plot(x0[0], y0[0], 'og', markersize=16, alpha=0.5)
+	plt.plot(x0[-1], y0[-1], 'or', markersize=16, alpha=0.5)
+	# Plot arrows
 	plt.quiver(x0[::dd], y0[::dd], wx[::dd], wy[::dd], scale=5, color='grey', width=.003, alpha=.8)
+	# Plot a black line every day on the wind plot
+	pdb.set_trace()
+	ind = (np.mod(trel,1) < 1e-5)
+	plt.plot(x0[ind], trel[ind], 'k|')
 	plt.savefig('figures/' + name + 'tracks.png',bbox_inches='tight')
 	plt.close()
 
