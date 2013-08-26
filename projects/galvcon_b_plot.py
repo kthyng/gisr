@@ -84,13 +84,14 @@ for File in Files:
 	plt.plot(x0[0], y0[0], 'og', markersize=16, alpha=0.5)
 	plt.plot(x0[-1], y0[-1], 'or', markersize=16, alpha=0.5)
 	# Plot a black line every day on the wind plot
-	pdb.set_trace()
+	# pdb.set_trace()
 	ind = (np.mod(trel[tinds_model],1) == 0.)
 	plt.plot(x0[ind], y0[ind], 'k|', markersize=10, alpha=0.5)
 	# Plot arrows
 	plt.quiver(x0[::dd], y0[::dd], wx[::dd], wy[::dd], scale=5, color='grey', width=.003, alpha=.8)
 	# Plot date below wind
-	plt.text(x0[ind], y0[ind]-2000, dates[tinds_model][ind])
+	for i in xrange(ind.size):
+		plt.text(x0[ind][i], y0[ind][i]-2000, dates[tinds_model][ind][i].isoformat()[0:10])
 	plt.savefig('figures/' + name + 'tracks.png',bbox_inches='tight')
 	plt.close()
 
