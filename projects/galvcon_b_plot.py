@@ -11,6 +11,8 @@ from datetime import datetime, timedelta
 import glob
 from matplotlib.mlab import find
 
+units = 'seconds since 1970-01-01'
+
 Files = glob.glob('tracks/galvcon_b/*.nc')
 Files.sort()
 
@@ -32,6 +34,7 @@ theta = d.variables['angle'][jind, iind]
 
 # model times
 t = d.variables['ocean_time'][:]
+dates = netCDF.num2date(t,units)
 
 # Relative times for outputs
 trel = (t-t[0])/(3600.*24) # output times in days
@@ -74,18 +77,23 @@ for File in Files:
 	tracpy.plotting.tracks(lonp, latp, name, grid)
 
 	# Plot wind arrows
+	# start with new axis
+	pdb.set_trace()
+	fig = plt.gcf()
+	ax = fig.add_axes([0.3775, 0.4, 0.48, 0.05])
 	lonv = np.linspace(-95.2, -88.3, len(wx))
 	latv = np.ones(lonv.shape)*25.5
 	x0, y0 = grid['basemap'](lonv, latv)
 	# Plot start and end indicators
 	plt.plot(x0[0], y0[0], 'og', markersize=16, alpha=0.5)
 	plt.plot(x0[-1], y0[-1], 'or', markersize=16, alpha=0.5)
+	# Plot a black line every day on the wind plot
+	ind = (np.mod(trel[tinds_model],1) == 0.)
+	plt.plot(x0[ind], y0[ind], 'k|', markersize=10, alpha=0.5)
 	# Plot arrows
 	plt.quiver(x0[::dd], y0[::dd], wx[::dd], wy[::dd], scale=5, color='grey', width=.003, alpha=.8)
-	# Plot a black line every day on the wind plot
-	pdb.set_trace()
-	ind = (np.mod(trel[tinds_model],1) == 0.)
-	plt.plot(x0[ind], np.ones(x0[ind].shape)*y0, 'k|', markersize=10)
+	# Plot date below wind
+	plt.plot_date(dates[tinds_model][ind], y0[ind])
 	plt.savefig('figures/' + name + 'tracks.png',bbox_inches='tight')
 	plt.close()
 
