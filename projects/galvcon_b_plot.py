@@ -77,10 +77,6 @@ for File in Files:
 	tracpy.plotting.tracks(lonp, latp, name, grid)
 
 	# Plot wind arrows
-	# start with new axis
-	pdb.set_trace()
-	fig = plt.gcf()
-	ax = fig.add_axes([0.3775, 0.4, 0.48, 0.05])
 	lonv = np.linspace(-95.2, -88.3, len(wx))
 	latv = np.ones(lonv.shape)*25.5
 	x0, y0 = grid['basemap'](lonv, latv)
@@ -88,12 +84,13 @@ for File in Files:
 	plt.plot(x0[0], y0[0], 'og', markersize=16, alpha=0.5)
 	plt.plot(x0[-1], y0[-1], 'or', markersize=16, alpha=0.5)
 	# Plot a black line every day on the wind plot
+	pdb.set_trace()
 	ind = (np.mod(trel[tinds_model],1) == 0.)
 	plt.plot(x0[ind], y0[ind], 'k|', markersize=10, alpha=0.5)
 	# Plot arrows
 	plt.quiver(x0[::dd], y0[::dd], wx[::dd], wy[::dd], scale=5, color='grey', width=.003, alpha=.8)
 	# Plot date below wind
-	plt.plot_date(dates[tinds_model][ind], y0[ind])
+	plt.text(x0[ind], y0[ind]-2000, dates[tinds_model][ind])
 	plt.savefig('figures/' + name + 'tracks.png',bbox_inches='tight')
 	plt.close()
 
