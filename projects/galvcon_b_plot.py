@@ -44,13 +44,15 @@ for File in Files:
 	track = netCDF.Dataset(File)
 	tp = track.variables['tp'][:]
 	tstart = find(tp.max() == t)
+	# time indices for ndays with 6 outputs per day (4 hour frequency)
+	tinds_model = np.arange(tstart, tstart-ndays*6, -1) #find(tp.max() == t))
 	# time indices for ndays with 6 outputs per day (4 hour frequency) (5 interpolation steps)
-	tinds = np.arange(tstart, tstart-ndays*6*5, -1) #find(tp.max() == t))
+	tinds_tracks = np.arange(tstart, tstart-ndays*6*5, -1) #find(tp.max() == t))
 
 	# Plot a wind array from a representative location in the TXLA domain as a wind legend
 	# Read in model output. Negative sign since backward in time
-	wi = d.variables['sustr'][tinds,jind,iind] # alongshore component of wind stress
-	wj = d.variables['svstr'][tinds,jind,iind] # acrossshore component of wind stress
+	wi = d.variables['sustr'][tinds_model,jind,iind] # alongshore component of wind stress
+	wj = d.variables['svstr'][tinds_model,jind,iind] # acrossshore component of wind stress
 	theta = d.variables['angle'][jind, iind]
 
 	# Rotate model output onto Cartesian axes
@@ -66,8 +68,8 @@ for File in Files:
 	# wxm = np.mean(wx,0)
 	# wym = np.mean(wy,0)
 
-	lonp = track.variables['lonp'][:,:len(tinds)]
-	latp = track.variables['latp'][:,:len(tinds)]
+	lonp = track.variables['lonp'][:,:len(tinds_tracks)]
+	latp = track.variables['latp'][:,:len(tinds_tracks)]
 	name = 'galvcon_b/' + str(ndays) + 'days/' + File[17:30]
 	tracpy.plotting.tracks(lonp, latp, name, grid)
 
@@ -82,8 +84,8 @@ for File in Files:
 	plt.quiver(x0[::dd], y0[::dd], wx[::dd], wy[::dd], scale=5, color='grey', width=.003, alpha=.8)
 	# Plot a black line every day on the wind plot
 	pdb.set_trace()
-	ind = (np.mod(trel,1) < 1e-5)
-	plt.plot(x0[ind], trel[ind], 'k|')
+	ind = (np.mod(trel[tinds_model],1) == 0.)
+	plt.plot(x0[ind], np.ones(x0[ind].shape)*y0, 'k|', markersize=10)
 	plt.savefig('figures/' + name + 'tracks.png',bbox_inches='tight')
 	plt.close()
 
