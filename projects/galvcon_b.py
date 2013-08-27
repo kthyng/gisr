@@ -33,7 +33,7 @@ def run():
     grid = tracpy.inout.readgrid(loc)
 
     # Start from the beginning and add days on for loop
-    startdate = datetime(2006, 1, 1, 0, 1)
+    startdate = datetime(2004, 1, 1, 0, 1)
     date = startdate
 
     # initialize counter for number of hours to increment through simulation by
@@ -68,8 +68,10 @@ def run():
             tracpy.plotting.hist(lonp, latp, name, grid=grid, which='hexbin')
             d.close()
 
-        # Increment by 4 hours for next loop
-        nh = nh + 4
+        # Increment by 24 hours for next loop, to move through more quickly
+        nh = nh + 24
+        # # Increment by 4 hours for next loop
+        # nh = nh + 4
         date = startdate + timedelta(hours=nh)
    
     # Do transport plot
