@@ -17,9 +17,9 @@ Files = glob.glob('tracks/galvcon_b/*.nc')
 Files.sort()
 
 # number of days to look at
-ndays = 10
+ndays = 20
 # d drifters for quiver
-dd = 1
+dd = 2
 
 # Choose a particular wind location
 iind= 330; jind = 90;
@@ -85,7 +85,7 @@ for File in Files:
 	plt.plot(x0[-1], y0[-1], 'or', markersize=16, alpha=0.5)
 	# Plot a black line every day on the wind plot
 	# pdb.set_trace()
-	ind = (np.mod(trel[tinds_model],1) == 0.)
+	ind = (np.mod(trel[tinds_model],dd) == 0.)
 	plt.plot(x0[ind], y0[ind], 'k|', markersize=10, alpha=0.5)
 	# Plot arrows
 	plt.quiver(x0[::dd], y0[::dd], wx[::dd], wy[::dd], scale=5, color='grey', width=.003, alpha=.8)
