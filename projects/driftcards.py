@@ -18,10 +18,7 @@ units = 'seconds since 1970-01-01'
 # Location of TXLA model output
 loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
 
-def read():
-
-    # Number of drift cards set out
-    ndrift = 1770
+def read(ndrift):
 
     # Read in all initial drift card locations
     idnum = np.zeros(ndrift).astype(int)
@@ -75,16 +72,16 @@ def read():
 
     return startdate, startlon, startlat, enddate, endlon, endlat, idnum
 
-def reduce(startdate, startlon, startlat, enddate, endlon, endlat, idnum):
+def reduce(grid, ndrift):
 
-    startdate, startlon, startlat, enddate, endlon, endlat, idnum = read()
+    startdate, startlon, startlat, enddate, endlon, endlat, idnum = read(ndrift)
 
     # If covering the whole domain, need to exclude points outside domain.
     # Use info just inside domain so points aren't right at the edge.
-    xvert = np.hstack((np.flipud(lonr[1,:]),lonr[:,1],
-        lonr[-2,:],np.flipud(lonr[:,-2])))
-    yvert = np.hstack((np.flipud(latr[1,:]),latr[:,1],
-        latr[-2,:],np.flipud(latr[:,-2])))
+    xvert = np.hstack((np.flipud(grid['lonr'][1,:]),grid['lonr'][:,1],
+        grid['lonr'][-2,:],np.flipud(grid['lonr'][:,-2])))
+    yvert = np.hstack((np.flipud(grid['latr'][1,:]),grid['latr'][:,1],
+        grid['latr'][-2,:],np.flipud(grid['latr'][:,-2])))
     verts = np.vstack((xvert,yvert))
     # Form path
     path = Path(verts.T)
@@ -106,9 +103,7 @@ def reduce(startdate, startlon, startlat, enddate, endlon, endlat, idnum):
   
     return startdate, startlon, startlat, enddate, endlon, endlat, idnum
 
-def init():
-
-    startdate, startlon, startlat, enddate, endlon, endlat, idnum = reduce()
+def init(grid):
 
     nsteps = 5 # 5 time interpolation steps
     ndays = 90#180 # in days, about 3 months
@@ -121,21 +116,48 @@ def init():
     ah = 20.
     av = 0. # m^2/s
 
+    # Number of drift cards set out
+    ndrift = 1770
+
+    startdate, startlon, startlat, enddate, endlon, endlat, idnum = reduce(grid, ndrift)
+
+    # surface drifters
+    z0 = 's'  
+    zpar = 29 
+
+    # for 3d flag, do3d=0 makes the run 2d and do3d=1 makes the run 3d
+    do3d = 0
+    doturb = 0
+
+    # Flag for streamlines. All the extra steps right after this are for streamlines.
+    dostream = 0
+
     return startdate, startlon, startlat, enddate, endlon, endlat, idnum, \
-            nsteps, ndays, ff
+            nsteps, ndays, ff, tseas, ah, av, ndrift, z0, zpar, do3d, doturb, dostream
 
 
 def run():
 
-  
+    # Make sure necessary directories exist
+    if not os.path.exists('tracks'):
+        os.makedirs('tracks')
+    if not os.path.exists('tracks/driftcards'):
+        os.makedirs('tracks/driftcards')
+    if not os.path.exists('figures'):
+        os.makedirs('figures')
+    if not os.path.exists('figures/driftcards'):
+        os.makedirs('figures/driftcards')
+ 
     # Find drifters that started within the TX-LA numerical domain
     # Use path to do so
     grid = tracpy.inout.readgrid(loc)
-    lonr = grid['lonr']
-    latr = grid['latr']
+    # lonr = grid['lonr']
+    # latr = grid['latr']
 
-
-    STUFF = init()
+    # Initialize parameters
+    startdate, startlon, startlat, enddate, endlon, endlat, idnum, \
+            nsteps, ndays, ff, tseas, ah, av, ndrift, z0, zpar, \
+            do3d, doturb, dostream = init(grid)
 
     # For drifters that started within domain and have been found, order by
     # start date and time
@@ -147,8 +169,6 @@ def run():
     # # Sort arrays by startdate
     # startind = np.argsort(startdate) #these indices sort arrays by startdate
 
-    pdb.set_trace()
-
     # THIS NEEDS TO BE IN SOME SORT OF LOOP
 
     # start drifters in chunks of exact same date/time
@@ -157,17 +177,21 @@ def run():
     idrifts = find(startdate==startdate[find(~np.isnan(startdate))[0]]) # all drifters with same start date/time
     lon0 = startlon[idrifts]
     lat0 = startlat[idrifts]
-    date = startdate[idrifts]
+    date = netCDF.num2date(startdate[idrifts][0], units)
 
-    # NEED TO INITIATE PARAMETERS
+    pdb.set_trace()
+
+    name = 'driftcards/' + date.isoformat()
 
     # COULD RUN MORE DRIFTERS THAN THE NUMBER OF DRIFT CARDS
+
+    # Don't have the output available for these runs yet
 
     # Run tracpy
     lonp, latp, zp, t, grid, T0, U, V \
         = tracpy.run.run(loc, nsteps, ndays, ff, date, tseas, ah, av, \
                             lon0, lat0, z0, zpar, do3d, doturb, name, \
-                            grid=grid, dostream=dostream, T0=T0, U=U, V=V)
+                            grid=grid, dostream=dostream)
 
 
     # nan out drifters once they have been used to run tracpy
@@ -175,6 +199,7 @@ def run():
     startlat[idrifts] = np.nan
     startdate[idrifts] = np.nan
 
+    pdb.set_trace()
 
 if __name__ == "__main__":
-    read()    
+    run()    
