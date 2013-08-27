@@ -10,6 +10,7 @@ import init
 from datetime import datetime, timedelta
 import glob
 from matplotlib.mlab import find
+import bottleneck as bn
 
 units = 'seconds since 1970-01-01'
 
@@ -88,7 +89,9 @@ for File in Files:
 	ind = (np.mod(trel[tinds_model],dd) == 0.)
 	plt.plot(x0[ind], y0[ind], 'k|', markersize=10, alpha=0.5)
 	# Plot arrows
-	plt.quiver(x0[::dd], y0[::dd], wx[::dd], wy[::dd], scale=5, color='grey', width=.003, alpha=.8)
+	# have rolling average of wind arrows instead of selecting every few so it is smoother
+	plt.quiver(x0[::dd], y0[::dd], bn.move_mean(wx, window=dd), bn.move_mean(wy, window=dd), scale=5, color='grey', width=.003, alpha=.8)
+	# plt.quiver(x0[::dd], y0[::dd], wx[::dd], wy[::dd], scale=5, color='grey', width=.003, alpha=.8)
 	# Plot date below wind
 	for i in xrange(x0[ind].size):
 		plt.text(x0[ind][i], y0[ind][i]-50000, dates[tinds_model][ind][i].isoformat()[5:10], fontsize=10, alpha=0.5)
