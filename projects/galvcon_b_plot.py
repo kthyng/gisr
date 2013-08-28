@@ -18,9 +18,9 @@ Files = glob.glob('tracks/galvcon_b/*.nc')
 Files.sort()
 
 # number of days to look at
-ndays = 60
+ndays = 90 #10
 # d drifters for quiver
-dd = 6
+dd = 9 #1
 
 # Choose a particular wind location
 iind= 330; jind = 90;
