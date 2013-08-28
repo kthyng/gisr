@@ -90,7 +90,7 @@ for File in Files:
 	plt.plot(x0[ind], y0[ind], 'k|', markersize=10, alpha=0.5)
 	# Plot arrows
 	# have rolling average of wind arrows instead of selecting every few so it is smoother
-	plt.quiver(x0[::dd], y0[::dd], bn.move_mean(wx, window=dd), bn.move_mean(wy, window=dd), scale=5, color='grey', width=.003, alpha=.8)
+	plt.quiver(x0[::dd], y0[::dd], bn.move_mean(wx, window=dd)[::dd], bn.move_mean(wy, window=dd)[::dd], scale=5, color='grey', width=.003, alpha=.8)
 	# plt.quiver(x0[::dd], y0[::dd], wx[::dd], wy[::dd], scale=5, color='grey', width=.003, alpha=.8)
 	# Plot date below wind
 	for i in xrange(x0[ind].size):
