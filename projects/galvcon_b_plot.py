@@ -43,62 +43,63 @@ trel = (t-t[0])/(3600.*24) # output times in days
 grid = tracpy.inout.readgrid(loc)
 
 for File in Files:
-
-	# Find tinds for track in full model output set
-	track = netCDF.Dataset(File)
-	tp = track.variables['tp'][:]
-	tstart = find(tp.max() == t)
-	# time indices for ndays with 6 outputs per day (4 hour frequency)
-	tinds_model = np.arange(tstart, tstart-ndays*6, -1) #find(tp.max() == t))
-	# time indices for ndays with 6 outputs per day (4 hour frequency) (5 interpolation steps)
-	tinds_tracks = np.arange(tstart, tstart-ndays*6*5, -1) #find(tp.max() == t))
-
-	# Plot a wind array from a representative location in the TXLA domain as a wind legend
-	# Read in model output. Negative sign since backward in time
-	wi = d.variables['sustr'][tinds_model,jind,iind] # alongshore component of wind stress
-	wj = d.variables['svstr'][tinds_model,jind,iind] # acrossshore component of wind stress
-	theta = d.variables['angle'][jind, iind]
-
-	# Rotate model output onto Cartesian axes
-	wx = wi*np.cos(theta) - wj*np.sin(theta)
-	wy = wi*np.sin(theta) + wj*np.cos(theta)
-
-	# Negative sign since backward in time
-	# also smooth
-	wx = -wx
-	wy = -wy
-
-	# # Average model output
-	# wxm = np.mean(wx,0)
-	# wym = np.mean(wy,0)
-
-	lonp = track.variables['lonp'][:,:len(tinds_tracks)]
-	latp = track.variables['latp'][:,:len(tinds_tracks)]
 	name = 'galvcon_b/' + str(ndays) + 'days/' + File[17:30]
-	tracpy.plotting.tracks(lonp, latp, name, grid)
+    if not os.path.exists('figures/' + name + 'tracks.png'):
 
-	# Plot wind arrows
-	lonv = np.linspace(-95.2, -88.3, len(wx))
-	latv = np.ones(lonv.shape)*25.5
-	x0, y0 = grid['basemap'](lonv, latv)
-	# Plot start and end indicators
-	plt.plot(x0[0], y0[0], 'og', markersize=16, alpha=0.5)
-	plt.plot(x0[-1], y0[-1], 'or', markersize=16, alpha=0.5)
-	# Plot a black line every day on the wind plot
-	# pdb.set_trace()
-	ind = (np.mod(trel[tinds_model],dd) == 0.)
-	plt.plot(x0[ind], y0[ind], 'k|', markersize=10, alpha=0.5)
-	# Plot arrows
-	# have rolling average of wind arrows instead of selecting every few so it is smoother
-	plt.quiver(x0[::dd], y0[::dd], bn.move_mean(wx, window=dd)[::dd], bn.move_mean(wy, window=dd)[::dd], scale=5, color='grey', width=.003, alpha=.8)
-	# plt.quiver(x0[::dd], y0[::dd], wx[::dd], wy[::dd], scale=5, color='grey', width=.003, alpha=.8)
-	# Plot date below wind
-	for i in xrange(x0[ind].size):
-		plt.text(x0[ind][i], y0[ind][i]-50000, dates[tinds_model][ind][i].isoformat()[5:10], fontsize=10, alpha=0.5)
-	plt.savefig('figures/' + name + 'tracks.png',bbox_inches='tight')
-	plt.close()
+		# Find tinds for track in full model output set
+		track = netCDF.Dataset(File)
+		tp = track.variables['tp'][:]
+		tstart = find(tp.max() == t)
+		# time indices for ndays with 6 outputs per day (4 hour frequency)
+		tinds_model = np.arange(tstart, tstart-ndays*6, -1) #find(tp.max() == t))
+		# time indices for ndays with 6 outputs per day (4 hour frequency) (5 interpolation steps)
+		tinds_tracks = np.arange(tstart, tstart-ndays*6*5, -1) #find(tp.max() == t))
 
-	track.close()
+		# Plot a wind array from a representative location in the TXLA domain as a wind legend
+		# Read in model output. Negative sign since backward in time
+		wi = d.variables['sustr'][tinds_model,jind,iind] # alongshore component of wind stress
+		wj = d.variables['svstr'][tinds_model,jind,iind] # acrossshore component of wind stress
+		theta = d.variables['angle'][jind, iind]
+
+		# Rotate model output onto Cartesian axes
+		wx = wi*np.cos(theta) - wj*np.sin(theta)
+		wy = wi*np.sin(theta) + wj*np.cos(theta)
+
+		# Negative sign since backward in time
+		# also smooth
+		wx = -wx
+		wy = -wy
+
+		# # Average model output
+		# wxm = np.mean(wx,0)
+		# wym = np.mean(wy,0)
+
+		lonp = track.variables['lonp'][:,:len(tinds_tracks)]
+		latp = track.variables['latp'][:,:len(tinds_tracks)]
+		tracpy.plotting.tracks(lonp, latp, name, grid)
+
+		# Plot wind arrows
+		lonv = np.linspace(-95.2, -88.3, len(wx))
+		latv = np.ones(lonv.shape)*25.5
+		x0, y0 = grid['basemap'](lonv, latv)
+		# Plot start and end indicators
+		plt.plot(x0[0], y0[0], 'og', markersize=16, alpha=0.5)
+		plt.plot(x0[-1], y0[-1], 'or', markersize=16, alpha=0.5)
+		# Plot a black line every day on the wind plot
+		# pdb.set_trace()
+		ind = (np.mod(trel[tinds_model],dd) == 0.)
+		plt.plot(x0[ind], y0[ind], 'k|', markersize=10, alpha=0.5)
+		# Plot arrows
+		# have rolling average of wind arrows instead of selecting every few so it is smoother
+		plt.quiver(x0[::dd], y0[::dd], bn.move_mean(wx, window=dd)[::dd], bn.move_mean(wy, window=dd)[::dd], scale=5, color='grey', width=.003, alpha=.8)
+		# plt.quiver(x0[::dd], y0[::dd], wx[::dd], wy[::dd], scale=5, color='grey', width=.003, alpha=.8)
+		# Plot date below wind
+		for i in xrange(x0[ind].size):
+			plt.text(x0[ind][i], y0[ind][i]-50000, dates[tinds_model][ind][i].isoformat()[5:10], fontsize=10, alpha=0.5)
+		plt.savefig('figures/' + name + 'tracks.png',bbox_inches='tight')
+		plt.close()
+
+		track.close()
 
 d.close()
 
