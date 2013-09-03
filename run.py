@@ -45,7 +45,7 @@ if __name__ == "__main__":
                     "bara_stream_b":False,
                     "gom_dwh_f":False, "matt_comp":False,
                     "allgrid_f":False, "galvcon_b":False,
-                    "galvcon_b_plot":False}
+                    "galvcon_b_plot":False, "all_f":False}
 
     # Check to see if any input arguments were on the command line
     if len(sys.argv) > 1:
