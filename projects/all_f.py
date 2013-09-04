@@ -32,8 +32,8 @@ def run():
 
     grid = tracpy.inout.readgrid(loc)
 
-    startdates = np.array([datetime(2006, 7, 1, 0, 1)])
-    # startdates = np.array([datetime(2006, 2, 1, 0, 1), datetime(2006, 7, 1, 0, 1)])
+    # startdates = np.array([datetime(2006, 7, 1, 0, 1)])
+    startdates = np.array([datetime(2006, 2, 1, 0, 1), datetime(2006, 7, 1, 0, 1)])
     # pdb.set_trace()
 
     # loop through state dates
@@ -83,7 +83,7 @@ def run():
             date = startdate + timedelta(hours=nh)
    
         # Do transport plot
-        tracpy.plotting.transport(name='all_f', fmod=startdate.isoformat()[0:7], 
+        tracpy.plotting.transport(name='all_f', fmod=startdate.isoformat()[0:7] + '*', 
             extraname=startdate.isoformat()[0:7], Title='Transport on Shelf', dmax=1.0)
 
 
