@@ -15,9 +15,36 @@ import tracpy
 import init
 from datetime import datetime, timedelta
 import glob
+import octant
 from matplotlib.mlab import find
+from mpl_toolkits.basemap import Basemap
 
 units = 'seconds since 1970-01-01'
+
+def make_grid():
+    
+    # Make grid
+x, y = mgrid[-10.:10.0, -10.0:10.0]
+grd = octant.grid.CGrid(x, y)
+
+llcrnrlon=-95; llcrnrlat=29; 
+urcrnrlon=-94; urcrnrlat=30; projection='lcc'
+lat_0=29.5; lon_0=-94.5; resolution='i'; area_thresh=0.
+basemap = Basemap(llcrnrlon=llcrnrlon,
+             llcrnrlat=llcrnrlat,
+             urcrnrlon=urcrnrlon,
+             urcrnrlat=urcrnrlat,
+             projection=projection,
+             lat_0=lat_0,
+             lon_0=lon_0,
+             resolution=resolution,
+             area_thresh=area_thresh)
+
+# grdll = octant.grid.CGrid_geo(grd,x,y, basemap)
+lon = (llcrnrlon,llcrnrlon,urcrnrlon,urcrnrlon)
+lat = (llcrnrlat,llcrnrlat,urcrnrlat,urcrnrlat)
+beta = [1.,1.,1.,1.]
+grd = octant.grid.Gridgen(lon, lat, beta, (32,32), proj=basemap)
 
 def make_fields(grid, ndays):
     '''
@@ -27,13 +54,13 @@ def make_fields(grid, ndays):
     '''
 
     # Center of gyre in lon/lat
-    lon0 = -93.5; lat0 = 28.5
+    lon0 = 0; lat0 = 0
 
     # Convert to x/y
     x0, y0 = grid['basemap'](lon0, lat0)
 
     # Radius of gyre
-    L = 30000 # meters
+    L = 10 # meters
 
     # Strength of gyre
     psi = 10000
@@ -114,9 +141,9 @@ def uv(grid, ndays):
 def init():
 
     # Initialize parameters
-    nsteps = 5 # 5 time interpolation steps
+    nsteps = 20 # time interpolation steps
     ff = 1
-    ndays = 50
+    ndays = 10
 
     # Time between outputs
     tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
