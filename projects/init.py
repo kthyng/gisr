@@ -1496,12 +1496,13 @@ def all_f(date, loc, grid=None):
 
     # Initial lon/lat locations for drifters
     # Use the center of all grid cells
-    dx = 4; dy = 4;
+    dx = 8; dy = 8; # WAS 4 in N=1
     lon0 = grid['lonr'][1:-1:dx,1:-1:dy]
     lat0 = grid['latr'][1:-1:dx,1:-1:dy]
 
     # Eliminate points that are outside domain or in masked areas
     lon0, lat0 = tracpy.tools.check_points(lon0, lat0, grid)
+    pdb.set_trace()
 
     # Interpolate to get starting positions in grid space
     xstart0, ystart0, _ = tracpy.tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
@@ -1512,7 +1513,7 @@ def all_f(date, loc, grid=None):
     # lon0, lat0 already at cell centers
     # # Change to get positions at the center of the given cell
     # lon0, lat0, _ = tracpy.tools.interpolate2d(ia - 0.5, ja - 0.5, grid, 'm_ij2ll')
-    N = 10 #lon0.size since there is only one drifter per box in this setup
+    N = 5 #lon0.size since there is only one drifter per box in this setup
 
     # surface drifters
     z0 = 's'  
@@ -1536,6 +1537,10 @@ def all_f(date, loc, grid=None):
     nc.close()
     # Initial total volume transport as a scalar quantity to be conserved, I think
     T0 = (abs(uf[ia, ja, 0]) + abs(vf[ia, ja, 0]))/N
+    # # Initialize arrays of lon0, lat0 and U, V for full number of drifters
+    # lon0 = np.ones(N,order='F')*lon0
+    # lat0 = np.ones(N,order='F')*lat0
+    # T0 = np.ones(N,order='F')*T0
 
     # Initialize the arrays to save the transports on the grid in the loop.
     # These arrays aggregate volume transport when a drifter enters or exits a grid cell

@@ -23,12 +23,12 @@ def run():
     # Make sure necessary directories exist
     if not os.path.exists('tracks'):
         os.makedirs('tracks')
-    if not os.path.exists('tracks/all_f'):
-        os.makedirs('tracks/all_f')
+    if not os.path.exists('tracks/all_f/N=5_dx=8'):
+        os.makedirs('tracks/all_f/N=5_dx=8')
     if not os.path.exists('figures'):
         os.makedirs('figures')
-    if not os.path.exists('figures/all_f'):
-        os.makedirs('figures/all_f')
+    if not os.path.exists('figures/all_f/N=5_dx=8'):
+        os.makedirs('figures/all_f/N=5_dx=8')
 
     grid = tracpy.inout.readgrid(loc)
 
@@ -48,42 +48,42 @@ def run():
         # keep running until we hit the next month
         while date.month < startdate.month+1:
 
-            name = 'all_f/' + date.isoformat()[0:13] 
+            name = 'all_f/N=5_dx=8/' + date.isoformat()[0:13] 
 
-            # # If the particle trajectories have not been run, run them
-            # if not os.path.exists('tracks/' + name + '.nc'):
+            # If the particle trajectories have not been run, run them
+            if not os.path.exists('tracks/' + name + '.nc'):
 
-            #     # Read in simulation initialization
-            #     nstep, ndays, ff, tseas, ah, av, lon0, lat0, z0, zpar, do3d, doturb, \
-            #             grid, dostream, N, T0, U, V = init.all_f(date, loc, grid=grid)
+                # Read in simulation initialization
+                nstep, ndays, ff, tseas, ah, av, lon0, lat0, z0, zpar, do3d, doturb, \
+                        grid, dostream, N, T0, U, V = init.all_f(date, loc, grid=grid)
 
-            #     # Run tracpy
-            #     lonp, latp, zp, t, grid, T0, U, V \
-            #         = tracpy.run.run(loc, nstep, ndays, ff, date, tseas, ah, av, \
-            #                             lon0, lat0, z0, zpar, do3d, doturb, name, \
-            #                             grid=grid, dostream=dostream, T0=T0, U=U, V=V)
+                # Run tracpy
+                lonp, latp, zp, t, grid, T0, U, V \
+                    = tracpy.run.run(loc, nstep, ndays, ff, date, tseas, ah, av, \
+                                        lon0, lat0, z0, zpar, do3d, doturb, name, \
+                                        grid=grid, dostream=dostream, T0=T0, U=U, V=V)
 
             # # If basic figures don't exist, make them
             # if not os.path.exists('figures/' + name + '*.png'):
 
-            # Read in and plot tracks
-            d = netCDF.Dataset('tracks/' + name + '.nc')
-            lonp = d.variables['lonp'][:]
-            latp = d.variables['latp'][:]
-            # tracpy.plotting.tracks(lonp, latp, name, grid=grid)
-            # tracpy.plotting.hist(lonp, latp, name, grid=grid, which='hexbin')
-            d.close()
-            # Do transport plot
-            tracpy.plotting.transport(name='all_f', fmod=date.isoformat()[0:13], 
-                extraname=date.isoformat()[0:13], 
-                Title='Transport on Shelf, for a week from ' + date.isoformat()[0:13], dmax=1.0)
+                # Read in and plot tracks
+                d = netCDF.Dataset('tracks/' + name + '.nc')
+                lonp = d.variables['lonp'][:]
+                latp = d.variables['latp'][:]
+                # tracpy.plotting.tracks(lonp, latp, name, grid=grid)
+                # tracpy.plotting.hist(lonp, latp, name, grid=grid, which='hexbin')
+                d.close()
+                # Do transport plot
+                tracpy.plotting.transport(name='all_f/N=5_dx=8', fmod=date.isoformat()[0:13], 
+                    extraname=date.isoformat()[0:13], 
+                    Title='Transport on Shelf, for a week from ' + date.isoformat()[0:13], dmax=1.0)
 
             # Increment by 24 hours for next loop, to move through more quickly
             nh = nh + 24
             date = startdate + timedelta(hours=nh)
    
         # Do transport plot
-        tracpy.plotting.transport(name='all_f', fmod=startdate.isoformat()[0:7] + '*', 
+        tracpy.plotting.transport(name='all_f/N=5_dx=8', fmod=startdate.isoformat()[0:7] + '*', 
             extraname=startdate.isoformat()[0:7], Title='Transport on Shelf', dmax=1.0)
 
 
