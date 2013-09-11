@@ -23,28 +23,95 @@ units = 'seconds since 1970-01-01'
 
 def make_grid():
     
-    # Make grid
-x, y = mgrid[-10.:10.0, -10.0:10.0]
-grd = octant.grid.CGrid(x, y)
+    # Make grid (did this on hafen)
+    lon, lat = mgrid[-95.:-94.0:.001, 29:30:.001]
+    llcrnrlon=-95; llcrnrlat=29; 
+    urcrnrlon=-94; urcrnrlat=30; projection='lcc'
+    lat_0=29.5; lon_0=-94.5; resolution='i'; area_thresh=0.
+    basemap = Basemap(llcrnrlon=llcrnrlon,
+                 llcrnrlat=llcrnrlat,
+                 urcrnrlon=urcrnrlon,
+                 urcrnrlat=urcrnrlat,
+                 projection=projection,
+                 lat_0=lat_0,
+                 lon_0=lon_0,
+                 resolution=resolution,
+                 area_thresh=area_thresh)
+    grd = octant.grid.CGrid_geo(lon, lat, basemap)
+    grd.h=np.ones(grd.lat_rho.shape)*100
+    # cd to octant directory
+    # cd /usr/local/lib/python2.7/lib/python2.7/site-packages/octant
+    # import roms
+    roms.write_grd(grd,filename='/home/kthyng/projects/gyre/grid.nc',verbose=True)
 
-llcrnrlon=-95; llcrnrlat=29; 
-urcrnrlon=-94; urcrnrlat=30; projection='lcc'
-lat_0=29.5; lon_0=-94.5; resolution='i'; area_thresh=0.
-basemap = Basemap(llcrnrlon=llcrnrlon,
-             llcrnrlat=llcrnrlat,
-             urcrnrlon=urcrnrlon,
-             urcrnrlat=urcrnrlat,
-             projection=projection,
-             lat_0=lat_0,
-             lon_0=lon_0,
-             resolution=resolution,
-             area_thresh=area_thresh)
+    s_win = np.array([-1.,0.])
+    Cs_win = np.array([-1.,0.])
+    hcin = 0.
+    theta_sin = 1e-4
+    theta_bin = 1.
 
-# grdll = octant.grid.CGrid_geo(grd,x,y, basemap)
-lon = (llcrnrlon,llcrnrlon,urcrnrlon,urcrnrlon)
-lat = (llcrnrlat,llcrnrlat,urcrnrlat,urcrnrlat)
-beta = [1.,1.,1.,1.]
-grd = octant.grid.Gridgen(lon, lat, beta, (32,32), proj=basemap)
+    # Append to grid
+    # Open file for writing.
+    rootgrp = netCDF.Dataset('/home/kthyng/projects/gyre/grid.nc', 'a', format='NETCDF3_64BIT')
+
+    # find dimensions
+    zl = 1
+
+    # Define dimensions
+    rootgrp.createDimension('zlp1', zl+1) # z direction
+
+    # Create variable
+    s_w = rootgrp.createVariable('s_w','f8',('zlp1'))
+    Cs_w = rootgrp.createVariable('Cs_w','f8',('zlp1'))
+    hc = rootgrp.createVariable('hc','f8')
+    theta_s = rootgrp.createVariable('theta_s','f8')
+    theta_b = rootgrp.createVariable('theta_b','f8')
+
+    # Write data to netCDF variables
+    s_w[:] = s_win
+    Cs_w[:] = Cs_win
+    hc[:] = hcin
+    theta_s[:] = theta_sin
+    theta_b[:] = theta_bin
+    rootgrp.close()
+
+
+# llcrnrlon=-95; llcrnrlat=29; 
+# urcrnrlon=-94; urcrnrlat=30; projection='lcc'
+# lat_0=29.5; lon_0=-94.5; resolution='i'; area_thresh=0.
+# basemap = Basemap(llcrnrlon=llcrnrlon,
+#              llcrnrlat=llcrnrlat,
+#              urcrnrlon=urcrnrlon,
+#              urcrnrlat=urcrnrlat,
+#              projection=projection,
+#              lat_0=lat_0,
+#              lon_0=lon_0,
+#              resolution=resolution,
+#              area_thresh=area_thresh)
+
+# # grdll = octant.grid.CGrid_geo(grd,x,y, basemap)
+# lon = (llcrnrlon,llcrnrlon,urcrnrlon,urcrnrlon)
+# lat = (llcrnrlat,llcrnrlat,urcrnrlat,urcrnrlat)
+# beta = [1.,1.,1.,1.]
+# grd = octant.grid.Gridgen(lon, lat, beta, (32,32), proj=basemap)
+
+
+# proj = Basemap(projection='lcc',
+#                resolution='i',
+#                llcrnrlon=-72.0,
+#                llcrnrlat= 40.0,
+#                urcrnrlon=-63.0,
+#                urcrnrlat=47.0,
+#                lat_0=43.0,
+#                lon_0=-62.5)
+
+# lon = (-71.977385177601761, -70.19173825913137,
+#        -63.045075098584945,-64.70104074097425)
+# lat = (42.88215610827428, 41.056141745853786,
+#        44.456701607935841, 46.271758064353897)
+# beta = [1.0, 1.0, 1.0, 1.0]
+
+# grd = octant.grid.Gridgen(lon, lat, beta, (32, 32), proj=proj)
 
 def make_fields(grid, ndays):
     '''
@@ -52,18 +119,18 @@ def make_fields(grid, ndays):
     Input:
         grid    as read in from tracpy.inout.readgrid()
     '''
-
+    # pdb.set_trace()
     # Center of gyre in lon/lat
-    lon0 = 0; lat0 = 0
+    lon0 = -94.5; lat0 = 29.5
 
     # Convert to x/y
     x0, y0 = grid['basemap'](lon0, lat0)
 
     # Radius of gyre
-    L = 10 # meters
+    L = 10000 # meters
 
     # Strength of gyre
-    psi = 10000
+    psi = 1000000
 
     # Velocity fields, on staggered grid
     u = psi*(grid['yu'].T-y0)/L**2*np.exp(-1./(2*L**2)*((grid['xu'].T-x0)**2 + (grid['yu'].T-y0)**2))
@@ -86,10 +153,18 @@ def make_fields(grid, ndays):
     # also need zeta
     zeta = np.zeros((u.shape[0],u.shape[2],v.shape[3]))
 
-    return u, v, t, zeta
+    # other grid parameters:
+    s_w = np.array([0,1])
+    Cs_w = np.array([0,1])
+    hc = 0.
+    theta_s = 0.
+    theta_b = 1e-4
+
+    return u, v, t, zeta, s_w, Cs_w, hc, theta_s, theta_b
 
 
-def write_files(uin, vin, tin, zetain):
+def write_files(uin, vin, tin, zetain, s_win, Cs_win, hcin, 
+                theta_sin, theta_bin):
 
     # pdb.set_trace()
 
@@ -106,6 +181,7 @@ def write_files(uin, vin, tin, zetain):
     rootgrp.createDimension('el', el) # length of array in y direction
     rootgrp.createDimension('xl', xl) # x direction
     rootgrp.createDimension('zl', zl) # z direction
+    rootgrp.createDimension('zlp1', zl+1) # z direction
     rootgrp.createDimension('elm1', el-1) # length of array in y direction
     rootgrp.createDimension('xlm1', xl-1) # x direction
     rootgrp.createDimension('nt', None) # time length, setting this as None makes
@@ -116,6 +192,11 @@ def write_files(uin, vin, tin, zetain):
     v = rootgrp.createVariable('v','f8',('nt','zl','elm1','xl')) # 64-bit floating point
     zeta = rootgrp.createVariable('zeta','f8',('nt','el','xl')) # 64-bit floating point
     ocean_time = rootgrp.createVariable('ocean_time','f8',('nt'))
+    s_w = rootgrp.createVariable('s_w','f8',('zlp1'))
+    Cs_w = rootgrp.createVariable('Cs_w','f8',('zlp1'))
+    hc = rootgrp.createVariable('hc','f8')
+    theta_s = rootgrp.createVariable('theta_s','f8')
+    theta_b = rootgrp.createVariable('theta_b','f8')
 
     # # Set some attributes
     # u.long_name = 'longitudinal position of drifter'
@@ -127,6 +208,11 @@ def write_files(uin, vin, tin, zetain):
     v[:] = vin
     zeta[:] = zetain
     ocean_time[:] = tin
+    s_w[:] = s_win
+    Cs_w[:] = Cs_win
+    hc[:] = hcin
+    theta_s[:] = theta_sin
+    theta_b[:] = theta_bin
     rootgrp.close()
 
 def uv(grid, ndays):
@@ -135,8 +221,8 @@ def uv(grid, ndays):
     # if not os.path.exists('projects/gyre'):
     #     os.makedirs('projects/gyre')
     # if not os.path.exists('projects/gyre/ocean_his_0001.nc'):
-    u, v, t, zeta = make_fields(grid, ndays)
-    write_files(u, v, t, zeta)
+    u, v, t, zeta, s_w, Cs_w, hc, theta_s, theta_b = make_fields(grid, ndays)
+    write_files(u, v, t, zeta, s_w, Cs_w, hc, theta_s, theta_b)
 
 def init():
 
@@ -150,8 +236,8 @@ def init():
     ah = 0.
     av = 0. # m^2/s
 
-    lon0 = np.linspace(-93.5,-93,10)
-    lat0 = np.ones(lon0.shape)*28.5
+    lon0 = np.linspace(-94.5,-94,10)
+    lat0 = np.ones(lon0.shape)*29.5
 
     # surface drifters
     z0 = 's'  
@@ -181,7 +267,7 @@ def run():
         os.makedirs('figures/gyre')
 
     # Location of TXLA model output
-    loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
+    loc = 'projects/gyre/'# 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
 
     # Read in grid
     grid = tracpy.inout.readgrid(loc)
