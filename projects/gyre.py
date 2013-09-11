@@ -24,7 +24,8 @@ units = 'seconds since 1970-01-01'
 def make_grid():
     
     # Make grid (did this on hafen)
-    lon, lat = mgrid[-95.:-94.0:.001, 29:30:.001]
+    lon, lat = mgrid[-95.:-94.0:.001, 29:30:.002]
+    lon = lon.T; lat = lat.T;
     llcrnrlon=-95; llcrnrlat=29; 
     urcrnrlon=-94; urcrnrlat=30; projection='lcc'
     lat_0=29.5; lon_0=-94.5; resolution='i'; area_thresh=0.
@@ -42,7 +43,7 @@ def make_grid():
     # cd to octant directory
     # cd /usr/local/lib/python2.7/lib/python2.7/site-packages/octant
     # import roms
-    roms.write_grd(grd,filename='/home/kthyng/projects/gyre/grid.nc',verbose=True)
+    roms.write_grd(grd,filename='/home/kthyng/projects/gisr/projects/gyre/grid.nc',verbose=True)
 
     s_win = np.array([-1.,0.])
     Cs_win = np.array([-1.,0.])
@@ -52,7 +53,7 @@ def make_grid():
 
     # Append to grid
     # Open file for writing.
-    rootgrp = netCDF.Dataset('/home/kthyng/projects/gyre/grid.nc', 'a', format='NETCDF3_64BIT')
+    rootgrp = netCDF.Dataset('/home/kthyng/projects/gisr/projects/gyre/grid.nc', 'a', format='NETCDF3_64BIT')
 
     # find dimensions
     zl = 1
