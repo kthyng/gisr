@@ -23,22 +23,22 @@ def run():
     # Make sure necessary directories exist
     if not os.path.exists('tracks'):
         os.makedirs('tracks')
-    if not os.path.exists('tracks/all_f/N=5_dx=8'):
-        os.makedirs('tracks/all_f/N=5_dx=8')
+    if not os.path.exists('tracks/all_f/N=5_dx=8/25days'):
+        os.makedirs('tracks/all_f/N=5_dx=8/25days')
     if not os.path.exists('figures'):
         os.makedirs('figures')
-    if not os.path.exists('figures/all_f/N=5_dx=8'):
-        os.makedirs('figures/all_f/N=5_dx=8')
+    if not os.path.exists('figures/all_f/N=5_dx=8/25days'):
+        os.makedirs('figures/all_f/N=5_dx=8/25days')
 
     grid = tracpy.inout.readgrid(loc)
 
     startdates = np.array([datetime(2004, 2, 1, 0, 1), datetime(2004, 7, 1, 0, 1),
                             datetime(2005, 2, 1, 0, 1), datetime(2005, 7, 1, 0, 1),
-                            datetime(2006, 2, 1, 0, 1), datetime(2006, 7, 1, 0, 1)
-                            datetime(2007, 2, 1, 0, 1), datetime(2007, 7, 1, 0, 1)
-                            datetime(2008, 2, 1, 0, 1), datetime(2008, 7, 1, 0, 1)
-                            datetime(2009, 2, 1, 0, 1), datetime(2009, 7, 1, 0, 1)
-                            datetime(2010, 2, 1, 0, 1), datetime(2010, 7, 1, 0, 1)
+                            datetime(2006, 2, 1, 0, 1), datetime(2006, 7, 1, 0, 1),
+                            datetime(2007, 2, 1, 0, 1), datetime(2007, 7, 1, 0, 1),
+                            datetime(2008, 2, 1, 0, 1), datetime(2008, 7, 1, 0, 1),
+                            datetime(2009, 2, 1, 0, 1), datetime(2009, 7, 1, 0, 1),
+                            datetime(2010, 2, 1, 0, 1), datetime(2010, 7, 1, 0, 1),
                             datetime(2011, 2, 1, 0, 1), datetime(2011, 7, 1, 0, 1)])
 
     # loop through state dates
@@ -53,7 +53,7 @@ def run():
         # keep running until we hit the next month
         while date.month < startdate.month+1:
 
-            name = 'all_f/N=5_dx=8/' + date.isoformat()[0:13] 
+            name = 'all_f/N=5_dx=8/25days/' + date.isoformat()[0:13] 
 
             # If the particle trajectories have not been run, run them
             if not os.path.exists('tracks/' + name + '.nc'):
@@ -79,7 +79,7 @@ def run():
                 # tracpy.plotting.hist(lonp, latp, name, grid=grid, which='hexbin')
                 d.close()
                 # Do transport plot
-                tracpy.plotting.transport(name='all_f/N=5_dx=8', fmod=date.isoformat()[0:13], 
+                tracpy.plotting.transport(name='all_f/N=5_dx=8/25days', fmod=date.isoformat()[0:13], 
                     extraname=date.isoformat()[0:13], 
                     Title='Transport on Shelf, for a week from ' + date.isoformat()[0:13], dmax=1.0)
 
@@ -88,7 +88,7 @@ def run():
             date = startdate + timedelta(hours=nh)
    
         # Do transport plot
-        tracpy.plotting.transport(name='all_f/N=5_dx=8', fmod=startdate.isoformat()[0:7] + '*', 
+        tracpy.plotting.transport(name='all_f/N=5_dx=8/25days', fmod=startdate.isoformat()[0:7] + '*', 
             extraname=startdate.isoformat()[0:7], Title='Transport on Shelf', dmax=1.0)
 
 
