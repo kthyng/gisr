@@ -32,9 +32,14 @@ def run():
 
     grid = tracpy.inout.readgrid(loc)
 
-    # startdates = np.array([datetime(2006, 7, 1, 0, 1)])
-    startdates = np.array([datetime(2006, 2, 1, 0, 1), datetime(2006, 7, 1, 0, 1)])
-    # pdb.set_trace()
+    startdates = np.array([datetime(2004, 2, 1, 0, 1), datetime(2004, 7, 1, 0, 1),
+                            datetime(2005, 2, 1, 0, 1), datetime(2005, 7, 1, 0, 1),
+                            datetime(2006, 2, 1, 0, 1), datetime(2006, 7, 1, 0, 1)
+                            datetime(2007, 2, 1, 0, 1), datetime(2007, 7, 1, 0, 1)
+                            datetime(2008, 2, 1, 0, 1), datetime(2008, 7, 1, 0, 1)
+                            datetime(2009, 2, 1, 0, 1), datetime(2009, 7, 1, 0, 1)
+                            datetime(2010, 2, 1, 0, 1), datetime(2010, 7, 1, 0, 1)
+                            datetime(2011, 2, 1, 0, 1), datetime(2011, 7, 1, 0, 1)])
 
     # loop through state dates
     for startdate in startdates:

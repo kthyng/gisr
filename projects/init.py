@@ -1484,7 +1484,7 @@ def all_f(date, loc, grid=None):
 
     # Time between outputs
     tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
-    ah = 20.
+    ah = 5.
     av = 0. # m^2/s
 
     if grid is None:
@@ -1502,7 +1502,7 @@ def all_f(date, loc, grid=None):
 
     # Eliminate points that are outside domain or in masked areas
     lon0, lat0 = tracpy.tools.check_points(lon0, lat0, grid)
-    pdb.set_trace()
+    # pdb.set_trace()
 
     # Interpolate to get starting positions in grid space
     xstart0, ystart0, _ = tracpy.tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
@@ -1521,7 +1521,7 @@ def all_f(date, loc, grid=None):
 
     # for 3d flag, do3d=0 makes the run 2d and do3d=1 makes the run 3d
     do3d = 0
-    doturb = 1
+    doturb = 2
 
     # Flag for streamlines. All the extra steps right after this are for streamlines.
     dostream = 1
