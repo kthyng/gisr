@@ -71,25 +71,25 @@ def run():
             # # If basic figures don't exist, make them
             # if not os.path.exists('figures/' + name + '*.png'):
 
-                # Read in and plot tracks
-                d = netCDF.Dataset('tracks/' + name + '.nc')
-                lonp = d.variables['lonp'][:]
-                latp = d.variables['latp'][:]
-                # tracpy.plotting.tracks(lonp, latp, name, grid=grid)
-                # tracpy.plotting.hist(lonp, latp, name, grid=grid, which='hexbin')
-                d.close()
-                # Do transport plot
-                tracpy.plotting.transport(name='all_f/N=5_dx=8', fmod=date.isoformat()[0:13], 
-                    extraname=date.isoformat()[0:13], 
-                    Title='Transport on Shelf, for a week from ' + date.isoformat()[0:13], dmax=1.0)
+                # # Read in and plot tracks
+                # d = netCDF.Dataset('tracks/' + name + '.nc')
+                # lonp = d.variables['lonp'][:]
+                # latp = d.variables['latp'][:]
+                # # tracpy.plotting.tracks(lonp, latp, name, grid=grid)
+                # # tracpy.plotting.hist(lonp, latp, name, grid=grid, which='hexbin')
+                # d.close()
+                # # Do transport plot
+                # tracpy.plotting.transport(name='all_f/N=5_dx=8', fmod=date.isoformat()[0:13], 
+                #     extraname=date.isoformat()[0:13], 
+                #     Title='Transport on Shelf, for a week from ' + date.isoformat()[0:13], dmax=1.0)
 
             # Increment by 24 hours for next loop, to move through more quickly
             nh = nh + 24
             date = startdate + timedelta(hours=nh)
    
-        # Do transport plot
-        tracpy.plotting.transport(name='all_f/N=5_dx=8', fmod=startdate.isoformat()[0:7] + '*', 
-            extraname=startdate.isoformat()[0:7], Title='Transport on Shelf', dmax=1.0)
+        # # Do transport plot
+        # tracpy.plotting.transport(name='all_f/N=5_dx=8', fmod=startdate.isoformat()[0:7] + '*', 
+        #     extraname=startdate.isoformat()[0:7], Title='Transport on Shelf', dmax=1.0)
 
 
 if __name__ == "__main__":
