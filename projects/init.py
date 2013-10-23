@@ -1479,7 +1479,7 @@ def all_f(date, loc, grid=None):
 
     # Initialize parameters
     nsteps = 5 # 5 time interpolation steps
-    ndays = 7
+    ndays = 25
     ff = 1 # This is a forward-moving simulation
 
     # Time between outputs
