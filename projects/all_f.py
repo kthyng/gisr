@@ -78,18 +78,18 @@ def run():
                 # tracpy.plotting.tracks(lonp, latp, name, grid=grid)
                 # tracpy.plotting.hist(lonp, latp, name, grid=grid, which='hexbin')
                 d.close()
-                # Do transport plot
-                tracpy.plotting.transport(name='all_f/N=5_dx=8/25days', fmod=date.isoformat()[0:13], 
-                    extraname=date.isoformat()[0:13], 
-                    Title='Transport on Shelf, for a week from ' + date.isoformat()[0:13], dmax=1.0)
+                # # Do transport plot
+                # tracpy.plotting.transport(name='all_f/N=5_dx=8/25days', fmod=date.isoformat()[0:13], 
+                #     extraname=date.isoformat()[0:13], 
+                #     Title='Transport on Shelf, for a week from ' + date.isoformat()[0:13], dmax=1.0)
 
             # Increment by 24 hours for next loop, to move through more quickly
             nh = nh + 24
             date = startdate + timedelta(hours=nh)
    
-        # Do transport plot
-        tracpy.plotting.transport(name='all_f/N=5_dx=8/25days', fmod=startdate.isoformat()[0:7] + '*', 
-            extraname=startdate.isoformat()[0:7], Title='Transport on Shelf', dmax=1.0)
+        # # Do transport plot
+        # tracpy.plotting.transport(name='all_f/N=5_dx=8/25days', fmod=startdate.isoformat()[0:7] + '*', 
+        #     extraname=startdate.isoformat()[0:7], Title='Transport on Shelf', dmax=1.0)
 
 
 if __name__ == "__main__":
