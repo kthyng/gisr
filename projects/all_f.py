@@ -17,19 +17,17 @@ import glob
 
 def run():
 
-    # Location of TXLA model output
-    loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
-
     # Make sure necessary directories exist
     if not os.path.exists('tracks'):
         os.makedirs('tracks')
-    if not os.path.exists('tracks/all_f/N=5_dx=8/25days'):
-        os.makedirs('tracks/all_f/N=5_dx=8/25days')
+    if not os.path.exists('tracks/all_f/'):
+        os.makedirs('tracks/all_f/')
     if not os.path.exists('figures'):
         os.makedirs('figures')
-    if not os.path.exists('figures/all_f/N=5_dx=8/25days'):
-        os.makedirs('figures/all_f/N=5_dx=8/25days')
-
+    if not os.path.exists('figures/all_f/'):
+        os.makedirs('figures/all_f/')
+        
+    loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
     grid = tracpy.inout.readgrid(loc)
 
     startdates = np.array([datetime(2004, 2, 1, 0, 1), datetime(2004, 7, 1, 0, 1),
@@ -53,14 +51,14 @@ def run():
         # keep running until we hit the next month
         while date.month < startdate.month+1:
 
-            name = 'all_f/N=5_dx=8/25days/' + date.isoformat()[0:13] 
+            name = 'all_f/' + date.isoformat()[0:13] 
 
             # If the particle trajectories have not been run, run them
             if not os.path.exists('tracks/' + name + '.nc'):
 
                 # Read in simulation initialization
-                nstep, ndays, ff, tseas, ah, av, lon0, lat0, z0, zpar, do3d, doturb, \
-                        grid, dostream, N, T0, U, V = init.all_f(date, loc, grid=grid)
+                nstep, N, ndays, ff, tseas, ah, av, lon0, lat0, z0, zpar, do3d, doturb, \
+                        grid, dostream, T0, U, V = init.all_f(date, loc, grid=grid)
 
                 # Run tracpy
                 lonp, latp, zp, t, grid, T0, U, V \

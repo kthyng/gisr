@@ -1477,10 +1477,16 @@ def all_f(date, loc, grid=None):
                 Default is to load in grid.
     '''
 
-    # Initialize parameters
-    nsteps = 5 # 5 time interpolation steps
-    ndays = 25
-    ff = 1 # This is a forward-moving simulation
+    # horizontal_diffusivity project showed that relative dispersion did not
+    # change between nsteps=25 and 50, but does between nsteps=5 and 25, and
+    # interim numbers have not been tested yet.
+    nsteps = 25 
+    # Number of steps to divide model output for outputting drifter location
+    N = 8
+    # Number of days
+    ndays = 30
+    # This is a forward-moving simulation
+    ff = 1 
 
     # Time between outputs
     tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
@@ -1495,10 +1501,14 @@ def all_f(date, loc, grid=None):
         grid = grid
 
     # Initial lon/lat locations for drifters
-    # Use the center of all grid cells
-    dx = 8; dy = 8; # WAS 4 in N=1
-    lon0 = grid['lonr'][1:-1:dx,1:-1:dy]
-    lat0 = grid['latr'][1:-1:dx,1:-1:dy]
+    # Start uniform array of drifters across domain using x,y coords
+    dx = 1000 # initial separation distance of drifters, in meters, from sensitivity project
+    llcrnrlon = grid['lonr'].min(); urcrnrlon = grid['lonr'].max(); 
+    llcrnrlat = grid['latr'].min(); urcrnrlat = grid['latr'].max(); 
+    xcrnrs, ycrnrs = grid['basemap']([llcrnrlon, urcrnrlon], [llcrnrlat, urcrnrlat])
+    X, Y = np.meshgrid(np.arange(xcrnrs[0], xcrnrs[1], dx), 
+                        np.arange(ycrnrs[0], ycrnrs[1], dx))
+    lon0, lat0 = grid['basemap'](X, Y, inverse=True)
 
     # Eliminate points that are outside domain or in masked areas
     lon0, lat0 = tracpy.tools.check_points(lon0, lat0, grid)
@@ -1508,12 +1518,8 @@ def all_f(date, loc, grid=None):
     xstart0, ystart0, _ = tracpy.tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
 
     # Initialize seed locations 
-    ia = np.ceil(xstart0).astype(int) #[253]#,525]
-    ja = np.ceil(ystart0).astype(int) #[57]#,40]
-    # lon0, lat0 already at cell centers
-    # # Change to get positions at the center of the given cell
-    # lon0, lat0, _ = tracpy.tools.interpolate2d(ia - 0.5, ja - 0.5, grid, 'm_ij2ll')
-    N = 5 #lon0.size since there is only one drifter per box in this setup
+    ia = np.ceil(xstart0).astype(int)
+    ja = np.ceil(ystart0).astype(int)
 
     # surface drifters
     z0 = 's'  
@@ -1525,22 +1531,66 @@ def all_f(date, loc, grid=None):
 
     # Flag for streamlines. All the extra steps right after this are for streamlines.
     dostream = 1
+
     # convert date to number
     datenum = netCDF.date2num(date, units)
+
     # Number of model outputs to use
     tout = np.int((ndays*(24*3600))/tseas)
+
     # Figure out what files will be used for this tracking - to get tinds for
     # the following calculation
     nc, tinds = tracpy.inout.setupROMSfiles(loc, datenum, ff, tout)
+
     # Get fluxes at first time step in order to find initial drifter volume transport
     uf, vf, dzt, zrt, zwt  = tracpy.inout.readfields(tinds[0],grid,nc,z0,zpar)
     nc.close()
-    # Initial total volume transport as a scalar quantity to be conserved, I think
-    T0 = (abs(uf[ia, ja, 0]) + abs(vf[ia, ja, 0]))/N
-    # # Initialize arrays of lon0, lat0 and U, V for full number of drifters
-    # lon0 = np.ones(N,order='F')*lon0
-    # lat0 = np.ones(N,order='F')*lat0
-    # T0 = np.ones(N,order='F')*T0
+
+    # Max initial volume transport, from sensitivity project, in m^3/s
+    Vmax = 100
+
+    # Initial total volume transport as a scalar quantity to be conserved
+    # Do some manipulation here to, for a given initial separation, have the drifter represent
+    # an approximately fixed amount of volume transport
+    # if it is too high currently, add drifters
+    pts = []
+    for i in xrange(ia.size): # loop over drifters
+        pts.append((ia[i], ja[i])) # list of points
+
+    lon0new = list(lon0); lat0new = list(lat0);
+    ianew = list(ia); janew = list(ja);
+    for i in xrange(len(lon0)): # loop over drifters
+        pt = tuple((ia[i], ja[i])) # drifter we are examining
+        Npt = pts.count(pt) # count occurrences of point, # of drifters in this cell
+        T = (abs(uf[ia[i], ja[i], 0]) + abs(vf[ia[i], ja[i], 0]))/Npt # transport amount
+        while T > Vmax: # looping to get volume down
+
+            pts.insert(-1, (ia[i], ja[i]))
+            # Also update the list of points, just stick points on the end since they are repeats
+            # and order shouldn't matter. If it does matter, I could sort at the end.
+            lon0new.insert(-1, lon0[i])
+            lat0new.insert(-1, lat0[i])
+            ianew.insert(-1, ia[i])
+            janew.insert(-1, ja[i])
+            Npt = pts.count(pt) # count occurrences of point, # of drifters in this cell
+            T = (abs(uf[ia[i], ja[i], 0]) + abs(vf[ia[i], ja[i], 0]))/Npt # transport amount
+
+    lon0new = np.array(lon0new)
+    lat0new = np.array(lat0new)
+    pdb.set_trace()
+
+    # T0 is the volume transport represented by each drifter, so same size as lon0
+    # To find this out, loop through new set of drifters
+    T0 = np.zeros(len(lon0new))
+    Npt = np.zeros(len(lon0new))
+    for i in xrange(len(lon0new)): # loop over drifters
+        pt = tuple((ianew[i], janew[i])) # drifter we are examining
+        Npt[i] = pts.count(pt) # count occurrences of point, # of drifters in this cell
+        T0[i] = (abs(uf[ianew[i], janew[i], 0]) + abs(vf[ianew[i], janew[i], 0]))/Npt[i]
+
+    # Copy over new arrays
+    pdb.set_trace()
+    lon0 = lon0new; lat0 = lat0new;
 
     # Initialize the arrays to save the transports on the grid in the loop.
     # These arrays aggregate volume transport when a drifter enters or exits a grid cell
@@ -1548,5 +1598,5 @@ def all_f(date, loc, grid=None):
     U = np.ma.zeros(grid['xu'].shape,order='F')
     V = np.ma.zeros(grid['xv'].shape,order='F')
 
-    return nsteps, ndays, ff, tseas, ah, av, lon0, lat0, \
-            z0, zpar, do3d, doturb, grid, dostream, N, T0.data, U, V
+    return nsteps, N, ndays, ff, tseas, ah, av, lon0, lat0, \
+            z0, zpar, do3d, doturb, grid, dostream, T0.data, U, V
