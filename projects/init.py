@@ -1517,10 +1517,6 @@ def all_f(date, loc, grid=None):
     # Interpolate to get starting positions in grid space
     xstart0, ystart0, _ = tracpy.tools.interpolate2d(lon0, lat0, grid, 'd_ll2ij')
 
-    # Initialize seed locations 
-    ia = np.ceil(xstart0).astype(int)
-    ja = np.ceil(ystart0).astype(int)
-
     # surface drifters
     z0 = 's'  
     zpar = 29 
@@ -1548,49 +1544,203 @@ def all_f(date, loc, grid=None):
 
     # Max initial volume transport, from sensitivity project, in m^3/s
     Vmax = 100
+    # pdb.set_trace()
 
-    # Initial total volume transport as a scalar quantity to be conserved
-    # Do some manipulation here to, for a given initial separation, have the drifter represent
-    # an approximately fixed amount of volume transport
-    # if it is too high currently, add drifters
-    pts = []
-    for i in xrange(ia.size): # loop over drifters
-        pts.append((ia[i], ja[i])) # list of points
+    # # Figure out the number of drifter cells to use
+    # T0 = np.zeros(lon0.size)
+    # # Find the outflowing transport values from the grid cells
+    # Ueast = uf[ia, ja, 0]
+    # ind = Ueast<0 # positive here is outflowing
+    # Ueast[ind] = 0 # don't want to count negative values of Ueast
+    # Uwest = uf[ia, ja, 0]
+    # ind = Uwest>0 # negative is outflowing 
+    # Uwest[ind] = 0
+    # Veast = vf[ia, ja, 0]
+    # ind = Veast<0 # positive is outflowing
+    # Veast[ind] = 0
+    # Vwest = vf[ia, ja, 0]
+    # ind = Vwest>0 # negative is outflowing from cell
+    # Vwest[ind] = 0
+    # # combine all outflow values for drifters
+    # T0 += Ueast + Veast + Uwest + Vwest
 
-    lon0new = list(lon0); lat0new = list(lat0);
-    ianew = list(ia); janew = list(ja);
-    for i in xrange(len(lon0)): # loop over drifters
-        pt = tuple((ia[i], ja[i])) # drifter we are examining
-        Npt = pts.count(pt) # count occurrences of point, # of drifters in this cell
-        T = (abs(uf[ia[i], ja[i], 0]) + abs(vf[ia[i], ja[i], 0]))/Npt # transport amount
-        while T > Vmax: # looping to get volume down
+    # H gives the number of drifters per grid cell of numerical grid
+    H, xedges, yedges = np.histogram2d(xstart0, ystart0, 
+                  bins=[grid['xu'].shape[0]-1, grid['xv'].shape[1]-1],
+                  range=[[0, grid['xu'].shape[0]-1], [0, grid['xv'].shape[1]-1]])
+    # H, xedges, yedges = np.histogram2d(ia, ja, 
+    #               bins=[grid['xu'].shape[0]-1, grid['xv'].shape[1]-1])
+    # Use H to figure out the volume transport for each drifter
 
-            pts.insert(-1, (ia[i], ja[i]))
-            # Also update the list of points, just stick points on the end since they are repeats
-            # and order shouldn't matter. If it does matter, I could sort at the end.
-            lon0new.insert(-1, lon0[i])
-            lat0new.insert(-1, lat0[i])
-            ianew.insert(-1, ia[i])
-            janew.insert(-1, ja[i])
-            Npt = pts.count(pt) # count occurrences of point, # of drifters in this cell
-            T = (abs(uf[ia[i], ja[i], 0]) + abs(vf[ia[i], ja[i], 0]))/Npt # transport amount
+    # Volume transport out of each grid cell in the grid
+    # Find the outflowing transport values from the grid cells
+    # Note that tools.check_points eliminates points outside the domain
+    # and in the first row/column in of the grid
+    Ueast = uf[1:, 1:-1, 0].copy()
+    ind = Ueast<0 # positive here is outflowing
+    Ueast[ind] = 0 # don't want to count negative values of Ueast
+    Uwest = uf[:-1, 1:-1, 0].copy()
+    ind = Uwest>0 # negative is outflowing 
+    Uwest[ind] = 0
+    Vnorth = vf[1:-1, 1:, 0].copy()
+    ind = Vnorth<0 # positive is outflowing
+    Vnorth[ind] = 0
+    Vsouth = vf[1:-1, :-1, 0].copy()
+    ind = Vsouth>0 # negative is outflowing from cell
+    Vsouth[ind] = 0
+    # # combine all outflow values for drifters
+    # T0 += Ueast + Veast + Uwest + Vwest
+    Tgrid = abs(Ueast) + abs(Vnorth) + abs(Uwest) + abs(Vsouth)
+    # Vgrid = Tgrid/H # volume transport per drifter
+    # ind = Vgrid>Vmax
 
-    lon0new = np.array(lon0new)
-    lat0new = np.array(lat0new)
-    pdb.set_trace()
+    ndriftersbycell = np.ceil(Tgrid/Vmax).data # gives number of drifters per grid cell
 
-    # T0 is the volume transport represented by each drifter, so same size as lon0
-    # To find this out, loop through new set of drifters
-    T0 = np.zeros(len(lon0new))
-    Npt = np.zeros(len(lon0new))
-    for i in xrange(len(lon0new)): # loop over drifters
-        pt = tuple((ianew[i], janew[i])) # drifter we are examining
-        Npt[i] = pts.count(pt) # count occurrences of point, # of drifters in this cell
-        T0[i] = (abs(uf[ianew[i], janew[i], 0]) + abs(vf[ianew[i], janew[i], 0]))/Npt[i]
+    # Want to connect histogram results with original drifter locations
 
-    # Copy over new arrays
-    pdb.set_trace()
-    lon0 = lon0new; lat0 = lat0new;
+    # This has space for max possible number of drifters needed in one grid cell
+    # inds = np.ones((grid['xr'].shape[0]-2, grid['xr'].shape[1]-2, 
+    #           ndriftersbycell.max()))*np.nan
+    xstart0new = xstart0.tolist()
+    ystart0new = ystart0.tolist()
+    # pdb.set_trace()
+    for i, xedge in enumerate(xedges[:-1]):
+      for j, yedge in enumerate(yedges[:-1]):
+
+        # print i,j
+        # if j == 160:
+        #   pdb.set_trace()
+        # These are the indices of the list of drifters that are in this grid cell
+        indssave = find((xstart0>=xedge)*(xstart0<=xedges[i+1]) \
+                          * (ystart0>=yedge)*(ystart0<=yedges[j+1]))
+
+        # If there aren't any drifters in this grid cell, that is ok, just move on
+        if indssave.size == 0:
+          continue
+
+        # print indssave
+
+        # # indices correspond to order in list of drifters so that we can add 
+        # # drifters where needed for large transport
+        # inds[i,j,0:indssave.size] = indssave
+
+        # number of drifters needed to be added to grid cell
+        ndiff = ndriftersbycell[i,j] - indssave.size
+
+        # if the cell already has the correct number of drifters, move onto next loop
+        if ndiff<=0:
+          continue
+        # print ndiff
+
+        # add on some of the drifters, maybe all of them
+        somedrifters = indssave.repeat(int(ndiff/indssave.size)).tolist()
+
+
+        # the remainder in case indssave.size does not divide evenly into ndiff
+        therest = indssave[:(ndiff-len(somedrifters))].tolist()
+
+        # add drifters at the existing drifter locations
+        if bool(somedrifters): # True if not empty
+          xstart0new.extend(xstart0[somedrifters].tolist())
+          ystart0new.extend(ystart0[somedrifters].tolist())
+        if bool(therest): # True if not empty
+          xstart0new.extend(xstart0[therest].tolist())
+          ystart0new.extend(ystart0[therest].tolist())
+
+    # indx = np.ones((xedges.size, xstart0.size))*np.nan
+    # for i, xedge in enumerate(xedges[:-1]):
+    #   indx[i,:] = (xstart0>xedge)*(xstart0<xedges[i+1]) # drifter between columns
+    # pdb.set_trace()
+
+    # indy = np.ones((yedges.size, ystart0.size))*np.nan
+    # for i, yedge in enumerate(yedges[:-1]):
+    #   indy[i,:] = (ystart0>yedge)*(ystart0<yedges[i+1]) # drifter between columns
+
+
+    # while ind.any(): # while any grid cell is over the Vmax limit
+    #   H[ind] += 1
+    #   Vgrid = Tgrid/H
+    #   ind = Vgrid>Vmax
+
+    # Extract out drifter start locations by grid index
+
+
+    # Can I extract out lon0,lat0 from ia,ja?
+
+    # H gives the updated number of drifters per grid cell of numerical grid
+    H, xedges, yedges = np.histogram2d(xstart0new, ystart0new, 
+                  bins=[grid['xu'].shape[0]-1, grid['xv'].shape[1]-1],
+                  range=[[0, grid['xu'].shape[0]-1], [0, grid['xv'].shape[1]-1]])
+
+    # Grid of initial volume transport per drifters (for numerical domain)
+    Vgrid = (Tgrid/H).data
+
+
+    # Drifter indices for new list of drifters
+    ia = np.ceil(xstart0).astype(int)
+    ja = np.ceil(ystart0).astype(int)
+
+    # Initial volume transport by drifter
+    T0 = Vgrid[ia-1,ja-1]
+
+    # back to lat/lon
+    lon0, lat0 = grid['basemap'](xstart0new, ystart0new, inverse=True)
+
+    # # Initial total volume transport as a scalar quantity to be conserved
+    # # Do some manipulation here to, for a given initial separation, have the drifter represent
+    # # an approximately fixed amount of volume transport
+    # # if it is too high currently, add drifters
+    # pts = []
+    # for i in xrange(ia.size): # loop over drifters
+    #     pts.append((ia[i], ja[i])) # list of points
+
+    # lon0new = list(lon0); lat0new = list(lat0);
+    # ianew = list(ia); janew = list(ja);
+    # for i in xrange(len(lon0)): # loop over drifters
+    #     pt = tuple((ia[i], ja[i])) # drifter we are examining
+    #     Npt = pts.count(pt) # count occurrences of point, # of drifters in this cell
+    #     T = (abs(uf[ia[i], ja[i], 0]) + abs(vf[ia[i], ja[i], 0]))/Npt # transport amount
+    #     while T > Vmax: # looping to get volume down
+
+    #         pts.insert(-1, (ia[i], ja[i]))
+    #         # Also update the list of points, just stick points on the end since they are repeats
+    #         # and order shouldn't matter. If it does matter, I could sort at the end.
+    #         lon0new.insert(-1, lon0[i])
+    #         lat0new.insert(-1, lat0[i])
+    #         ianew.insert(-1, ia[i])
+    #         janew.insert(-1, ja[i])
+    #         Npt = pts.count(pt) # count occurrences of point, # of drifters in this cell
+    #         # Find the outflowing transport values from the grid cell
+    #         Ueast = uf[ia[i], ja[i], 0] # positive here is outflowing
+    #         Uwest = uf[ia[i-1], ja[i], 0]*-1 # negative is outflowing 
+    #         Veast = vf[ia[i], ja[i], 0] # positive is outflowing
+    #         Vwest = vf[ia[i], ja[i-1], 0]*-1 # negative is outflowing from cell
+    #         if Ueast>0:
+    #           T += Ueast
+    #         if Veast>0:
+    #           T += Veast
+    #         if Uwest>0:
+    #           T += Uwest
+    #         if Vwest>0:
+    #           T += Vwest
+    #         # T = (abs(uf[ia[i], ja[i], 0]) + abs(vf[ia[i], ja[i], 0]))/Npt # transport amount
+
+    # lon0new = np.array(lon0new)
+    # lat0new = np.array(lat0new)
+    # pdb.set_trace()
+
+    # # T0 is the volume transport represented by each drifter, so same size as lon0
+    # # To find this out, loop through new set of drifters
+    # T0 = np.zeros(len(lon0new))
+    # Npt = np.zeros(len(lon0new))
+    # for i in xrange(len(lon0new)): # loop over drifters
+    #     pt = tuple((ianew[i], janew[i])) # drifter we are examining
+    #     Npt[i] = pts.count(pt) # count occurrences of point, # of drifters in this cell
+    #     T0[i] = (abs(uf[ianew[i], janew[i], 0]) + abs(vf[ianew[i], janew[i], 0]))/Npt[i]
+
+    # # Copy over new arrays
+    # pdb.set_trace()
+    # lon0 = lon0new; lat0 = lat0new;
 
     # Initialize the arrays to save the transports on the grid in the loop.
     # These arrays aggregate volume transport when a drifter enters or exits a grid cell
@@ -1599,4 +1749,4 @@ def all_f(date, loc, grid=None):
     V = np.ma.zeros(grid['xv'].shape,order='F')
 
     return nsteps, N, ndays, ff, tseas, ah, av, lon0, lat0, \
-            z0, zpar, do3d, doturb, grid, dostream, T0.data, U, V
+            z0, zpar, do3d, doturb, grid, dostream, T0, U, V
