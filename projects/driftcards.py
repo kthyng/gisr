@@ -15,8 +15,8 @@ from matplotlib.mlab import find, Path
 
 units = 'seconds since 1970-01-01'
 
-# Location of TXLA model output
-loc = 'http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc'
+# on pong
+loc = ['/pong/raid/kthyng/forecast/roms_his_20130101_a_n0.nc','http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc']
 
 def read(ndrift):
 
@@ -103,23 +103,22 @@ def reduce(grid, ndrift):
   
     return startdate, startlon, startlat, enddate, endlon, endlat, idnum
 
-def init(grid):
+def init(grid, date, lon0, lat0):
 
-    nsteps = 5 # 5 time interpolation steps
-    ndays = 90#180 # in days, about 3 months
+    nsteps = 25 # limiting steps 
+    N = 5 # 5 outputs between model outputs
+    ndays = 30 # days
     ff = 1 # forward for now but ALSO TRY BACKWARD FROM FOUND LOCATIONS. SHOULD DO BOTH!
-
-    # FINISH INIT TO SEE ABOUT GETTING A RUN TO WORK
 
     # Time between outputs
     tseas = 4*3600 # 4 hours between outputs, in seconds, time between model outputs 
-    ah = 20.
+    ah = 5.
     av = 0. # m^2/s
 
     # Number of drift cards set out
     ndrift = 1770
 
-    startdate, startlon, startlat, enddate, endlon, endlat, idnum = reduce(grid, ndrift)
+    # startdate, startlon, startlat, enddate, endlon, endlat, idnum = reduce(grid, ndrift)
 
     # surface drifters
     z0 = 's'  
@@ -127,10 +126,41 @@ def init(grid):
 
     # for 3d flag, do3d=0 makes the run 2d and do3d=1 makes the run 3d
     do3d = 0
-    doturb = 0
+    doturb = 2
 
     # Flag for streamlines. All the extra steps right after this are for streamlines.
-    dostream = 0
+    # Transport would be nice for pictures, and starting in a single location lends itself
+    # to this nicely.
+    dostream = 1
+
+    # convert date to number
+    datenum = netCDF.date2num(date, units)
+
+    # Number of model outputs to use
+    tout = np.int((ndays*(24*3600))/tseas)
+
+    # Figure out what files will be used for this tracking - to get tinds for
+    # the following calculation
+    nc, tinds = tracpy.inout.setupROMSfiles(loc, datenum, ff, tout)
+
+    # Get fluxes at first time step in order to find initial drifter volume transport
+    uf, vf, dzt, zrt, zwt  = tracpy.inout.readfields(tinds[0],grid,nc,z0,zpar)
+    nc.close()
+
+    # DO THIS ONCE I KNOW THE POSITION
+    Ueast = uf[1:, 1:-1, 0].copy()
+    ind = Ueast<0 # positive here is outflowing
+    Ueast[ind] = 0 # don't want to count negative values of Ueast
+    Uwest = uf[:-1, 1:-1, 0].copy()
+    ind = Uwest>0 # negative is outflowing 
+    Uwest[ind] = 0
+    Vnorth = vf[1:-1, 1:, 0].copy()
+    ind = Vnorth<0 # positive is outflowing
+    Vnorth[ind] = 0
+    Vsouth = vf[1:-1, :-1, 0].copy()
+    ind = Vsouth>0 # negative is outflowing from cell
+    Vsouth[ind] = 0
+    Tgrid = abs(Ueast) + abs(Vnorth) + abs(Uwest) + abs(Vsouth)
 
     return startdate, startlon, startlat, enddate, endlon, endlat, idnum, \
             nsteps, ndays, ff, tseas, ah, av, ndrift, z0, zpar, do3d, doturb, dostream
@@ -147,59 +177,50 @@ def run():
         os.makedirs('figures')
     if not os.path.exists('figures/driftcards'):
         os.makedirs('figures/driftcards')
- 
-    # Find drifters that started within the TX-LA numerical domain
-    # Use path to do so
+
     grid = tracpy.inout.readgrid(loc)
-    # lonr = grid['lonr']
-    # latr = grid['latr']
 
-    # Initialize parameters
-    startdate, startlon, startlat, enddate, endlon, endlat, idnum, \
-            nsteps, ndays, ff, tseas, ah, av, ndrift, z0, zpar, \
-            do3d, doturb, dostream = init(grid)
+    # Read in deployment info
+    ndrift = 3490 # number of driftcards deployed
+    startdate, startlon, startlat, enddate, endlon, endlat, idnum = read(ndrift)
 
-    # For drifters that started within domain and have been found, order by
-    # start date and time
-    # Start drifters at drift card locations, and have a different simulation for
-    # each set of drifters by start date/time
-    # Run for three months?
+    # Eliminate those outside the numerical domain
+    lon0, lat0 = tracpy.tools.check_points(lon0, lat0, grid)
 
-    # Don't need to go in order I suppose
-    # # Sort arrays by startdate
-    # startind = np.argsort(startdate) #these indices sort arrays by startdate
+    # Loop through deployments
 
-    # THIS NEEDS TO BE IN SOME SORT OF LOOP
+        # Check for in domain and if not, continue
 
-    # start drifters in chunks of exact same date/time
-    # idrift = 0
-    # tdrift = startdate[idrift] #drifter time
-    idrifts = find(startdate==startdate[find(~np.isnan(startdate))[0]]) # all drifters with same start date/time
-    lon0 = startlon[idrifts]
-    lat0 = startlat[idrifts]
-    date = netCDF.num2date(startdate[idrifts][0], units)
+        # Initialize parameters
+        startdate, startlon, startlat, enddate, endlon, endlat, idnum, \
+                nsteps, ndays, ff, tseas, ah, av, ndrift, z0, zpar, \
+                do3d, doturb, dostream = init(grid)
 
-    pdb.set_trace()
+        # start drifters in chunks of exact same date/time
+        # idrift = 0
+        # tdrift = startdate[idrift] #drifter time
+        idrifts = find(startdate==startdate[find(~np.isnan(startdate))[0]]) # all drifters with same start date/time
+        lon0 = startlon[idrifts]
+        lat0 = startlat[idrifts]
+        date = netCDF.num2date(startdate[idrifts][0], units)
 
-    name = 'driftcards/' + date.isoformat()
+        pdb.set_trace()
 
-    # COULD RUN MORE DRIFTERS THAN THE NUMBER OF DRIFT CARDS
+        name = 'driftcards/' + date.isoformat()
 
-    # Don't have the output available for these runs yet
-
-    # Run tracpy
-    lonp, latp, zp, t, grid, T0, U, V \
-        = tracpy.run.run(loc, nsteps, ndays, ff, date, tseas, ah, av, \
-                            lon0, lat0, z0, zpar, do3d, doturb, name, \
-                            grid=grid, dostream=dostream)
+        # Run tracpy
+        lonp, latp, zp, t, grid, T0, U, V \
+            = tracpy.run.run(loc, nsteps, ndays, ff, date, tseas, ah, av, \
+                                lon0, lat0, z0, zpar, do3d, doturb, name, \
+                                grid=grid, dostream=dostream)
 
 
-    # nan out drifters once they have been used to run tracpy
-    startlon[idrifts] = np.nan
-    startlat[idrifts] = np.nan
-    startdate[idrifts] = np.nan
+        # nan out drifters once they have been used to run tracpy
+        startlon[idrifts] = np.nan
+        startlat[idrifts] = np.nan
+        startdate[idrifts] = np.nan
 
-    pdb.set_trace()
+        pdb.set_trace()
 
 if __name__ == "__main__":
     run()    
