@@ -18,7 +18,7 @@ units = 'seconds since 1970-01-01'
 # on pong
 loc = ['/pong/raid/kthyng/forecast/roms_his_20130101_a_n0.nc','http://barataria.tamu.edu:8080/thredds/dodsC/NcML/txla_nesting6.nc']
 
-def read(ndrift):
+def read(ndrift, fileloc):
 
     # Read in all initial drift card locations
     idnum = np.zeros(ndrift).astype(int)
@@ -26,7 +26,7 @@ def read(ndrift):
     startlat = np.zeros(ndrift)*np.nan
     startlon = np.zeros(ndrift)*np.nan
 
-    with open('projects/driftcards/Deployment_data.txt','rU') as csvfile:
+    with open(fileloc,'rU') as csvfile:
         reader = csv.reader(csvfile,delimiter=',')
         for i, row in enumerate(reader):
             idnum[i] = row[0]
@@ -73,9 +73,9 @@ def read(ndrift):
     return startdate, startlon, startlat, idnum
     # return startdate, startlon, startlat, enddate, endlon, endlat, idnum
 
-def readThenReduce(grid, ndrift):
+def readThenReduce(grid, ndrift, fileloc='projects/driftcards/Deployment_data.txt'):
 
-    startdate, startlon, startlat, idnum = read(ndrift)
+    startdate, startlon, startlat, idnum = read(ndrift, fileloc)
     # startdate, startlon, startlat, enddate, endlon, endlat, idnum = read(ndrift)
 
     # If covering the whole domain, need to exclude points outside domain.
