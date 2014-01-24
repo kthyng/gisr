@@ -15,7 +15,7 @@ import init
 from datetime import datetime, timedelta
 import glob
 
-npieces = 12 # number of pieces to divide starting locations for drifters into, in x direction
+npieces = 1# 20 # number of pieces to divide starting locations for drifters into, in x direction
 
 def run():
 
@@ -33,7 +33,7 @@ def run():
     grid = tracpy.inout.readgrid(loc)
 
     overallstartdate = datetime(2004, 1, 1, 0, 1)
-    overallstopdate = datetime(2012, 1, 1, 0, 1)
+    overallstopdate = datetime(2005, 1, 1, 0, 1)
 
     # startdates = np.array([datetime(2004, 2, 1, 0, 1), datetime(2004, 7, 1, 0, 1),
     #                         datetime(2005, 2, 1, 0, 1), datetime(2005, 7, 1, 0, 1),

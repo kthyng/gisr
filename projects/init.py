@@ -1506,7 +1506,7 @@ def all_f(date, loc, npiece=[0,1], grid=None):
 
     # Initial lon/lat locations for drifters
     # Start uniform array of drifters across domain using x,y coords
-    dx = 1000 # initial separation distance of drifters, in meters, from sensitivity project
+    dx = 5000 # initial separation distance of drifters, in meters, from sensitivity project (now just picked lower value)
     llcrnrlon = grid['lonr'].min(); urcrnrlon = grid['lonr'].max(); 
     llcrnrlat = grid['latr'].min(); urcrnrlat = grid['latr'].max(); 
     xcrnrs, ycrnrs = grid['basemap']([llcrnrlon, urcrnrlon], [llcrnrlat, urcrnrlat])
@@ -1559,7 +1559,7 @@ def all_f(date, loc, npiece=[0,1], grid=None):
     nc.close()
 
     # Max initial volume transport, from sensitivity project, in m^3/s
-    Vmax = 100
+    Vmax = 200 # 100
 
     # H gives the number of drifters per grid cell of numerical grid
     H, xedges, yedges = np.histogram2d(xstart0, ystart0, 
